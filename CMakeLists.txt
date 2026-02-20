@@ -17,11 +17,11 @@ pico_sdk_init()
 
 add_executable(Pico-Music
 	src/main.c
-	#	src/led_manager.c
+	src/led_manager.c
 )
 
 target_include_directories(Pico-Music PRIVATE
-	#${CMAKE_CURRENT_LIST_DIR}/include
+	${CMAKE_CURRENT_LIST_DIR}/include
 	${CMAKE_CURRENT_LIST_DIR}/src
 
 )
