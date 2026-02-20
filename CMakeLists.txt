@@ -13,15 +13,15 @@ pico_sdk_init()
 
 # rest of your project
 
-add_subdirectory(lib/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src)
+#add_subdirectory(lib/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src)
 
 add_executable(Pico-Music
 	src/main.c
-	src/led_manager.c
+	#	src/led_manager.c
 )
 
 target_include_directories(Pico-Music PRIVATE
-	${CMAKE_CURRENT_LIST_DIR}/include
+	#${CMAKE_CURRENT_LIST_DIR}/include
 	${CMAKE_CURRENT_LIST_DIR}/src
 
 )
@@ -32,12 +32,9 @@ target_include_directories(Pico-Music PRIVATE
 target_link_libraries(Pico-Music
 	pico_stdlib
 	pico_cyw43_arch_none
-	no-OS-FatFS-SD-SDIO-SPI-RPi-Pico
+	#	no-OS-FatFS-SD-SDIO-SPI-RPi-Pico
 	
 )
-
-pico_set_program_name(Pico-Music "Pico-Music-Player")
-pico_set_program_version(Pico-Music "0.1")
 
 
 ##
