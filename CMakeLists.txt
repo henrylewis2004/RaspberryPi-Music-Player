@@ -18,6 +18,7 @@ pico_sdk_init()
 add_executable(Pico-Music
 	src/main.c
 	src/led_manager.c
+	src/audio_player.c
 )
 
 target_include_directories(Pico-Music PRIVATE

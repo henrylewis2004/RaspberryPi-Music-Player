@@ -1,18 +1,25 @@
+//c libraries
+#include <stdbool.h>
 //pico libraries
 #include "pico/stdlib.h"
+#include "pico/time.h"
 //project libraries
 #include "led_manager.h"
 
-//
+
 #ifdef CYW43_WL_GPIO_LED_PIN
 #include "pico/cyw43_arch.h" 
 #endif
 
 #ifndef LED_DELAY_MS
-#define LED_DELAY_MS 250
+#define LED_DELAY_MS 500
 #endif
 
-//
+// internal \\
+
+static struct repeating_timer blink_timer;
+
+//methods
 static int Pico_led_init(void){
 #if defined(PICO_DEFAULT_LED_PIN)
 	gpio_init(PICO_DEFAULT_LED_PIN);
@@ -31,19 +38,32 @@ static void Pico_set_led(bool led_on){
 #endif
 }
 
-int led_init(void){
-	return Pico_led_init();
+static bool blink_callback(struct repeating_timer *t){
+	static bool led_state = false;
+
+	led_state = !led_state;
+	Pico_set_led(led_state);
+
+	return true;
 }
 
-void blink(void){
-	int rc = Pico_led_init();
-	hard_assert(rc == PICO_OK);
+// public \\
 
-	while(true){
-		Pico_set_led(true);
-		sleep_ms(250);
-		Pico_set_led(false);
-		sleep_ms(250);
-	}
+//methods
+void led_init(void){
+	Pico_led_init();
+}
 
+void led_set(bool led_on){
+	Pico_set_led(led_on);
+}
+
+
+bool led_blink(void){
+	led_init();
+	return add_repeating_timer_ms(-500,blink_callback,NULL,&blink_timer);
+}
+
+void led_blink_stop(void){
+	cancel_repeating_timer(&blink_timer);
 }
