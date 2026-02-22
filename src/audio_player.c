@@ -1,5 +1,5 @@
 //c libraries
-#include <bool.h>
+#include <stdbool.h>
 //pico libraries
 #include "pico/stdlib.h"
 //project libraries

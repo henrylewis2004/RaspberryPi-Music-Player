@@ -1,0 +1,4 @@
+#ifndef SD_MEMORY_MANAGER_H
+#define SD_MEMORY_MANAGER_H
+
+#endif // !SD_MEMORY_MANAGER_H

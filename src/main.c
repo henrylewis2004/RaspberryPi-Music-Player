@@ -5,7 +5,7 @@
 //#include "pico/time.h"
 //project libraries
 #include "led_manager.h"
-#include "audio_player.h"
+//#include "audio_player.h"
 
 static bool aliveMessage(struct repeating_timer *t){
 	printf("I Breathe Father\n");
@@ -19,10 +19,11 @@ int main(void){
 
 	//led
 	led_blink();
+	printf("Hello Father");
 
 	//alive message
-	struct repeating_timer timer;
-	add_repeating_timer_ms(-1000,aliveMessage,NULL,&timer);
+	struct repeating_timer alive_message_timer;
+	add_repeating_timer_ms(-1000,aliveMessage,NULL,&alive_message_timer);
 
 
 	//infinite loop
