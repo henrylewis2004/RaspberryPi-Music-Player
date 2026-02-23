@@ -22,6 +22,7 @@
 
 int sd_mount(void){
 
+
 	FATFS fs; //FatFs filesystem
 	FRESULT fr = f_mount(&fs,"",1);
 	if (fr != FR_OK){

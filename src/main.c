@@ -26,6 +26,15 @@ int main(void){
 	sleep_ms(1500);
 	printf("hello father\n");
 
+
+	if(!sd_init_driver()){
+		printf("failed to init sd drivers\n");
+	}
+	else{
+		printf("init sd drivers success\n");
+	}
+
+
 	sd_mount();
 
 

@@ -9,15 +9,14 @@ static sd_sdio_if_t sdio_if = {
 	//values might need changing
 	.CMD_gpio = 18,
 	.D0_gpio = 19,
-	.baud_rate = 5000000,//125 * 1000 * 1000 / 6 //20833333 Hz
-	.SDIO_PIO = pio0,
-	.DMA_IRQ_num = DMA_IRQ_0
+	.baud_rate = 1 * 1000 * 1000,//125 * 1000 * 1000 / 6 //20833333 Hz
 };
 
 //hardware configuration of sd card (using SDIO interface type / created object above)
 static sd_card_t sd_card = {
 	.type = SD_IF_SDIO, 
 	.sdio_if_p = &sdio_if,
+	.card_detected_true = -1
 
 };
 
