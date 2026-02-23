@@ -1,9 +1,9 @@
-//c libraries
+//c headers
 #include <stdbool.h>
-//pico libraries
+//pico headers
 #include "pico/stdlib.h"
 #include "pico/time.h"
-//project libraries
+//project headers
 #include "led_manager.h"
 
 

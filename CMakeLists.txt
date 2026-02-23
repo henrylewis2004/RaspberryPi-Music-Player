@@ -13,12 +13,16 @@ pico_sdk_init()
 
 # rest of your project
 
-#add_subdirectory(lib/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src)
+add_subdirectory(lib/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src)
 
 add_executable(Pico-Music
 	src/main.c
 	src/led_manager.c
 	src/audio_player.c
+
+	# sd - sdio
+	src/hw_config.c
+	src/sd_memory_manager.c
 )
 
 target_include_directories(Pico-Music PRIVATE
@@ -33,9 +37,10 @@ target_include_directories(Pico-Music PRIVATE
 target_link_libraries(Pico-Music
 	pico_stdlib
 	pico_cyw43_arch_none
-	#	no-OS-FatFS-SD-SDIO-SPI-RPi-Pico
+	no-OS-FatFS-SD-SDIO-SPI-RPi-Pico
 	
 )
+
 
 
 ##

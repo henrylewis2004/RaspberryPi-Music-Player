@@ -1,11 +1,14 @@
-//standard C libraries
+//standard C headers
 #include <stdio.h>
-//pico libraries
+
+//pico headers
 #include "pico/stdlib.h"
-//#include "pico/time.h"
-//project libraries
+#include "my_debug.h"
+
+//project headers
 #include "led_manager.h"
 //#include "audio_player.h"
+#include "sd_memory_manager.h"
 
 static bool aliveMessage(struct repeating_timer *t){
 	printf("I Breathe Father\n");
@@ -19,11 +22,16 @@ int main(void){
 
 	//led
 	led_blink();
-	printf("Hello Father");
+
+	sleep_ms(1500);
+	printf("hello father\n");
+
+	sd_mount();
+
 
 	//alive message
 	struct repeating_timer alive_message_timer;
-	add_repeating_timer_ms(-1000,aliveMessage,NULL,&alive_message_timer);
+	add_repeating_timer_ms(-5000,aliveMessage,NULL,&alive_message_timer);
 
 
 	//infinite loop
