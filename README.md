@@ -45,9 +45,9 @@ A music player using a RaspberryPi Pico 2 W
 |-|-|-|
 | VIN  | 3V3(OUT) - 36 | n/a |
 | GND | GND - 38 | n/a |
-| RST | 7 | 5 |
-| SCL | 9 | 6 |
-| SDA | 10 | 7 |
+| RST | 5 | 3 |
+| SDA | 6 | 4 |
+| SCL | 7 | 5 |
 | DIN | 11 | 8 |
 | WSEL | 12 | 9 |
 | BCK | 14 | 10 |
