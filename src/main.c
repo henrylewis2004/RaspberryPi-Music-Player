@@ -27,6 +27,8 @@ int main(void){
 	printf("hello father\n");
 
 	//sd_mount();
+	printf("audio_init();");
+	audio_init();
 
 	//alive message
 	struct repeating_timer alive_message_timer;

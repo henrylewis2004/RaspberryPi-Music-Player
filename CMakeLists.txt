@@ -4,7 +4,9 @@ set(PICO_BOARD pico2_w CACHE STRING "Board type")
 
 # initialize the SDK based on PICO_SDK_PATH
 # note: this must happen before project()
-include(pico_sdk_import.cmake)
+include(
+	pico_sdk_import.cmake
+)
 
 project(Pico-Music C CXX ASM)
 
@@ -13,16 +15,22 @@ pico_sdk_init()
 
 # rest of your project
 
-add_subdirectory(lib/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src)
+add_subdirectory(
+	lib/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src
+)
 
 add_executable(Pico-Music
 	src/main.c
+
+	#led
 	src/led_manager.c
-	src/audio_player.c
 
 	# sd - sdio
 	src/hw_config.c
 	src/sd_memory_manager.c
+
+	#audio - i2s
+	src/audio_player.c
 )
 
 target_include_directories(Pico-Music PRIVATE
@@ -37,6 +45,7 @@ target_include_directories(Pico-Music PRIVATE
 target_link_libraries(Pico-Music
 	pico_stdlib
 	pico_cyw43_arch_none #for light / wifi module?
+	hardware_i2c #i2c
 
 	no-OS-FatFS-SD-SDIO-SPI-RPi-Pico #sd card & sdio library
 	
