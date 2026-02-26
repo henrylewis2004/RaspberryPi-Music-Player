@@ -13,7 +13,7 @@ A music player using a RaspberryPi Pico 2 W
 | Screen | *TBD* | O |
 | Battery | [2000mAh 3.7V LiPo Battery](https://thepihut.com/products/2000mah-3-7v-lipo-battery) | O |
 | Battery Charger | *TBD* | O |
-| Input Buttons | [PSP Thumb Joystick](https://thepihut.com/products/psp-2-axis-analog-thumb-joystick), [on/off switch](https://thepihut.com/products/breadboard-friendly-spdt-slide-switch), *MORE TBD* | O |
+| Input Buttons | [2-Axis Joystick](https://thepihut.com/products/psp-2-axis-analog-thumb-joystick), [An on/off switch](https://thepihut.com/products/breadboard-friendly-spdt-slide-switch), [3x Buttons](https://thepihut.com/products/180-piece-ultimate-tactile-button-kit), *POTENTIALLY MORE TBD* | O |
 
 ## Wiring
 
