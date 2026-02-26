@@ -7,7 +7,7 @@ A music player using a RaspberryPi Pico 2 W
 | Function | Component | Aquired |
 |-|-|-|
 | Microcontroller  | [Raspberry Pi Pico 2 W](https://www.raspberrypi.com/products/raspberry-pi-pico-2/)| X |
-| Audio DAC | [adafruit TLV320DAC3100](https://www.adafruit.com/product/6309?srsltid=AfmBOorzJw4PwT3HF0vGFX7eqOSgBaOBtBcg8bkU7igFjqLHTnfaYH3e)| X |
+| Audio DAC | [Adafruit TLV320DAC3100](https://www.adafruit.com/product/6309?srsltid=AfmBOorzJw4PwT3HF0vGFX7eqOSgBaOBtBcg8bkU7igFjqLHTnfaYH3e)| X |
 | Memory Storage | [Adafruit Micro SD SPI or SDIO Card Breakout Board](https://www.adafruit.com/product/4682?srsltid=AfmBOoperZd8N_q_g0DlBwCeuqUr0O1IKYDF3KCDKo4BibNNp2DtdHoi)| X |
 | Micro SD Card | Some Micro SD Card (Formatted to FAT32) | X |
 | Screen | *TBD* | O |
@@ -31,7 +31,7 @@ A music player using a RaspberryPi Pico 2 W
 | D2 | 27 | 21 |
 | D3 | 29 | 22 |
 
-### Audio Dac - [adafruit TLV320DAC3100](https://www.adafruit.com/product/6309?srsltid=AfmBOorzJw4PwT3HF0vGFX7eqOSgBaOBtBcg8bkU7igFjqLHTnfaYH3e)
+### Audio Dac - [Adafruit TLV320DAC3100](https://www.adafruit.com/product/6309?srsltid=AfmBOorzJw4PwT3HF0vGFX7eqOSgBaOBtBcg8bkU7igFjqLHTnfaYH3e)
 
 | Board PIN | Pico PIN | GPIO PIN |
 |-|-|-|
