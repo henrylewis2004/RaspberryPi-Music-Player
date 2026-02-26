@@ -30,3 +30,17 @@ A music player using a RaspberryPi Pico 2 W
 | D1 | 26 | 20 |
 | D2 | 27 | 21 |
 | D3 | 29 | 22 |
+
+### Audio Dac - [adafruit TLV320DAC3100](https://www.adafruit.com/product/6309?srsltid=AfmBOorzJw4PwT3HF0vGFX7eqOSgBaOBtBcg8bkU7igFjqLHTnfaYH3e)
+
+| Board PIN | Pico PIN | GPIO PIN |
+|-|-|-|
+| VIN  | 3V3(OUT) - 36 | n/a |
+| GND | GND - 38 | n/a |
+| RST | 7 | 5 |
+| SCL | 9 | 6 |
+| SDA | 10 | 7 |
+| DIN | 11 | 8 |
+| WSEL | 12 | 9 |
+| BCK | 14 | 10 |
+| MCLK | 15 | 11 |
