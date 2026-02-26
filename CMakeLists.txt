@@ -36,8 +36,9 @@ target_include_directories(Pico-Music PRIVATE
 ## link libraries
 target_link_libraries(Pico-Music
 	pico_stdlib
-	pico_cyw43_arch_none
-	no-OS-FatFS-SD-SDIO-SPI-RPi-Pico
+	pico_cyw43_arch_none #for light / wifi module?
+
+	no-OS-FatFS-SD-SDIO-SPI-RPi-Pico #sd card & sdio library
 	
 )
 

@@ -21,8 +21,6 @@
  */
 
 int sd_mount(void){
-
-
 	FATFS fs; //FatFs filesystem
 	FRESULT fr = f_mount(&fs,"",1);
 	if (fr != FR_OK){
@@ -32,6 +30,7 @@ int sd_mount(void){
 
 	FIL fil; //file object
 	const char* const filename = "sd_text_write.txt";
+	const char* const filename_read = "test.txt";
 	fr = f_open(&fil, filename, FA_OPEN_APPEND | FA_WRITE);
 
 	if (fr != FR_OK && fr != FR_EXIST){

@@ -16,8 +16,8 @@ static void DAC_i2c_wakeup(){
 	
 	//reset hardware
 	//pullup reset pin
-	gpio_init(PICO_RESET_PIN);
-	gpio_set_dir(PICO_RESET_PIN,GPIO_OUT);
+	gpio_init(DAC_PICO_RESET_PIN);
+	gpio_set_dir(DAC_PICO_RESET_PIN,GPIO_OUT);
 
 	gpio_put(PICO_RESET_PIN,false);
 	sleep_ms(20);
