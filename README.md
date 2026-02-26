@@ -19,7 +19,7 @@ A music player using a RaspberryPi Pico 2 W
 
 ### Memory Storage - [Adafruit Micro SD SPI or SDIO Card Breakout Board](https://www.adafruit.com/product/4682?srsltid=AfmBOoperZd8N_q_g0DlBwCeuqUr0O1IKYDF3KCDKo4BibNNp2DtdHoi)
 
-<p align="center">
+<p align="left">
     <img src="https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/.github/images/adafruit_microsd_pins.jpg" width=600 />
 </p>
 
@@ -37,7 +37,7 @@ A music player using a RaspberryPi Pico 2 W
 
 ### Audio Dac - [Adafruit TLV320DAC3100](https://www.adafruit.com/product/6309?srsltid=AfmBOorzJw4PwT3HF0vGFX7eqOSgBaOBtBcg8bkU7igFjqLHTnfaYH3e)
 
-<p align="center">
+<p align="left">
     <img src="https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/.github/images/adafruit_dac_pins.jpg" width=600 />
 </p>
 
