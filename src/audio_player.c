@@ -80,7 +80,7 @@ static int dac_register_setup(void){
 
 static int dac_init(void){
 	//set page 0
-	if (dac_reg_page(0x00) == PICO_ERROR_GENERIC){
+	if (dac_reg_page(DAC_REG_PG0) == PICO_ERROR_GENERIC){
 		panic("reg - 0x00 error:(%d)\n", res);
 		return -1;
 	}
@@ -93,14 +93,24 @@ static int dac_init(void){
 	sleep_ms(10);
 
 	//set volumes low
-	set_channel_volume(true,-63.5); //right
-	set_channel_volume(false,-63.5); //left
-	
+	if (set_channel_volume(true,-63.5) == PICO_ERROR_GENERIC){ //right
+		panic("reg - 0x01 error:(%d)\n", res);
+		return -1;
+	}
+	if (set_channel_volume(false,-63.5) == PICO_ERROR_GENERIC){ //right
+		panic("reg - 0x01 error:(%d)\n", res);
+		return -1;
+	}
+
+	//configure dac output
+	//L + R enabled & I2S enabled
+	dac_reg_write(DAC_DATA_PATH_REG,DAC_DATA_PATH_VALUE);
 }
+
 
 static int set_channel_volume(bool right_channel, float volume_db){
 	//right channel = 0x42, left channel = 0x41
-	const channel_register = (right_channel)? 0x42 : 0x41;
+	const uint8_t channel_register = (right_channel)? DAC_RIGHT_CHANNEL_REG : DAC_LEFT_CHANNEL_REG;
 
 	if (volume_db > 24.0){
 		volume_db = 24.0;
@@ -115,18 +125,18 @@ static int set_channel_volume(bool right_channel, float volume_db){
 		return -1;
 	}
 
-	dac_reg_write(channel_register,reg_value & 0xFF);
+	return dac_reg_write(channel_register,reg_value & 0xFF);
 }
 
 static int dac_mute(bool mute){
-	if (mute){
-		if (dac_reg_write(0x40,0x00) == PICO_ERROR_GENERIC){
+	if (mute){ //mute L + R
+		if (dac_reg_write(DAC_VOLUME_CONTROL,0x0C) == PICO_ERROR_GENERIC){
 			panic("reg - 0x40 error:(%d)\n", res);
 			return -1;
 		}
 	}
-	else{
-		if (dac_reg_write(0x40,0x01) == PICO_ERROR_GENERIC){
+	else{ //unmute
+		if (dac_reg_write(DAC_VOLUME_CONTROL,0x00) == PICO_ERROR_GENERIC){
 			panic("reg - 0x40 error:(%d)\n", res);
 			return -1;
 		}
@@ -136,19 +146,8 @@ static int dac_mute(bool mute){
 
 static int dac_configure_clocks(void){
 	const uint sample_rate = DAC_SAMPLE_RATE;
-	const uint bit_rate = DAC_BIT_RATE;
+	const uint bit_depth = DAC_BIT_DEPTH;
 
-	//set clock to BCK
-	if (dac_reg_write(0x04,0x03) == PICO_ERROR_GENERIC){ 
-		panic("reg - 0x04 error:(%d)\n", res);
-		return -1;
-	}
-
-	//set I2S, 16 bit, slave
-	if (dac_reg_write(0x1B,0x0c) == PICO_ERROR_GENERIC){
-		panic("reg - 0x1B error:(%d)\n", res);
-		return -1;
-	}
 	return 0;
 }
 
