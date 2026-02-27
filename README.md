@@ -4,6 +4,8 @@ A music player using a RaspberryPi Pico 2 W
 ## Libraries used
 
 [no-OS-FatFS-SD-SDIO-SPI-RPI-Pico by carlk3](https://github.com/carlk3/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/tree/main) - used for SDIO Micro SD card interface
+
+
 [Adafruit CircuitPython TLV320](https://github.com/adafruit/Adafruit_CircuitPython_TLV320/tree/main) - adapted into C and then used to configure the audio DAC
 
 
