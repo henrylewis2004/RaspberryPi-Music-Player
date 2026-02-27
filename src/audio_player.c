@@ -4,12 +4,6 @@
 //pico libraries
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
-#include "pico/binary_info.h"
-
-#if PICO_ON_DEVICE
-#include "hardware/clocks.h"
-#include "hardware/structs/clocks.h"
-#endif
 
 #if USE_AUDIO_I2S
 #include "pico/audio_i2s.h"
@@ -17,26 +11,27 @@
 
 //project libraries
 #include "audio_player.h"
-#include "audio_dac_pins.h"
+#include "audio_dac_values.h"
 
+// internal \\
 
-
-
-
-//internal
+//register writing methods
 static int dac_reg_write(uint8_t reg, uint8_t val){
 	uint8_t buffer[2] = {reg,val};
 	return i2c_write_blocking(I2C_PORT,DAC_ADDR, buffer, 2, false);
 }
 
+static int dac_reg_page(uint8_t page){
+	return dac_reg_write(0x00,page);
+}
+
+//dac methods
 static void dac_i2c_start(void){
 #if !defined(I2C_PORT) || !defined(DAC_SDA_GPIO_PIN) || !defined(DAC_SCL_GPIO_PIN)
 	#warning i2c/bus_scan example requires a board with I2C pins
     puts("Default I2C pins were not defined\n");
 #else
-
-	printf("dac start i2c pins\n");
-	i2c_init(i2c_default,10*1000);
+	i2c_init(I2C_PORT,100*1000);
 
 	gpio_set_function(DAC_SDA_GPIO_PIN,GPIO_FUNC_I2C);
 	gpio_set_function(DAC_SCL_GPIO_PIN,GPIO_FUNC_I2C);
@@ -44,20 +39,18 @@ static void dac_i2c_start(void){
 	gpio_pull_up(DAC_SDA_GPIO_PIN);
 	gpio_pull_up(DAC_SCL_GPIO_PIN);
 	
-	bi_decl(bi_2pins_with_func(DAC_SDA_GPIO_PIN,DAC_SCL_GPIO_PIN,GPIO_FUNC_I2C))
 #endif
 }
 
 static bool dac_addr_response(void){
 	uint8_t dummy;
 	int result = i2c_read_blocking(I2C_PORT,DAC_ADDR,&dummy,1,false);
-	printf("dac response result: %d\n", result);
 	return (result >= 0);
 }
 
 static void dac_reset(void){
-	printf("dac reset pin\n");
 	//reset hardware - pullup reset pin
+	
 	//setup reset pin
 	gpio_init(DAC_RESET_GPIO_PIN);
 	gpio_set_dir(DAC_RESET_GPIO_PIN,GPIO_OUT);
@@ -66,50 +59,97 @@ static void dac_reset(void){
 	gpio_put(DAC_RESET_GPIO_PIN,false);
 	sleep_ms(100);
 	gpio_put(DAC_RESET_GPIO_PIN,true);
+	sleep_ms(100);
 }
 
-int dac_register_setup(void){
-	printf("dac reg setup\n");
-	printf("dac reg setup: write 0x00 0x00 \n");
-	int res = dac_reg_write(0x00,0x00); //set page 0
-	printf("result: %d\n", res);
-	if (res==PICO_ERROR_GENERIC){
+static int dac_register_setup(void){
+	dac_init();
+	dac_configure_clocks();
+
+	//route DAC to output
+	if (dac_reg_write(0x3F,0xD4) == PICO_ERROR_GENERIC){
+		panic("reg - 0x3F error:(%d)\n", res);
+		return -1;
+	}
+
+	//unmute
+	dac_mute(false);
+
+	printf("finished reg setup\n");
+}
+
+static int dac_init(void){
+	//set page 0
+	if (dac_reg_page(0x00) == PICO_ERROR_GENERIC){
 		panic("reg - 0x00 error:(%d)\n", res);
 		return -1;
 	}
 
-	res = dac_reg_write(0x01,0x01); //reset
-	if (res==PICO_ERROR_GENERIC){
+	//reset registers
+	if (dac_reg_write(0x01,0x01) == PICO_ERROR_GENERIC){
 		panic("reg - 0x01 error:(%d)\n", res);
 		return -1;
 	}
 	sleep_ms(10);
 
-	printf("dac reg setup: write 0x04 0x03 \n");
-	res = dac_reg_write(0x04,0x03); //set clock to BCK
-	if (res==PICO_ERROR_GENERIC){
+	//set volumes low
+	set_channel_volume(true,-63.5); //right
+	set_channel_volume(false,-63.5); //left
+	
+}
+
+static int set_channel_volume(bool right_channel, float volume_db){
+	//right channel = 0x42, left channel = 0x41
+	const channel_register = (right_channel)? 0x42 : 0x41;
+
+	if (volume_db > 24.0){
+		volume_db = 24.0;
+	}
+	else if (volume_db < -63.5){
+		volume_db = -63.5;
+	}
+
+	int reg_value = (int)(volume_db * 2);
+	if (reg_value == 0x80 || reg_value > 0x30){
+		panic("INCORRECT set_channel_volume register volume - volume: %d", reg_value);
+		return -1;
+	}
+
+	dac_reg_write(channel_register,reg_value & 0xFF);
+}
+
+static int dac_mute(bool mute){
+	if (mute){
+		if (dac_reg_write(0x40,0x00) == PICO_ERROR_GENERIC){
+			panic("reg - 0x40 error:(%d)\n", res);
+			return -1;
+		}
+	}
+	else{
+		if (dac_reg_write(0x40,0x01) == PICO_ERROR_GENERIC){
+			panic("reg - 0x40 error:(%d)\n", res);
+			return -1;
+		}
+	}
+	return 0;
+}
+
+static int dac_configure_clocks(void){
+	const uint sample_rate = DAC_SAMPLE_RATE;
+	const uint bit_rate = DAC_BIT_RATE;
+
+	//set clock to BCK
+	if (dac_reg_write(0x04,0x03) == PICO_ERROR_GENERIC){ 
 		panic("reg - 0x04 error:(%d)\n", res);
 		return -1;
 	}
-	printf("dac reg setup: write 0x1B 0x0c \n");
-	res = dac_reg_write(0x1B,0x0c); //set I2S, 16 bit, slave
-	if (res==PICO_ERROR_GENERIC){
+
+	//set I2S, 16 bit, slave
+	if (dac_reg_write(0x1B,0x0c) == PICO_ERROR_GENERIC){
 		panic("reg - 0x1B error:(%d)\n", res);
 		return -1;
 	}
-	printf("dac reg setup: write 0x3F 0xD4 \n");
-	res = dac_reg_write(0x3F,0xD4); //route DAC to output
-	if (res==PICO_ERROR_GENERIC){
-		panic("reg - 0x3F error:(%d)\n", res);
-		return -1;
-	}
-	printf("dac reg setup: write 0x40 0x00 \n");
-	res = dac_reg_write(0x40,0x00); //unmute
-	if (res==PICO_ERROR_GENERIC){
-		panic("reg - 0x40 error:(%d)\n", res);
-		return -1;
-	}
-	printf("finished reg setup\n");
+	return 0;
 }
 
 //wakeup handshake
@@ -118,6 +158,7 @@ static void DAC_i2c_wakeup(){
 	dac_i2c_start();
 	dac_reset();
 
+	
 	if (dac_addr_response()){
 		printf("DAC responsed to 0x%02X\n", DAC_ADDR);
 		dac_register_setup();
@@ -125,10 +166,6 @@ static void DAC_i2c_wakeup(){
 	else{
 		printf("no DAC response to 0x%02X\n", DAC_ADDR);
 	}
-
-	i2c_bus_scan();
-
-
 }
 
 static void DAC_powerdown(){
@@ -146,7 +183,6 @@ void i2c_bus_scan(void){
 		}
 	}
 	printf("scan finished\n");
-
 }
 
 void audio_init(void){
