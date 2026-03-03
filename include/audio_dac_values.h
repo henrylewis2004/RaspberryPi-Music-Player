@@ -25,7 +25,7 @@
 
 //i2s pins
 #ifndef DAC_DIN_GPIO_PIN
-#define DAC_DIN_GPIO_PIN 8
+#define DAC_DIN_GPIO_PIN 6
 #endif
 
 #ifndef DAC_WSEL_GPIO_PIN
@@ -33,15 +33,12 @@
 #endif
 
 #ifndef DAC_BCK_GPIO_PIN
-#define DAC_BCK_GPIO_PIN 6
+#define DAC_BCK_GPIO_PIN 8
 #endif
 
-/* emulate with PLL
 #ifndef DAC_MCLK_GPIO_PIN
-#define DAC_MCLK_GPIO_PIN 11
+#define DAC_MCLK_GPIO_PIN 9
 #endif
-*/
-
 
 //i2s audio values
 #ifndef DAC_SAMPLE_RATE

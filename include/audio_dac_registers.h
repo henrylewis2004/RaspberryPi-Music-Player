@@ -8,6 +8,7 @@
 #endif 
 
 //register values
+//pages
 #ifndef DAC_REG_PG0
 #define DAC_REG_PG0 0x00
 #endif 
@@ -16,6 +17,7 @@
 #define DAC_REG_PG1 0x01
 #endif 
 
+//page 0
 #ifndef DAC_VOLUME_CONTROL
 #define DAC_VOLUME_CONTROL 0x40
 #endif 
@@ -25,7 +27,7 @@
 #endif 
 
 #ifndef DAC_RIGHT_CHANNEL_REG
-#define DAC_RIGHT_CHANNEL_REG 0x41
+#define DAC_RIGHT_CHANNEL_REG 0x42
 #endif 
 
 #ifndef DAC_DATA_PATH_REG
@@ -37,7 +39,7 @@
 #endif 
 
 #ifndef DAC_PLL_PROG_PR
-#define DAC_PLL_PROG_PR 0xD4
+#define DAC_PLL_PROG_PR 0x05
 #endif 
 
 #ifndef DAC_PLL_PROG_J
@@ -61,39 +63,40 @@
 #endif 
 
 #ifndef DAC_CODEC_IF
-#define DAC_CODEC_IF 0x1b
+#define DAC_CODEC_IF 0x1B
 #endif 
 
 #ifndef DAC_NDAC_REG
-#define DAC_NDAC_REG 0x0b
+#define DAC_NDAC_REG 0x0B
 #endif 
 
 #ifndef DAC_MDAC_REG
-#define DAC_MDAC_REG 0x0c
+#define DAC_MDAC_REG 0x0C
 #endif 
 
 #ifndef DAC_DOSR_MSB_REG
-#define DAC_DOSR_MSB_REG 0x0d
+#define DAC_DOSR_MSB_REG 0x0D
 #endif 
 
 #ifndef DAC_DOSR_LSB_REG
-#define DAC_DOSR_LSB_REG 0x0e
+#define DAC_DOSR_LSB_REG 0x0E
 #endif 
 
+//page 1
 #ifndef DAC_HEADPHONES_DRIVER_REG
-#define DAC_HEADPHONES_DRIVER_REG 0x1f
+#define DAC_HEADPHONES_DRIVER_REG 0x1F
 #endif 
 
 #ifndef DAC_HEADPHONES_DRIVER_VAL
-#define DAC_HEADPHONES_DRIVER_VAL 196
+#define DAC_HEADPHONES_DRIVER_VAL 0xC4
 #endif 
 
 #ifndef DAC_ROUTE_L
-#define DAC_ROUTE_L 0x0c
+#define DAC_ROUTE_L 0x0C
 #endif 
 
 #ifndef DAC_ROUTE_R
-#define DAC_ROUTE_R 0x0d
+#define DAC_ROUTE_R 0x0D
 #endif 
 
 #ifndef DAC_HPL_DRIVER

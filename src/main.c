@@ -4,6 +4,7 @@
 //pico headers
 #include "pico/stdlib.h"
 #include "my_debug.h"
+#include "hardware/clocks.h"
 
 //project headers
 #include "led_manager.h"
@@ -18,6 +19,7 @@ static bool aliveMessage(struct repeating_timer *t){
 // main \\
 
 int main(void){
+	set_sys_clock_khz(132000,true); //132KHz / 11 = 12 MHz
 	stdio_init_all();
 
 	//led

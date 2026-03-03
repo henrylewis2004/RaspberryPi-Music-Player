@@ -3,6 +3,6 @@
 
 void play_noise(void);
 void audio_init(void);
-void i2c_bus_scan(void);
+void audio_close(void);
 
 #endif // !AUDIO_PLAYER_H
