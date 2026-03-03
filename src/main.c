@@ -8,6 +8,7 @@
 //project headers
 #include "led_manager.h"
 #include "audio_player.h"
+#include "sd_memory_manager.h"
 
 static bool aliveMessage(struct repeating_timer *t){
 	printf("I Breathe Father\n");
@@ -26,7 +27,9 @@ int main(void){
 	printf("hello father\n");
 
 	printf("audio_init\n");
-	audio_init();
+	sd_functionality_test();
+	//printf("audio_init\n");
+//	audio_init();
 
 	//alive message
 	struct repeating_timer alive_message_timer;

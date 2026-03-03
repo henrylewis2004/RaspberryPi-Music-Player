@@ -1,0 +1,77 @@
+#ifndef AUDIO_DAC_REGISTERS
+#define AUDIO_DAC_REGISTERS
+#endif
+
+// dac address
+#ifndef DAC_ADDR
+#define DAC_ADDR 0x18
+#endif 
+
+//register values
+#ifndef DAC_REG_PG0
+#define DAC_REG_PG0 0x00
+#endif 
+
+#ifndef DAC_VOLUME_CONTROL
+#define DAC_VOLUME_CONTROL 0x40
+#endif 
+
+#ifndef DAC_LEFT_CHANNEL_REG
+#define DAC_LEFT_CHANNEL_REG 0x41
+#endif 
+
+#ifndef DAC_RIGHT_CHANNEL_REG
+#define DAC_RIGHT_CHANNEL_REG 0x41
+#endif 
+
+#ifndef DAC_DATA_PATH_REG
+#define DAC_DATA_PATH_REG 0x3F
+#endif 
+
+#ifndef DAC_DATA_PATH_VALUE
+#define DAC_DATA_PATH_VALUE 0xD4
+#endif 
+
+#ifndef DAC_PLL_PROG_PR
+#define DAC_PLL_PROG_PR 0xD4
+#endif 
+
+#ifndef DAC_PLL_PROG_J
+#define DAC_PLL_PROG_J 0x06
+#endif 
+
+#ifndef DAC_PLL_PROG_D_MSB
+#define DAC_PLL_PROG_D_MSB 0x07
+#endif 
+
+#ifndef DAC_PLL_PROG_D_LSB
+#define DAC_PLL_PROG_D_LSB 0x08
+#endif 
+
+#ifndef DAC_CLOCK_MUX1
+#define DAC_CLOCK_MUX1 0x04
+#endif 
+
+#ifndef DAC_CLOCK_MUX1_SOURCE
+#define DAC_CLOCK_MUX1_SOURCE 0b01
+#endif 
+
+#ifndef DAC_CODEC_IF
+#define DAC_CODEC_IF 0x1b
+#endif 
+
+#ifndef DAC_NDAC_REG
+#define DAC_NDAC_REG 0x0b
+#endif 
+
+#ifndef DAC_MDAC_REG
+#define DAC_MDAC_REG 0x0c
+#endif 
+
+#ifndef DAC_DOSR_MSB_REG
+#define DAC_DOSR_MSB_REG 0x0d
+#endif 
+
+#ifndef DAC_DOSR_LSB_REG
+#define DAC_DOSR_LSB_REG 0x0e
+#endif 

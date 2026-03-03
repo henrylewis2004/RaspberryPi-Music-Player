@@ -9,7 +9,7 @@ static sd_sdio_if_t sdio_if = {
 	//values might need changing
 	.CMD_gpio = 18,
 	.D0_gpio = 19,
-	.baud_rate = 1 * 1000 * 1000,//125 * 1000 * 1000 / 6 //20833333 Hz
+	.baud_rate = 15 * 1000 * 1000// 125 * 1000 * 1000 / 6 //20833333 Hz//
 };
 
 //hardware configuration of sd card (using SDIO interface type / created object above)

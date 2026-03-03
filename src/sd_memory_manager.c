@@ -38,6 +38,7 @@ static int sd_create_file(char* filepath,bool overwrite){
 	}
 
 	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(&file);
 		panic("f_open(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 		return -1;
 	}
@@ -47,30 +48,37 @@ static int sd_create_file(char* filepath,bool overwrite){
 	return 0;
 }
 
-static char* sd_read_file(char* filepath){
+static char* sd_read_file(char* filepath, uint file_size){
 	FIL file;
 	FRESULT fr = f_open(&file, filepath, FA_READ);
 
-	printf("- read test -\n");
 	//open file
 	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(&file);
 		panic("f_open(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 		return NULL;
 	}
-	printf("read test - opened file\n");
 
 	//read file
-	char* file_buffer = malloc(MAX_FILE_SIZE);
+	char* file_buffer = malloc(file_size);
+	if (file_buffer == NULL){
+		f_close(&file);
+		panic("sd_read error: failed to create file_buffer\n");
+		return NULL;
+	}
+
 	uint bytes_read;
 
-	fr = f_read(&file, file_buffer,MAX_FILE_SIZE,&bytes_read);
-	printf("read test - read file\n");
+	fr = f_read(&file, file_buffer,file_size,&bytes_read);
+
 	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(&file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 		return NULL;
 	}
 	f_close(&file);
-	printf("read test - closed file\n");
+
+	file_buffer[bytes_read] = '\0';
 
 	return file_buffer;
 }
@@ -90,12 +98,15 @@ static int sd_write_file(char* filepath, char* data_in,size_t input_size, bool w
 	}
 
 	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(&file);
 		panic("f_open(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 		return -1;
 	}
 
 	//write to file
-	if (f_write(&file, data_in, input_size, &bytes_written) < 0){
+	fr = f_write(&file, data_in, input_size, &bytes_written);
+	if (fr != FR_OK || bytes_written < input_size){ 
+		f_close(&file);
 		panic("f_printf failed\n");
 		return -1;
 	}
@@ -121,7 +132,11 @@ void sd_functionality_test(void){
 
 	printf("read test\n");
 	char* const filepath1 = "test.txt";
-	printf("read_test: %s\n", sd_read_file(filepath1));
+	char* read_result = sd_read_file(filepath1,MAX_FILE_SIZE);
+	printf("%s: %s\n",filepath1, read_result);
+
+	free(read_result);
+	read_result = NULL;
 
 	printf("create test\n");
 	char* const filepath_create = "create_test";
@@ -130,5 +145,14 @@ void sd_functionality_test(void){
 	printf("write test\n");
 	sd_write_file(filepath_create,"hello world!\n",14, true);
 
+	printf("read + write test\n");
+	char* const filepath_create2 = "create_test2";
+	read_result = sd_read_file(filepath1,MAX_FILE_SIZE);
+	sd_write_file(filepath_create,read_result,MAX_FILE_SIZE, false);
+
+	free(read_result);
+	read_result = NULL;
+
 	sd_unmount();
+	printf("sd tests finished\n");
 }

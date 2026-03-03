@@ -12,17 +12,40 @@
 //project libraries
 #include "audio_player.h"
 #include "audio_dac_values.h"
+#include "audio_dac_registers.h"
 
 // internal \\
 
 //register writing methods
 static int dac_reg_write(uint8_t reg, uint8_t val){
 	uint8_t buffer[2] = {reg,val};
-	return i2c_write_blocking(I2C_PORT,DAC_ADDR, buffer, 2, false);
+	return i2c_write_blocking(I2C_PORT,DAC_ADDR, buffer, sizeof(buffer), false);
 }
 
-static int dac_reg_page(uint8_t page){
+static int dac_set_page(uint8_t page){
 	return dac_reg_write(0x00,page);
+}
+
+static int dac_set_reg(uint8_t reg){
+	uint8_t buffer[1] = {reg};
+	return i2c_write_blocking(I2C_PORT,DAC_ADDR, buffer, sizeof(buffer), true);
+}
+
+static int dac_read_register(uint8_t page, uint8_t reg ){
+	dac_set_page(page);
+	dac_set_reg(reg);
+
+	uint8_t value;
+	i2c_read_blocking_until(I2C_PORT,DAC_ADDR,&value,sizeof(value),false,1000);
+	
+	return value;
+}
+
+static int set_bits(uint8_t reg, uint8_t mask, uint8_t shift,uint value){
+	uint8_t reg_value = dac_read_register(DAC_REG_PG0,reg);
+        reg_value &= ~(mask << shift);
+        reg_value |= (value & mask) << shift;
+        return dac_reg_write(reg, reg_value);
 }
 
 //dac methods
@@ -59,54 +82,8 @@ static void dac_reset(void){
 	gpio_put(DAC_RESET_GPIO_PIN,false);
 	sleep_ms(100);
 	gpio_put(DAC_RESET_GPIO_PIN,true);
-	sleep_ms(100);
-}
-
-static int dac_register_setup(void){
-	dac_init();
-	dac_configure_clocks();
-
-	//route DAC to output
-	if (dac_reg_write(0x3F,0xD4) == PICO_ERROR_GENERIC){
-		panic("reg - 0x3F error:(%d)\n", res);
-		return -1;
-	}
-
-	//unmute
-	dac_mute(false);
-
-	printf("finished reg setup\n");
-}
-
-static int dac_init(void){
-	//set page 0
-	if (dac_reg_page(DAC_REG_PG0) == PICO_ERROR_GENERIC){
-		panic("reg - 0x00 error:(%d)\n", res);
-		return -1;
-	}
-
-	//reset registers
-	if (dac_reg_write(0x01,0x01) == PICO_ERROR_GENERIC){
-		panic("reg - 0x01 error:(%d)\n", res);
-		return -1;
-	}
 	sleep_ms(10);
-
-	//set volumes low
-	if (set_channel_volume(true,-63.5) == PICO_ERROR_GENERIC){ //right
-		panic("reg - 0x01 error:(%d)\n", res);
-		return -1;
-	}
-	if (set_channel_volume(false,-63.5) == PICO_ERROR_GENERIC){ //right
-		panic("reg - 0x01 error:(%d)\n", res);
-		return -1;
-	}
-
-	//configure dac output
-	//L + R enabled & I2S enabled
-	dac_reg_write(DAC_DATA_PATH_REG,DAC_DATA_PATH_VALUE);
 }
-
 
 static int set_channel_volume(bool right_channel, float volume_db){
 	//right channel = 0x42, left channel = 0x41
@@ -128,16 +105,47 @@ static int set_channel_volume(bool right_channel, float volume_db){
 	return dac_reg_write(channel_register,reg_value & 0xFF);
 }
 
+static int dac_init(void){
+	//set page 0
+	if (dac_set_page(DAC_REG_PG0) == PICO_ERROR_GENERIC){
+		panic("reg - 0x00 set page 0\n" );
+		return -1;
+	}
+
+	//reset registers
+	if (dac_reg_write(0x01,0x01) == PICO_ERROR_GENERIC){
+		panic("reg - 0x01 reset dac software\n");
+		return -1;
+	}
+	sleep_ms(10);
+
+	//set volumes low
+	if (set_channel_volume(true,-63.5) == PICO_ERROR_GENERIC){ //right
+		panic("reg - 0x01 set volumes low R\n" );
+		return -1;
+	}
+	if (set_channel_volume(false,-63.5) == PICO_ERROR_GENERIC){ //right
+		panic("reg - 0x01 set volumes low L\n" );
+		return -1;
+	}
+
+	//configure dac output
+	//L + R enabled & I2S enabled
+	dac_reg_write(DAC_DATA_PATH_REG,DAC_DATA_PATH_VALUE);
+}
+
+
+
 static int dac_mute(bool mute){
 	if (mute){ //mute L + R
 		if (dac_reg_write(DAC_VOLUME_CONTROL,0x0C) == PICO_ERROR_GENERIC){
-			panic("reg - 0x40 error:(%d)\n", res);
+			panic("error writing to dac_volume - dac_mute() mute \n");
 			return -1;
 		}
 	}
 	else{ //unmute
 		if (dac_reg_write(DAC_VOLUME_CONTROL,0x00) == PICO_ERROR_GENERIC){
-			panic("reg - 0x40 error:(%d)\n", res);
+			panic("error writing to dac_volume - dac_mute() unmute \n");
 			return -1;
 		}
 	}
@@ -148,8 +156,62 @@ static int dac_configure_clocks(void){
 	const uint sample_rate = DAC_SAMPLE_RATE;
 	const uint bit_depth = DAC_BIT_DEPTH;
 
+	//ensure DAC and PLL are powered down
+	set_bits(DAC_DATA_PATH_REG,0x03,6,0b00);
+	set_bits(DAC_PLL_PROG_PR,0x01,7,0b0);
+	sleep_ms(10);
+
+	//set PLL clock scaling registers
+	dac_reg_write(DAC_PLL_PROG_PR,18);
+	dac_reg_write(DAC_PLL_PROG_J,38);
+	dac_reg_write(DAC_PLL_PROG_D_MSB,0);
+	dac_reg_write(DAC_PLL_PROG_D_LSB,0);
+
+	//set mux for PLL ipnut clock source (PLL_CLKIN)
+	set_bits(DAC_CLOCK_MUX1,0x0c,2,DAC_CLOCK_MUX1_SOURCE);
+
+	//power up PLL and wait briefly for PLL lock
+	set_bits(DAC_PLL_PROG_PR, 0x01, 7, 0b1);
+	sleep_ms(10);
+
+	//set data format I2S
+	dac_reg_write(DAC_CODEC_IF,0);
+
+	//configure codec clock dividers for oversamply and dsp (might not be needed?)
+	dac_reg_write(DAC_NDAC_REG,147);
+	dac_reg_write(DAC_MDAC_REG,129);
+	dac_reg_write(DAC_DOSR_MSB_REG,0);
+	dac_reg_write(DAC_DOSR_LSB_REG,128);
+
+	//power up dac
+	set_bits(DAC_DATA_PATH_REG, 0x03, 6, 0b11);
+	
+
+
+
+
+
 	return 0;
 }
+
+static int dac_register_setup(void){
+	dac_init();
+	dac_configure_clocks();
+
+	//route DAC to output
+	if (dac_reg_write(0x3F,0xD4) == PICO_ERROR_GENERIC){
+		panic("error - writing to reg 0x3F dac_reg_write() route DAC to output \n");
+		return -1;
+	}
+
+	//unmute
+	if (dac_mute(false) == -1){
+		return -1;
+	}
+
+	printf("finished reg setup\n");
+}
+
 
 //wakeup handshake
 static void DAC_i2c_wakeup(){

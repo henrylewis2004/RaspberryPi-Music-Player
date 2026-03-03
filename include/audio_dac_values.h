@@ -2,11 +2,7 @@
 #define AUDIO_DAC_PINS_H
 #endif
 
-// register address
-#ifndef DAC_ADDR
-#define DAC_ADDR 0x18
-#endif 
-
+//i2c port 
 #ifndef I2C_PORT
 #define I2C_PORT i2c0
 #endif 
@@ -56,27 +52,3 @@
 #define DAC_BIT_DEPTH 16
 #endif 
 
-//register values
-#ifndef DAC_REG_PG0
-#define DAC_REG_PG0 0x00
-#endif 
-
-#ifndef DAC_VOLUME_CONTROL
-#define DAC_VOLUME_CONTROL 0x40
-#endif 
-
-#ifndef DAC_LEFT_CHANNEL_REG
-#define DAC_LEFT_CHANNEL_REG 0x41
-#endif 
-
-#ifndef DAC_RIGHT_CHANNEL_REG
-#define DAC_RIGHT_CHANNEL_REG 0x41
-#endif 
-
-#ifndef DAC_DATA_PATH_REG
-#define DAC_DATA_PATH_REG 0x3F
-#endif 
-
-#ifndef DAC_DATA_PATH_VALUE
-#define DAC_DATA_PATH_VALUE 0xD4
-#endif 
