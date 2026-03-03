@@ -54,7 +54,7 @@ static void dac_i2c_start(void){
 	#warning i2c/bus_scan example requires a board with I2C pins
     puts("Default I2C pins were not defined\n");
 #else
-	i2c_init(I2C_PORT,100*1000);
+	i2c_init(I2C_PORT,400*1000);
 
 	gpio_set_function(DAC_SDA_GPIO_PIN,GPIO_FUNC_I2C);
 	gpio_set_function(DAC_SCL_GPIO_PIN,GPIO_FUNC_I2C);
@@ -132,6 +132,9 @@ static int dac_init(void){
 	//configure dac output
 	//L + R enabled & I2S enabled
 	dac_reg_write(DAC_DATA_PATH_REG,DAC_DATA_PATH_VALUE);
+
+	//set volume control
+	dac_reg_write(DAC_VOLUME_CONTROL,0x00);
 }
 
 
@@ -186,11 +189,6 @@ static int dac_configure_clocks(void){
 	//power up dac
 	set_bits(DAC_DATA_PATH_REG, 0x03, 6, 0b11);
 	
-
-
-
-
-
 	return 0;
 }
 
