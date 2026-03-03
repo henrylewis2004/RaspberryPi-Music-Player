@@ -87,3 +87,19 @@
 #ifndef DAC_HEADPHONES_DRIVER_VAL
 #define DAC_HEADPHONES_DRIVER_VAL 196
 #endif 
+
+#ifndef DAC_ROUTE_L
+#define DAC_ROUTE_L 0x0c
+#endif 
+
+#ifndef DAC_ROUTE_R
+#define DAC_ROUTE_R 0x0d
+#endif 
+
+#ifndef DAC_HPL_DRIVER
+#define DAC_HPL_DRIVER 0x10
+#endif 
+
+#ifndef DAC_HPR_DRIVER
+#define DAC_HPR_DRIVER 0x11
+#endif 

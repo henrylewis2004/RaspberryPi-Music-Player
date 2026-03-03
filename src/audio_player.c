@@ -58,6 +58,7 @@ static bool dac_addr_response(void){
 static int set_channel_volume(bool right_channel, float volume_db){
 	//right channel = 0x42, left channel = 0x41
 	const uint8_t channel_register = (right_channel)? DAC_RIGHT_CHANNEL_REG : DAC_LEFT_CHANNEL_REG;
+	dac_set_page(0x00);
 
 	if (volume_db > 24.0){
 		volume_db = 24.0;
@@ -76,6 +77,7 @@ static int set_channel_volume(bool right_channel, float volume_db){
 }
 
 static int dac_mute(bool mute){
+	dac_set_page(0x00);
 	if (mute){ //mute L + R
 		if (dac_reg_write(DAC_VOLUME_CONTROL,0x0C) == PICO_ERROR_GENERIC){
 			panic("error writing to dac_volume - dac_mute() mute \n");
@@ -194,25 +196,40 @@ static int dac_configure_headphones(void){
 	//set volume control
 	dac_reg_write(DAC_VOLUME_CONTROL,0x00);
 
-
+	//set page 1
 	dac_set_page(DAC_REG_PG1);
+
+	//route dac output to HP drivers
+	dac_reg_write(DAC_ROUTE_L, 0x08);
+	dac_reg_write(DAC_ROUTE_R, 0x08);
+
+	//HP gain
+	dac_reg_write(DAC_HPL_DRIVER, 0x00);
+	dac_reg_write(DAC_HPR_DRIVER, 0x00);
+
 	dac_reg_write(DAC_HEADPHONES_DRIVER_REG, DAC_HEADPHONES_DRIVER_VAL);
+
+	//set page 0
 	dac_set_page(DAC_REG_PG0);
 
 	return 0;
 }
 
 static int dac_register_setup(void){
-	dac_init();
-	dac_configure_clocks();
-	dac_configure_headphones();
-
-/*	//route DAC to output
-	if (dac_reg_write(0x3F,0xD4) == PICO_ERROR_GENERIC){
-		panic("error - writing to reg 0x3F dac_reg_write() route DAC to output \n");
+	if (dac_init() == -1){
+		panic("dac failed to init\n");
 		return -1;
 	}
-		*/
+
+	if (dac_configure_clocks() == -1){
+		panic("dac failed to configure clocks\n");
+		return -1;
+	}
+
+	if (dac_configure_headphones() == -1){
+		panic("dac failed to configure headphones\n");
+		return -1;
+	}
 
 	//unmute
 	if (dac_mute(false) == -1){
@@ -223,17 +240,24 @@ static int dac_register_setup(void){
 	return 0;
 }
 
+static int mclk_init(){
+
+
+}
+
 
 //wakeup handshake
 static void DAC_i2c_wakeup(){
 	printf("dac wakeup\n");
 	dac_i2c_start();
+	mclk_init();
 	dac_reset();
-
 	
 	if (dac_addr_response()){
 		printf("DAC responsed to 0x%02X\n", DAC_ADDR);
-		dac_register_setup();
+		if (dac_register_setup() == -1){
+			panic("dac register setup");
+		}
 	}
 	else{
 		printf("no DAC response to 0x%02X\n", DAC_ADDR);
