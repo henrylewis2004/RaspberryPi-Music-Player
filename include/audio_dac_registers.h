@@ -12,6 +12,10 @@
 #define DAC_REG_PG0 0x00
 #endif 
 
+#ifndef DAC_REG_PG1
+#define DAC_REG_PG1 0x01
+#endif 
+
 #ifndef DAC_VOLUME_CONTROL
 #define DAC_VOLUME_CONTROL 0x40
 #endif 
@@ -53,7 +57,7 @@
 #endif 
 
 #ifndef DAC_CLOCK_MUX1_SOURCE
-#define DAC_CLOCK_MUX1_SOURCE 0b01
+#define DAC_CLOCK_MUX1_SOURCE 0b00
 #endif 
 
 #ifndef DAC_CODEC_IF
@@ -74,4 +78,12 @@
 
 #ifndef DAC_DOSR_LSB_REG
 #define DAC_DOSR_LSB_REG 0x0e
+#endif 
+
+#ifndef DAC_HEADPHONES_DRIVER_REG
+#define DAC_HEADPHONES_DRIVER_REG 0x1f
+#endif 
+
+#ifndef DAC_HEADPHONES_DRIVER_VAL
+#define DAC_HEADPHONES_DRIVER_VAL 196
 #endif 
