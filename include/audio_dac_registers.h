@@ -1,6 +1,5 @@
 #ifndef AUDIO_DAC_REGISTERS
 #define AUDIO_DAC_REGISTERS
-#endif
 
 // dac address
 #ifndef DAC_ADDR
@@ -106,3 +105,5 @@
 #ifndef DAC_HPR_DRIVER
 #define DAC_HPR_DRIVER 0x11
 #endif 
+
+#endif

@@ -275,5 +275,5 @@ void DAC_i2c_wakeup(void){
 	}
 }
 
-static void DAC_powerdown(void){
+void DAC_powerdown(void){
 }

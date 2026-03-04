@@ -31,6 +31,8 @@ add_executable(Pico-Music
 
 	#audio - i2s
 	src/audio_player.c
+	src/audio_dac_bridge.c
+	src/dac_i2s_bridge.c
 )
 
 target_include_directories(Pico-Music PRIVATE
@@ -39,15 +41,27 @@ target_include_directories(Pico-Music PRIVATE
 
 )
 
+pico_generate_pio_header(Pico-Music ${CMAKE_CURRENT_LIST_DIR}/src/dac_i2s.pio)
+
 
 
 ## link libraries
 target_link_libraries(Pico-Music
 	pico_stdlib
 	pico_cyw43_arch_none #for light / wifi module?
-	hardware_i2c #i2c
 
-	no-OS-FatFS-SD-SDIO-SPI-RPi-Pico #sd card & sdio library
+	#i2c
+	hardware_i2c 
+
+	#sd card & sdio library
+	no-OS-FatFS-SD-SDIO-SPI-RPi-Pico 
+
+	#i2s
+	hardware_pwm #used to generate mclk for dac
+
+	hardware_pio #used to stream i2s
+	hardware_dma
+	hardware_irq
 	
 )
 

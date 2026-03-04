@@ -1,6 +1,7 @@
 //c libraries
 #include <stdbool.h>
 #include <stdio.h>
+#include <math.h>
 
 //pico headers
 #include "pico/stdlib.h"
@@ -29,7 +30,7 @@ static void generate_sine(void){
 	for (int i = 0; i < BUF_SAMPLES; i++){
 		sine_buf[i] = (int16_t)(32767.0f *
 			sinf(2.0f * M_PI * SINE_FREQ * i / (float)SAMPLE_RATE)
-		)
+		);
 
 	}
 
