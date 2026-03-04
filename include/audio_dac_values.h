@@ -28,11 +28,11 @@
 #endif
 
 #ifndef DAC_WSEL_GPIO_PIN
-#define DAC_WSEL_GPIO_PIN 7
+#define DAC_WSEL_GPIO_PIN 8
 #endif
 
 #ifndef DAC_BCK_GPIO_PIN
-#define DAC_BCK_GPIO_PIN 8
+#define DAC_BCK_GPIO_PIN 7
 #endif
 
 #ifndef DAC_MCLK_GPIO_PIN

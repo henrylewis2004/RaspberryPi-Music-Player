@@ -4,7 +4,7 @@
 
 //pico headers
 #include "pico/stdlib.h"
-#include "hardware/i2c.h"
+#include "hardware/i2c.h" 
 #include "hardware/pwm.h"
 
 //project headers
@@ -269,6 +269,7 @@ void DAC_i2c_wakeup(void){
 		if (dac_register_setup() == -1){
 			panic("dac register setup");
 		}
+
 	}
 	else{
 		printf("no DAC response to 0x%02X\n", DAC_ADDR);
