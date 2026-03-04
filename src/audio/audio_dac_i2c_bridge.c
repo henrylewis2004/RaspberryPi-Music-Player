@@ -269,6 +269,8 @@ void DAC_i2c_wakeup(void){
 		if (dac_register_setup() == -1){
 			panic("dac register setup");
 		}
+		dac_mute(false);
+		set_channel_volume(24.0f,24.0f);
 
 	}
 	else{
