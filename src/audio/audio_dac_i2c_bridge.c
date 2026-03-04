@@ -8,7 +8,7 @@
 #include "hardware/pwm.h"
 
 //project headers
-#include "audio_dac_bridge.h"
+#include "audio_dac_i2c_bridge.h"
 #include "audio_dac_registers.h"
 #include "audio_dac_values.h"
 

@@ -26,13 +26,13 @@ add_executable(Pico-Music
 	src/led_manager.c
 
 	# sd - sdio
-	src/hw_config.c
-	src/sd_memory_manager.c
+	src/sd_memory/hw_config.c
+	src/sd_memory/sd_memory_manager.c
 
 	#audio - i2s
-	src/audio_player.c
-	src/audio_dac_bridge.c
-	src/dac_i2s_bridge.c
+	src/audio/audio_player.c
+	src/audio/audio_dac_i2c_bridge.c
+	src/audio/audio_dac_i2s_bridge.c
 )
 
 target_include_directories(Pico-Music PRIVATE
@@ -41,7 +41,7 @@ target_include_directories(Pico-Music PRIVATE
 
 )
 
-pico_generate_pio_header(Pico-Music ${CMAKE_CURRENT_LIST_DIR}/src/dac_i2s.pio)
+pico_generate_pio_header(Pico-Music ${CMAKE_CURRENT_LIST_DIR}/src/audio/dac_i2s.pio)
 
 
 

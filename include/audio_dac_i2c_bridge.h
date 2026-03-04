@@ -1,5 +1,5 @@
-#ifndef AUDIO_DAC_BRIDGE_H
-#define AUDIO_DAC_BRIDGE_H
+#ifndef AUDIO_DAC_I2C_BRIDGE_H
+#define AUDIO_DAC_I2C_BRIDGE_H
 
 int dac_mute(bool mute);
 int set_channel_volume(bool right_channel, float volume_db);
