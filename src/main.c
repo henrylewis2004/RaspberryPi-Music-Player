@@ -5,11 +5,13 @@
 #include "pico/stdlib.h"
 #include "my_debug.h"
 #include "hardware/clocks.h"
+#include "hardware/pwm.h"
 
 //project headers
 #include "led_manager.h"
 #include "audio_player.h"
 #include "sd_memory_manager.h"
+#include "audio_dac_values.h"
 
 static bool aliveMessage(struct repeating_timer *t){
 	printf("I Breathe Father\n");
@@ -31,6 +33,9 @@ int main(void){
 	printf("audio_init\n");
 	audio_init();
 
+	sleep_ms(10);
+	uint slice = pwm_gpio_to_slice_num(DAC_MCLK_GPIO_PIN);
+	printf("PWM counter: %d\n", pwm_get_counter(slice));
 	//alive message
 	struct repeating_timer alive_message_timer;
 	add_repeating_timer_ms(-5000,aliveMessage,NULL,&alive_message_timer);

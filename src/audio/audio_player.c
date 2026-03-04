@@ -11,7 +11,7 @@
 #include "audio_dac_i2c_bridge.h"
 #include "audio_dac_i2s_bridge.h"
 
-#ifndef DAC_SAMPLERATE
+#ifndef DAC_SAMPLE_RATE
 #define DAC_SAMPLE_RATE 44100
 #endif
 

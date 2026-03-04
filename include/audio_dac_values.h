@@ -41,11 +41,7 @@
 
 //i2s audio values
 #ifndef DAC_SAMPLE_RATE
-#define DAC_SAMPLE_RATE 44100000
-#endif 
-
-#ifndef DAC_BIT_DEPTH
-#define DAC_BIT_DEPTH 16
+#define DAC_SAMPLE_RATE 44100
 #endif 
 
 #endif

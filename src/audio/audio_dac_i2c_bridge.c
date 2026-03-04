@@ -1,5 +1,6 @@
 //c libraries
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 
 //pico headers
@@ -35,7 +36,10 @@ static int dac_read_register(uint8_t page, uint8_t reg ){
 	dac_set_reg(reg);
 
 	uint8_t value;
-	i2c_read_blocking_until(I2C_PORT,DAC_ADDR,&value,sizeof(value),false,1000);
+	if (i2c_read_blocking(I2C_PORT,DAC_ADDR,&value,sizeof(value),false) == PICO_ERROR_GENERIC){
+		panic("error reading from register, page: %d, reg: %d\n",page,reg);
+		return -1;
+	}
 	
 	return value;
 }
@@ -99,6 +103,14 @@ static int dac_init(void){
 		panic("reg - 0x01 reset dac software\n");
 		return -1;
 	}
+	if (ramp_set_dac_volume(-63.5f,25,5) == PICO_ERROR_GENERIC){
+		panic("error muting dac in init\n");
+		return -1;
+	}
+	if (dac_mute(true) == PICO_ERROR_GENERIC){
+		panic("error muting dac in init\n");
+		return -1;
+	}
 	sleep_ms(10);
 
 	return 0;
@@ -121,7 +133,28 @@ static int dac_configure_clocks(void){
 
 	//power up PLL and wait briefly for PLL lock
 	set_bits(DAC_PLL_PROG_PR, 0x01, 7, 0b1);
-	sleep_ms(10);
+	//sleep_ms(10);
+	for(int i = 0; i < 10; i ++){
+		printf("MCLK GPIO level: %d\n", gpio_get(DAC_MCLK_GPIO_PIN));
+		sleep_ms(50);
+	}
+	bool locked = false;
+	printf("Clock mux: 0x%02X (expect bits 1:0=11, bits 3:2=00)\n", dac_read_register(DAC_REG_PG0,0x04));
+	for (int i = 0; i < 100; i++){
+		sleep_ms(10);
+		uint8_t status = dac_read_register(DAC_REG_PG0,0x26);
+		printf("PLL status atttempt %d: 0x%02X\n",i,status);
+		if (status & (1 << 6)){
+			locked = true;
+			printf("PLL locked after %dms\n", (i+1) * 10);
+			break;
+		}
+
+	}
+	if (!locked){
+		printf("PLL failed to lock\n");
+		return -1;
+	}
 
 	//set mux to route PLL output (PLL_CLK) to CODEC_CLKIN
 	set_bits(DAC_CLOCK_MUX1,0x03,0,0b11);
@@ -137,18 +170,25 @@ static int dac_configure_clocks(void){
 
 	//power up dac
 	set_bits(DAC_DATA_PATH_REG, 0x03, 6, 0b11);
+
+	printf("PLL PR: 0x%02X (expect 0xD1)\n", dac_read_register(DAC_REG_PG0,0x05));
+	printf("PLL J: 0x%02X (expect 0x23)\n", dac_read_register(DAC_REG_PG0,0x06));
+	printf("PLL D MSB: 0x%02X (expect 0x1D)\n", dac_read_register(DAC_REG_PG0,0x07));
+	printf("PLL D LSB: 0x%02X (expect 0x50)\n", dac_read_register(DAC_REG_PG0,0x08));
+	printf("Clock mux: 0x%02X (expect bits 1:0=11, bits 3:2=00)\n", dac_read_register(DAC_REG_PG0,0x04));
+	printf("ndac: 0x%02X (expect 0x93)\n", dac_read_register(DAC_REG_PG0,0x0B));
+	printf("mdac: 0x%02X (expect 0x81)\n", dac_read_register(DAC_REG_PG0,0x0C));
+
+	printf("PLL status: 0x%02X (bit6 should be 1 if locked)\n", dac_read_register(DAC_REG_PG0,0x26));
+	printf("mux reg: 0x%02X\n", dac_read_register(DAC_REG_PG0,0x04));
 	
 	return 0;
 }
 
 static int dac_configure_headphones(void){
 	//set volumes low
-	if (set_channel_volume(true,-63.5) == PICO_ERROR_GENERIC){ //right
-		panic("reg - 0x01 set volumes low R\n" );
-		return -1;
-	}
-	if (set_channel_volume(false,-63.5) == PICO_ERROR_GENERIC){ //right
-		panic("reg - 0x01 set volumes low L\n" );
+	if (ramp_set_dac_volume(-63.5,50,10) == PICO_ERROR_GENERIC){ 
+		panic("reg - 0x01 set volumes ramp low\n" );
 		return -1;
 	}
 
@@ -174,6 +214,8 @@ static int dac_configure_headphones(void){
 
 	//set page 0
 	dac_set_page(DAC_REG_PG0);
+	dac_mute(false);
+	ramp_set_dac_volume(0.0f,50,10);
 
 	return 0;
 }
@@ -217,8 +259,20 @@ static int mclk_init(){
 	return 0;
 }
 
+static float get_dac_channel_volume(bool right_channel){
+	uint8_t reg = right_channel ? DAC_RIGHT_CHANNEL_REG : DAC_LEFT_CHANNEL_REG;
+
+	int8_t raw = (int8_t)dac_read_register(DAC_REG_PG0, reg);
+	return raw / 2.0f;
+
+}
 
 //public
+
+float get_dac_volume(void){
+	return get_dac_channel_volume(true); //assume that both channels will be the same volume
+}
+
 int dac_mute(bool mute){
 	dac_set_page(0x00);
 	if (mute){ //mute L + R
@@ -234,6 +288,23 @@ int dac_mute(bool mute){
 		}
 	}
 	return 0;
+}
+
+int ramp_set_dac_volume(float target_volume_db, uint steps, uint step_timer_ms){
+	float initial_volume_db = get_dac_volume();
+	float step = (target_volume_db - initial_volume_db) / steps;
+	for (int i = 0; i <= steps; i++){
+		float vol = initial_volume_db + step * i;
+		if (set_channel_volume(true,vol) == PICO_ERROR_GENERIC){
+			return -1;
+		}
+		if (set_channel_volume(false,vol) == PICO_ERROR_GENERIC){
+			return -1;
+		}
+		sleep_ms(step_timer_ms);
+	}
+
+
 }
 
 int set_channel_volume(bool right_channel, float volume_db){
@@ -265,12 +336,9 @@ void DAC_i2c_wakeup(void){
 	dac_reset();
 	
 	if (dac_addr_response()){
-		printf("DAC responsed to 0x%02X\n", DAC_ADDR);
 		if (dac_register_setup() == -1){
-			panic("dac register setup");
+			panic("error in dac register setup\n");
 		}
-		dac_mute(false);
-		set_channel_volume(24.0f,24.0f);
 
 	}
 	else{
