@@ -7,6 +7,7 @@
 #include "pico/stdlib.h"
 #include "hardware/i2c.h" 
 #include "hardware/pwm.h"
+#include "hardware/clocks.h"
 
 //project headers
 #include "audio_dac_i2c_bridge.h"
@@ -148,9 +149,17 @@ static int dac_configure_clocks(void){
 	sleep_ms(10);
 
 	//check lock
-	uint8_t status = dac_read_register(0x26);
-	printf("PLL status: 0x%02x (bit6=1 means locked in)\n",status);
-	if(!(status & (1 << 6))){
+	bool locked = false;
+	for (int i = 0; i < 100; i++){
+		sleep_ms(10);
+		uint8_t status = dac_read_register(0x26);
+		if(status & (1 << 6)){
+			locked=true;
+			printf("PLL locked after %dms\n",(i+1) * 10);
+			break;
+		}
+	}
+	if(!locked){
 		printf("failed to lock!\n");
 		//return -1;
 	}
@@ -270,10 +279,25 @@ static int mclk_init(){
 	uint slice = pwm_gpio_to_slice_num(DAC_MCLK_GPIO_PIN);
 
 	pwm_config pwm_cfg = pwm_get_default_config();
-	pwm_config_set_wrap(&pwm_cfg, 10);
-	pwm_config_set_clkdiv(&pwm_cfg, 1.0f);
+	pwm_config_set_wrap(&pwm_cfg, 9); 
+	pwm_config_set_clkdiv(&pwm_cfg, 1);
 	pwm_init(slice,&pwm_cfg,true);
-	pwm_set_gpio_level(DAC_MCLK_GPIO_PIN,5);
+	pwm_set_gpio_level(DAC_MCLK_GPIO_PIN,5); //50% duty
+
+	int transitions = 0;
+	int last = gpio_get(DAC_MCLK_GPIO_PIN);
+	absolute_time_t end = make_timeout_time_ms(1000);
+	while(!time_reached(end)){
+		int val = gpio_get(DAC_MCLK_GPIO_PIN);
+		if (val != last){
+			transitions++;
+			last = val;
+		}
+	}
+	printf("MCLK frequency: ~%d Hz \n", transitions * 500);
+	printf("clk_sys: %lu\n", clock_get_hz(clk_sys));
+	printf("PWM top: %lu\n",pwm_hw->slice[pwm_gpio_to_slice_num(DAC_MCLK_GPIO_PIN)].top);
+	printf("PWM div: %lu\n",pwm_hw->slice[pwm_gpio_to_slice_num(DAC_MCLK_GPIO_PIN)].div);
 
 	return 0;
 }
