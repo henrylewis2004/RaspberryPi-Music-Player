@@ -106,4 +106,12 @@
 #define DAC_HPR_DRIVER 0x29
 #endif 
 
+#ifndef DAC_HPL_VOL
+#define DAC_HPL_VOL 0x24
+#endif 
+
+#ifndef DAC_HPR_VOL
+#define DAC_HPR_VOL 0x25
+#endif 
+
 #endif

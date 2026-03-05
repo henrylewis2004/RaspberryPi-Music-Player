@@ -184,14 +184,19 @@ static int dac_configure_headphones(void){
 	//set page 1
 	dac_set_page(DAC_REG_PG1);
 
-	//route dac output to HP drivers
-	dac_reg_write(DAC_OUT_ROUTING_REG, DAC_OUT_ROUTING_VALUE);
 
-	//HP gain
+	//HP drivers
 	dac_reg_write(DAC_HPL_DRIVER, 0x00);
 	dac_reg_write(DAC_HPR_DRIVER, 0x00);
 
+	//HP gain
+	dac_reg_write(DAC_HPL_VOL, (6 << 3) | 0x04); //6db
+	dac_reg_write(DAC_HPR_VOL, (6 << 3) | 0x04); //6db
+
 	dac_reg_write(DAC_HEADPHONES_DRIVER_REG, DAC_HEADPHONES_DRIVER_VAL);
+
+	//route dac output to HP drivers
+	dac_reg_write(DAC_OUT_ROUTING_REG, DAC_OUT_ROUTING_VALUE);
 
 	//set page 0
 	dac_set_page(DAC_REG_PG0);
@@ -353,8 +358,8 @@ void DAC_i2c_wakeup(void){
 		if (dac_register_setup() == -1){
 			panic("error in dac register setup\n");
 		}
-		sleep_ms(500);
-		confirm_register_setup();
+//		sleep_ms(500);
+//		confirm_register_setup();
 
 	}
 	else{
