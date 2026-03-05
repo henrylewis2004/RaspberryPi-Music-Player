@@ -20,7 +20,6 @@ static int dma_channel[2];
 
 static i2s_buffer_callback_t buffer_callback;
 static volatile uint buffer_active_half = 0;
-
 //setup
 
 static void dma_irq_handler(void);
@@ -36,7 +35,7 @@ static void dma_i2s_init(void){
 	dma_channel[0] = dma_claim_unused_channel(true);
 	dma_channel[1] = dma_claim_unused_channel(true);
 	
-	for (int i = 0; i < 2; i++){
+	for (int i = 0; i < sizeof(audio_buffer); i++){
 		dma_channel_config dma_cfg = dma_channel_get_default_config(dma_channel[i]);
 		channel_config_set_transfer_data_size(&dma_cfg, DMA_SIZE_32);
 		channel_config_set_read_increment(&dma_cfg,true);
