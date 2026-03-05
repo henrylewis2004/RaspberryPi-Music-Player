@@ -31,13 +31,14 @@ static int dac_set_reg(uint8_t reg){
 	return i2c_write_blocking(I2C_PORT,DAC_ADDR, buffer, sizeof(buffer), true);
 }
 
-static int dac_read_register(uint8_t page, uint8_t reg ){
-	dac_set_page(page);
+static int dac_read_register(uint8_t reg ){
+	//set reg
 	dac_set_reg(reg);
 
+	//read from register
 	uint8_t value;
 	if (i2c_read_blocking(I2C_PORT,DAC_ADDR,&value,sizeof(value),false) == PICO_ERROR_GENERIC){
-		panic("error reading from register, page: %d, reg: %d\n",page,reg);
+		panic("error reading from register,  reg: %d\n",reg);
 		return -1;
 	}
 	
@@ -45,7 +46,7 @@ static int dac_read_register(uint8_t page, uint8_t reg ){
 }
 
 static int set_bits(uint8_t reg, uint8_t mask, uint8_t shift,uint value){
-	uint8_t reg_value = dac_read_register(DAC_REG_PG0,reg);
+	uint8_t reg_value = dac_read_register(reg);
         reg_value &= ~(mask << shift);
         reg_value |= (value & mask) << shift;
         return dac_reg_write(reg, reg_value);
@@ -103,7 +104,13 @@ static int dac_init(void){
 		panic("reg - 0x01 reset dac software\n");
 		return -1;
 	}
-	if (ramp_set_dac_volume(-63.5f,25,5) == PICO_ERROR_GENERIC){
+	sleep_ms(10);
+	//mute audio
+	if (set_channel_volume(true,-63.5f) == PICO_ERROR_GENERIC){ //right
+		panic("error muting dac in init\n");
+		return -1;
+	}
+	if (set_channel_volume(false,-63.5f) == PICO_ERROR_GENERIC){ //right
 		panic("error muting dac in init\n");
 		return -1;
 	}
@@ -111,16 +118,21 @@ static int dac_init(void){
 		panic("error muting dac in init\n");
 		return -1;
 	}
-	sleep_ms(10);
+
+	//set dac datapath
+	dac_reg_write(DAC_DATA_PATH_REG,DAC_DATA_PATH_VALUE);
+	dac_reg_write(DAC_VOLUME_CONTROL,0x00);
 
 	return 0;
 }
 
 static int dac_configure_clocks(void){
+	dac_set_page(DAC_REG_PG0);
 	//ensure DAC and PLL are powered down
 	set_bits(DAC_DATA_PATH_REG,0x03,6,0b00);
 	set_bits(DAC_PLL_PROG_PR,0x01,7,0b0);
-	sleep_ms(10);
+	sleep_ms(1);
+
 
 	//set PLL clock scaling registers
 	dac_reg_write(DAC_PLL_PROG_PR,81);
@@ -128,39 +140,26 @@ static int dac_configure_clocks(void){
 	dac_reg_write(DAC_PLL_PROG_D_MSB,29);
 	dac_reg_write(DAC_PLL_PROG_D_LSB,80);
 
-	//set mux for PLL input clock source (PLL_CLKIN)
+	//set mux for PLL input clock source (MCLK)
 	set_bits(DAC_CLOCK_MUX1,0x0c,2,DAC_CLOCK_MUX1_SOURCE);
 
 	//power up PLL and wait briefly for PLL lock
 	set_bits(DAC_PLL_PROG_PR, 0x01, 7, 0b1);
-	//sleep_ms(10);
-	for(int i = 0; i < 10; i ++){
-		printf("MCLK GPIO level: %d\n", gpio_get(DAC_MCLK_GPIO_PIN));
-		sleep_ms(50);
-	}
-	bool locked = false;
-	printf("Clock mux: 0x%02X (expect bits 1:0=11, bits 3:2=00)\n", dac_read_register(DAC_REG_PG0,0x04));
-	for (int i = 0; i < 100; i++){
-		sleep_ms(10);
-		uint8_t status = dac_read_register(DAC_REG_PG0,0x26);
-		printf("PLL status atttempt %d: 0x%02X\n",i,status);
-		if (status & (1 << 6)){
-			locked = true;
-			printf("PLL locked after %dms\n", (i+1) * 10);
-			break;
-		}
+	sleep_ms(10);
 
-	}
-	if (!locked){
-		printf("PLL failed to lock\n");
-		return -1;
+	//check lock
+	uint8_t status = dac_read_register(0x26);
+	printf("PLL status: 0x%02x (bit6=1 means locked in)\n",status);
+	if(!(status & (1 << 6))){
+		printf("failed to lock!\n");
+		//return -1;
 	}
 
 	//set mux to route PLL output (PLL_CLK) to CODEC_CLKIN
 	set_bits(DAC_CLOCK_MUX1,0x03,0,0b11);
 
 	//set data format I2S
-	dac_reg_write(DAC_CODEC_IF,0);
+	dac_reg_write(DAC_CODEC_IF,0x00);
 
 	//configure codec clock dividers for oversamply and dsp (might not be needed?)
 	dac_reg_write(DAC_NDAC_REG,147);
@@ -170,17 +169,6 @@ static int dac_configure_clocks(void){
 
 	//power up dac
 	set_bits(DAC_DATA_PATH_REG, 0x03, 6, 0b11);
-
-	printf("PLL PR: 0x%02X (expect 0xD1)\n", dac_read_register(DAC_REG_PG0,0x05));
-	printf("PLL J: 0x%02X (expect 0x23)\n", dac_read_register(DAC_REG_PG0,0x06));
-	printf("PLL D MSB: 0x%02X (expect 0x1D)\n", dac_read_register(DAC_REG_PG0,0x07));
-	printf("PLL D LSB: 0x%02X (expect 0x50)\n", dac_read_register(DAC_REG_PG0,0x08));
-	printf("Clock mux: 0x%02X (expect bits 1:0=11, bits 3:2=00)\n", dac_read_register(DAC_REG_PG0,0x04));
-	printf("ndac: 0x%02X (expect 0x93)\n", dac_read_register(DAC_REG_PG0,0x0B));
-	printf("mdac: 0x%02X (expect 0x81)\n", dac_read_register(DAC_REG_PG0,0x0C));
-
-	printf("PLL status: 0x%02X (bit6 should be 1 if locked)\n", dac_read_register(DAC_REG_PG0,0x26));
-	printf("mux reg: 0x%02X\n", dac_read_register(DAC_REG_PG0,0x04));
 	
 	return 0;
 }
@@ -203,8 +191,7 @@ static int dac_configure_headphones(void){
 	dac_set_page(DAC_REG_PG1);
 
 	//route dac output to HP drivers
-	dac_reg_write(DAC_ROUTE_L, 0x08);
-	dac_reg_write(DAC_ROUTE_R, 0x08);
+	dac_reg_write(DAC_OUT_ROUTING_REG, DAC_OUT_ROUTING_VALUE);
 
 	//HP gain
 	dac_reg_write(DAC_HPL_DRIVER, 0x00);
@@ -241,8 +228,40 @@ static int dac_register_setup(void){
 		return -1;
 	}
 
+	// Read back DAC data path
+	dac_set_page(DAC_REG_PG0);
+
 	printf("finished reg setup\n");
 	return 0;
+}
+
+static void confirm_register_setup(void){
+	dac_set_page(DAC_REG_PG0);
+	printf("PLL PR: 0x%02X (expect 0xD1)\n", dac_read_register(0x05));
+	printf("PLL J: 0x%02X (expect 0x23)\n", dac_read_register(0x06));
+	printf("PLL D MSB: 0x%02X (expect 0x1D)\n", dac_read_register(0x07));
+	printf("PLL D LSB: 0x%02X (expect 0x50)\n", dac_read_register(0x08));
+	printf("Clock mux: 0x%02X (expect bits 1:0=11, bits 3:2=00)\n", dac_read_register(0x04));
+	printf("ndac: 0x%02X (expect 0x93)\n", dac_read_register(0x0B));
+	printf("mdac: 0x%02X (expect 0x81)\n", dac_read_register(0x0C));
+
+
+	printf("PLL status: 0x%02X (bit6 should be 1 if locked)\n", dac_read_register(0x26));
+	printf("mux reg: 0x%02X\n", dac_read_register(0x04));
+	printf("Data path: 0x%02X (expect 0xD4)\n", dac_read_register( 0x3F));
+	// Read back CODEC interface
+	printf("CODEC IF:  0x%02X (expect 0x00)\n", dac_read_register( 0x1B));
+	// Read back page 1 routing
+	dac_set_page(DAC_REG_PG1);
+	printf("Route L & R:   0x%02X (expect 0x44)\n", dac_read_register( DAC_OUT_ROUTING_REG));
+	printf("HPL gain:  0x%02X (expect 0x00)\n", dac_read_register( 0x10));
+	printf("HPR gain:  0x%02X (expect 0x00)\n", dac_read_register( 0x11));
+	printf("HP driver: 0x%02X (expect 0xC4)\n", dac_read_register( 0x1F));
+	dac_set_page(DAC_REG_PG0);
+	// Read back volume
+	printf("Vol ctrl:  0x%02X (expect 0x00)\n", dac_read_register( 0x40));
+	printf("Left vol:  0x%02X\n", dac_read_register( 0x41));
+	printf("Right vol: 0x%02X\n", dac_read_register( 0x42));
 }
 
 //mclk generation from pico pwm
@@ -262,7 +281,8 @@ static int mclk_init(){
 static float get_dac_channel_volume(bool right_channel){
 	uint8_t reg = right_channel ? DAC_RIGHT_CHANNEL_REG : DAC_LEFT_CHANNEL_REG;
 
-	int8_t raw = (int8_t)dac_read_register(DAC_REG_PG0, reg);
+	//set page 0
+	int8_t raw = (int8_t)dac_read_register(reg);
 	return raw / 2.0f;
 
 }
@@ -339,6 +359,7 @@ void DAC_i2c_wakeup(void){
 		if (dac_register_setup() == -1){
 			panic("error in dac register setup\n");
 		}
+		confirm_register_setup();
 
 	}
 	else{

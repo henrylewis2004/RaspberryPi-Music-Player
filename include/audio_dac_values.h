@@ -36,7 +36,7 @@
 #endif
 
 #ifndef DAC_MCLK_GPIO_PIN
-#define DAC_MCLK_GPIO_PIN 9
+#define DAC_MCLK_GPIO_PIN 10
 #endif
 
 //i2s audio values

@@ -90,13 +90,13 @@
 #define DAC_HEADPHONES_DRIVER_VAL 0xC4
 #endif 
 
-#ifndef DAC_ROUTE_L
-#define DAC_ROUTE_L 0x0C
-#endif 
-
-#ifndef DAC_ROUTE_R
-#define DAC_ROUTE_R 0x0D
-#endif 
+#ifndef DAC_OUT_ROUTING_REG
+#define DAC_OUT_ROUTING_REG 0x23
+#endif // !OUT_ROUTING_REG
+       
+#ifndef DAC_OUT_ROUTING_VALUE
+#define DAC_OUT_ROUTING_VALUE 0x44
+#endif // !OUT_ROUTING_REG
 
 #ifndef DAC_HPL_DRIVER
 #define DAC_HPL_DRIVER 0x10

@@ -57,4 +57,4 @@ A music player using a RaspberryPi Pico 2 W
 | DIN | 9 | 6 |
 | WSEL | 11 | 8 |
 | BCK | 10 | 7 |
-| MCLK | 12 | 9 |
+| MCLK | 14 | 10 |
