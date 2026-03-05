@@ -148,21 +148,6 @@ static int dac_configure_clocks(void){
 	set_bits(DAC_PLL_PROG_PR, 0x01, 7, 0b1);
 	sleep_ms(10);
 
-	//check lock
-	bool locked = false;
-	for (int i = 0; i < 100; i++){
-		sleep_ms(10);
-		uint8_t status = dac_read_register(0x26);
-		if(status & (1 << 6)){
-			locked=true;
-			printf("PLL locked after %dms\n",(i+1) * 10);
-			break;
-		}
-	}
-	if(!locked){
-		printf("failed to lock!\n");
-		//return -1;
-	}
 
 	//set mux to route PLL output (PLL_CLK) to CODEC_CLKIN
 	set_bits(DAC_CLOCK_MUX1,0x03,0,0b11);
@@ -284,21 +269,6 @@ static int mclk_init(){
 	pwm_init(slice,&pwm_cfg,true);
 	pwm_set_gpio_level(DAC_MCLK_GPIO_PIN,5); //50% duty
 
-	int transitions = 0;
-	int last = gpio_get(DAC_MCLK_GPIO_PIN);
-	absolute_time_t end = make_timeout_time_ms(1000);
-	while(!time_reached(end)){
-		int val = gpio_get(DAC_MCLK_GPIO_PIN);
-		if (val != last){
-			transitions++;
-			last = val;
-		}
-	}
-	printf("MCLK frequency: ~%d Hz \n", transitions * 500);
-	printf("clk_sys: %lu\n", clock_get_hz(clk_sys));
-	printf("PWM top: %lu\n",pwm_hw->slice[pwm_gpio_to_slice_num(DAC_MCLK_GPIO_PIN)].top);
-	printf("PWM div: %lu\n",pwm_hw->slice[pwm_gpio_to_slice_num(DAC_MCLK_GPIO_PIN)].div);
-
 	return 0;
 }
 
@@ -383,6 +353,7 @@ void DAC_i2c_wakeup(void){
 		if (dac_register_setup() == -1){
 			panic("error in dac register setup\n");
 		}
+		sleep_ms(500);
 		confirm_register_setup();
 
 	}

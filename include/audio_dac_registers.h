@@ -99,11 +99,11 @@
 #endif // !OUT_ROUTING_REG
 
 #ifndef DAC_HPL_DRIVER
-#define DAC_HPL_DRIVER 0x10
+#define DAC_HPL_DRIVER 0x28
 #endif 
 
 #ifndef DAC_HPR_DRIVER
-#define DAC_HPR_DRIVER 0x11
+#define DAC_HPR_DRIVER 0x29
 #endif 
 
 #endif
