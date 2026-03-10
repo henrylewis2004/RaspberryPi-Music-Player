@@ -19,10 +19,6 @@
 #define SINE_FREQ 440
 #endif
 
-#ifndef BUF_SAMPLES 
-#define BUF_SAMPLES 1024
-#endif
-
 // internal \\
 
 
@@ -42,7 +38,9 @@ void audio_callback(uint32_t *buf, size_t count){
 
 void audio_init(void){
 	DAC_i2c_wakeup();
+	printf("wakeup finished\n");
 	DAC_i2s_init(audio_callback);
+	printf("i2s init finished\n");
 }
 
 void audio_close(void){

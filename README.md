@@ -34,7 +34,7 @@ A music player using a RaspberryPi Pico 2 W
 | 3V | 3V3(OUT) - 36 | n/a |
 | GND | GND - 38 | n/a |
 | DET | 21 | 16 |
-| CLK | 22 | 17 |
+| CLK | 22 | 17 | (using 47ohm resistor)
 | CMD | 24 | 18 |
 | D0 | 25 | 19 |
 | D1 | 26 | 20 |

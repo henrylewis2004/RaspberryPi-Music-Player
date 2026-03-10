@@ -7,8 +7,10 @@
 //sdio interface
 static sd_sdio_if_t sdio_if = {
 	//values might need changing
+	//clk is cmd -1
 	.CMD_gpio = 18,
 	.D0_gpio = 19,
+	//D0-d3 are in sequence
 	.baud_rate = 15 * 1000 * 1000// 125 * 1000 * 1000 / 6 //20833333 Hz//
 };
 

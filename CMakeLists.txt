@@ -33,6 +33,9 @@ add_executable(Pico-Music
 	src/audio/audio_player.c
 	src/audio/audio_dac_i2c_bridge.c
 	src/audio/audio_dac_i2s_bridge.c
+
+	#input
+	src/input.c
 )
 
 target_include_directories(Pico-Music PRIVATE
@@ -68,8 +71,8 @@ target_link_libraries(Pico-Music
 
 
 ##
-pico_enable_stdio_usb(Pico-Music 1)
-pico_enable_stdio_uart(Pico-Music 0)
+pico_enable_stdio_usb(Pico-Music 0)
+pico_enable_stdio_uart(Pico-Music 1)
 
 pico_add_extra_outputs(Pico-Music)
 
