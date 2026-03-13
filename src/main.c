@@ -25,7 +25,7 @@ static bool aliveMessage(struct repeating_timer *t){
 int main(void){
 	set_sys_clock_khz(150000,true); //150mhz / 10 = 15 MHz
 	stdio_init_all();
-	dma_claim_mask(0xfff);
+	dma_claim_mask(0xfff); //claim all dma channels
 	//led
 	led_blink();
 
@@ -34,11 +34,11 @@ int main(void){
 
 
 	printf("audio_init\n");
-	dma_unclaim_mask(0x30);
+	dma_unclaim_mask(0x30); //unclaim channels 4 & 5
 	audio_init();
 
 	printf("sd_functionality_test\n");
-	dma_unclaim_mask(0x0f);
+	dma_unclaim_mask(0x0f); //unclaim channels (0-3)
 	sd_init();
 
 
