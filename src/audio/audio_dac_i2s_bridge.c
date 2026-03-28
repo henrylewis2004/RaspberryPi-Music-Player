@@ -23,7 +23,6 @@
 
 // internal \\
 
-
 static PIO i2s_pio;
 static uint i2s_state_machine;
 

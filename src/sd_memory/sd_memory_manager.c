@@ -150,7 +150,54 @@ static int sd_write_file(char* filepath, char* data_in,size_t input_size, bool w
 }
 
 // wav
-int read_wav(void){
+int16_t* read_wav(char* path){
+	FIL file;
+	FRESULT fr = f_open(&file, filepath, FA_READ);
+
+	//open file
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(&file);
+		panic("f_open(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+		return NULL;
+	}
+
+	//read file
+	wav_file wfile;
+	uint bytes_read;
+
+	//header
+	fr = f_read(&file,wfile.header.id,4,&bytes_read);
+	fr = f_read(&file,wfile.header.fileSize,sizeof(uint32_t),&bytes_read);
+	fr = f_read(&file,wfile.header.fileFormat,4,&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(&file);
+		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+		return NULL;
+	}
+
+	//format
+	fr = f_read(&file,wfile.format.chunkId,4,&bytes_read);
+	fr = f_read(&file,wfile.header.fileSize,sizeof(uint32_t),&bytes_read);
+	fr = f_read(&file,wfile.header.fileFormat,4,&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(&file);
+		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+		return NULL;
+	}
+
+
+	char* file_buffer = malloc(1024);
+	if (file_buffer == NULL){
+		f_close(&file);
+		panic("sd_read error: failed to create file_buffer\n");
+		return NULL;
+	}
+
+
+
+	f_close(&file);
+
+
 	return 0;
 
 }
