@@ -26,12 +26,9 @@ int main(void){
 	set_sys_clock_khz(150000,true); //150mhz / 10 = 15 MHz
 	stdio_init_all();
 	dma_claim_mask(0xfff); //claim all dma channels
+			       
 	//led
 	led_blink();
-
-	sleep_ms(1500);
-	printf("hello father\n");
-
 
 	printf("audio_init\n");
 	dma_unclaim_mask(0x30); //unclaim channels 4 & 5
@@ -40,6 +37,15 @@ int main(void){
 	printf("sd_functionality_test\n");
 	dma_unclaim_mask(0x0f); //unclaim channels (0-3)
 	sd_init();
+
+	sleep_ms(1500);
+	printf("hello father\n");
+
+	sleep_ms(500);
+	play_noise();
+
+
+
 
 
 

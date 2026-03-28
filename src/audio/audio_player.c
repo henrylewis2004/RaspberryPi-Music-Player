@@ -49,6 +49,8 @@ void audio_close(void){
 }
 
 void play_noise(void){
-	// need to implement
+	DAC_start_dma();	
+}
 
+void stop_playback(void){
 }

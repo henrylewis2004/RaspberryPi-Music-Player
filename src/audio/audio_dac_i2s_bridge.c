@@ -78,7 +78,7 @@ static void dma_i2s_init(void){
 	}
 
 	// start channel 0 - chains to channel 1
-	dma_channel_start(dma_channel[0]);
+	//dma_channel_start(dma_channel[0]);
 }
 
 //dma handling
@@ -115,8 +115,6 @@ void DAC_set_callback(i2s_buffer_callback_t callback){
 }
 
 void DAC_start_dma(void){
-	dma_channel_set_irq1_enabled(dma_channel[0], false); //reset dma (just in case? might not be needed)
-	dma_channel_set_irq1_enabled(dma_channel[0], true);
 	dma_channel_start(dma_channel[0]);
 }
 
