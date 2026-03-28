@@ -134,7 +134,7 @@ void DAC_i2s_init(){
 
 void DAC_start_dma(void){
 	for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
-		buffer_callback(audio_buffer[i],I2S_BUFFER_WORDS);
+		buffer_callback(audio_buffer[i]);
 	}
 	dma_channel_start(dma_channel[0]);
 }
