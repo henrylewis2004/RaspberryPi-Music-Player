@@ -3,10 +3,7 @@
 
 #define I2S_BUFFER_WORDS 512
 
-typedef void (*i2s_buffer_callback_t)(uint32_t *buffer, size_t word_count);
-
-void DAC_i2s_init(i2s_buffer_callback_t callback);
-void DAC_set_callback(i2s_buffer_callback_t callback);
+void DAC_i2s_init();
 void DAC_start_dma(void);
 
 static inline uint32_t i2s_pack_sample(int16_t left, int16_t right){

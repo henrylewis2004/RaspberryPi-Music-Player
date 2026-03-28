@@ -1,5 +1,14 @@
 //c headers
 #include <stdio.h>
+#include <math.h>
+
+#ifndef DAC_SAMPLE_RATE
+#define DAC_SAMPLE_RATE 44100
+#endif
+
+#ifndef SINE_FREQ
+#define SINE_FREQ 440
+#endif
 
 //pico headers
 #include "pico/stdlib.h"
@@ -24,7 +33,6 @@ static uint32_t audio_buffer[2][I2S_BUFFER_WORDS];
 #define DMA_CHANNEL_COUNT 2
 static int dma_channel[DMA_CHANNEL_COUNT];
 
-static i2s_buffer_callback_t buffer_callback;
 static volatile uint buffer_active_half = 0;
 //setup
 
@@ -70,6 +78,7 @@ static void dma_i2s_init(void){
 	irq_add_shared_handler(DMA_IRQ_1, dma_irq_handler, PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY);
 	irq_set_enabled(DMA_IRQ_1,true);
 
+	/*
 	//pre-fill both halves via callback before starting
 	if (buffer_callback){
 		for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
@@ -78,7 +87,22 @@ static void dma_i2s_init(void){
 	}
 
 	// start channel 0 - chains to channel 1
-	//dma_channel_start(dma_channel[0]);
+	dma_channel_start(dma_channel[0]);
+	*/
+}
+
+// buffer playback
+void buffer_callback(uint32_t *buf){
+	static float phase = 0.0f;
+	for (size_t i = 0; i < I2S_BUFFER_WORDS; i ++){
+		int16_t s = (int16_t)(32767.0f * sin(phase));
+		 buf[i] = i2s_pack_sample(s,s);
+		 phase += 2.0f * M_PI * 440.0f / DAC_SAMPLE_RATE;
+		 if(phase > 2.0f * M_PI){
+			phase -= 2.0f * M_PI;
+
+		 }
+	}
 }
 
 //dma handling
@@ -88,9 +112,7 @@ static void dma_irq_handler(void){
 			dma_channel_acknowledge_irq1(dma_channel[i]);
 
 			//refill finished half
-			if (buffer_callback){
-				buffer_callback(audio_buffer[i],I2S_BUFFER_WORDS);
-			}
+			buffer_callback(audio_buffer[i]);
 
 			//rearm channel
 			dma_channel_set_read_addr(dma_channel[i], audio_buffer[i], false);
@@ -101,8 +123,7 @@ static void dma_irq_handler(void){
 
 // public \\
 
-void DAC_i2s_init(i2s_buffer_callback_t callback){
-	DAC_set_callback(callback);
+void DAC_i2s_init(){
 	printf("i2s buffer assigned\n");
 	pio_i2s_init();
 	printf("pio i2s init finished\n");
@@ -110,11 +131,11 @@ void DAC_i2s_init(i2s_buffer_callback_t callback){
 	printf("dma i2s init finished\n");
 }
 
-void DAC_set_callback(i2s_buffer_callback_t callback){
-	buffer_callback = callback;
-}
 
 void DAC_start_dma(void){
+	for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
+		buffer_callback(audio_buffer[i],I2S_BUFFER_WORDS);
+	}
 	dma_channel_start(dma_channel[0]);
 }
 
