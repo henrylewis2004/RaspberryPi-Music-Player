@@ -102,12 +102,16 @@ static void dma_irq_handler(void){
 // public \\
 
 void DAC_i2s_init(i2s_buffer_callback_t callback){
-	buffer_callback = callback;
+	DAC_set_callback(callback);
 	printf("i2s buffer assigned\n");
 	pio_i2s_init();
 	printf("pio i2s init finished\n");
 	dma_i2s_init();
 	printf("dma i2s init finished\n");
+}
+
+void DAC_set_callback(i2s_buffer_callback_t callback){
+	buffer_callback = callback;
 }
 
 void DAC_start_dma(void){
