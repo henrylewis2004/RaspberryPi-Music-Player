@@ -6,6 +6,7 @@
 //project headers
 #include "sd_memory_manager.h"
 #include "hw_config.h"
+#include "wav_file.h"
 
 
 // internal \\
@@ -115,6 +116,13 @@ static int sd_write_file(char* filepath, char* data_in,size_t input_size, bool w
 
 	return 0;
 }
+
+// wav
+int read_wav(void){
+	return 0;
+
+}
+
 
 // public \\
 
