@@ -22,8 +22,7 @@ volatile bool buffer_refil_request;
 
 
 static void wav_buffer_callback(uint32_t* buf){
-	uint32_t* refil = sd_get_next_samples();
-	memcpy(buf,refil, I2S_BUFFER_WORDS * sizeof(uint32_t));
+	memcpy(buf,sd_get_next_samples(), I2S_BUFFER_WORDS * sizeof(uint32_t));
 
 	buffer_refil_request = true;
 }
@@ -52,6 +51,13 @@ static void test_buffer_callback(uint32_t *buf){
 bool audio_buffer_refil_requested(void){
 	return buffer_refil_request;
 }
+
+void audio_buffer_refil(void){
+	buffer_refil_request = false;
+	sd_read_wav_data(sd_get_cur_buffer());
+}
+
+
 
 void audio_init(void){
 	DAC_i2c_wakeup();

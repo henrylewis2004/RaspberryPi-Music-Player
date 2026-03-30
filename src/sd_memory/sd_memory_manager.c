@@ -14,7 +14,7 @@
 // internal \\
 
 #ifndef BUFFER_REFIL_CNT
-#define BUFFER_REFIL_CNT 2
+#define BUFFER_REFIL_CNT 1
 #endif /* ifndef BUFFER_REFIL_CNT */
 
 
@@ -24,7 +24,7 @@ typedef struct {
 	uint32_t bytes_read_total;
 
 	uint32_t buffer_refil[BUFFER_REFIL_CNT][I2S_BUFFER_WORDS];
-	uint32_t curBuffer;
+	uint curBuffer;
 	wav_file wfile;
 } playing_song;
 
@@ -271,12 +271,12 @@ void sd_functionality_test(void){
 	printf("sd tests finished\n");
 }
 
-uint32_t sd_get_cur_buffer(void){
+uint sd_get_cur_buffer(void){
 	return curSongPtr->curBuffer;
 }
 
-uint32_t sd_get_next_buffer(void){
-	if (sd_get_cur_buffer() > BUFFER_REFIL_CNT){
+uint sd_get_next_buffer(void){
+	if (sd_get_cur_buffer() + 1 + 1 > BUFFER_REFIL_CNT){
 		return 0;
 	}
 	return sd_get_cur_buffer() + 1;
@@ -284,7 +284,7 @@ uint32_t sd_get_next_buffer(void){
 
 
 uint32_t* sd_get_next_samples(void){
-	uint32_t temp_buf = curSongPtr->curBuffer;
+	uint temp_buf = curSongPtr->curBuffer;
 	curSongPtr->curBuffer = sd_get_next_buffer();
 
 	return curSongPtr->buffer_refil[temp_buf];

@@ -63,9 +63,15 @@ int main(void){
 
 
 	//infinite loop
-	/*
+	
 	while(true){
-		wfi();
+		if (audio_buffer_refil_requested()){
+			audio_buffer_refil();
+		}
+
+
+
+		__wfi();
 	}
-	*/
+	
 }
