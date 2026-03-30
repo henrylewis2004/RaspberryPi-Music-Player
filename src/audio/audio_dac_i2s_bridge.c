@@ -25,7 +25,7 @@ static uint32_t audio_buffer[DMA_CHANNEL_COUNT][I2S_BUFFER_WORDS];
 
 static int dma_channel[DMA_CHANNEL_COUNT];
 
-static volatile uint buffer_active_half = 0;
+//static volatile uint buffer_active_half = 0;
 //setup
 
 static void dma_irq_handler(void);
@@ -96,7 +96,7 @@ void i2s_set_buffer_callback(buffer_callback_t callback){
 }
 
 void DAC_i2s_init(buffer_callback_t callback){
-	i2s_set_buffer_callback(callback);
+	//i2s_set_buffer_callback(callback);
 	printf("i2s buffer assigned\n");
 	pio_i2s_init();
 	printf("pio i2s init finished\n");
@@ -123,6 +123,10 @@ void DAC_stop_dma(void){
 
 buffer_callback_t i2s_get_buffer_callback_function(void){
 	return buffer_callback;
+}
+
+uint32_t* get_audio_buffer(uint buf){
+	return audio_buffer[buf];
 }
 
 

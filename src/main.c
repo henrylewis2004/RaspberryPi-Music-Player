@@ -25,6 +25,7 @@ static bool aliveMessage(struct repeating_timer *t){
 
 int64_t stop_playback_callback(alarm_id_t id, void *user_data){
 	stop_playback();
+	audio_close();
 	return 0;
 }
 
@@ -36,25 +37,27 @@ int main(void){
 	//led
 	led_blink();
 
+	
 	printf("audio_init\n");
 	dma_unclaim_mask(0x30); //unclaim channels 4 & 5
 	audio_init();
 
+	
 	printf("sd_functionality_test\n");
 	dma_unclaim_mask(0x0f); //unclaim channels (0-3)
 	sd_init();
 
-	sleep_ms(1500);
-	printf("hello father\n");
+	//sleep_ms(1500);
+	//printf("hello father\n");
 
-	sleep_ms(500);
-//	play_song("test.wav");
+	sleep_ms(100);
+	
+	//play_song("test.wav");
 	play_noise();
 
-	add_alarm_in_ms(1000, &stop_playback_callback, NULL,true);
+	add_alarm_in_ms(10000, &stop_playback_callback, NULL,true);
 
-//	sleep_ms(5000);
-//	stop_playback();
+	
 
 
 
@@ -67,11 +70,9 @@ int main(void){
 	add_repeating_timer_ms(-5000,aliveMessage,NULL,&alive_message_timer);
 
 
-	for(;;);
-
 
 	//infinite loop
-	
+
 	while(true){
 		if (audio_buffer_refil_requested()){
 			audio_buffer_refil();
@@ -81,5 +82,6 @@ int main(void){
 
 		__wfi();
 	}
+
 	
 }

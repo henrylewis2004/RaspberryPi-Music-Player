@@ -186,12 +186,12 @@ static int dac_configure_headphones(void){
 
 
 	//HP drivers
-	dac_reg_write(DAC_HPL_DRIVER, 0x00);
-	dac_reg_write(DAC_HPR_DRIVER, 0x00);
+	dac_reg_write(DAC_HPL_DRIVER, 0x07);
+	dac_reg_write(DAC_HPR_DRIVER, 0x07);
 
 	//HP gain
-	dac_reg_write(DAC_HPL_VOL, (6 << 3) | 0x04); //6db
-	dac_reg_write(DAC_HPR_VOL, (6 << 3) | 0x04); //6db
+	dac_reg_write(DAC_HPL_VOL, 0x80); 
+	dac_reg_write(DAC_HPR_VOL, 0x80);
 
 	dac_reg_write(DAC_HEADPHONES_DRIVER_REG, DAC_HEADPHONES_DRIVER_VAL);
 
@@ -201,7 +201,7 @@ static int dac_configure_headphones(void){
 	//set page 0
 	dac_set_page(DAC_REG_PG0);
 	dac_mute(false);
-	ramp_set_dac_volume(0.0f,50,10);
+	ramp_set_dac_volume(-20.0f,50,10);
 
 	return 0;
 }
@@ -322,8 +322,7 @@ int ramp_set_dac_volume(float target_volume_db, uint steps, uint step_timer_ms){
 		}
 		sleep_ms(step_timer_ms);
 	}
-
-
+	return 0;
 }
 
 int set_channel_volume(bool right_channel, float volume_db){
@@ -347,6 +346,7 @@ int set_channel_volume(bool right_channel, float volume_db){
 	return dac_reg_write(channel_register,reg_value & 0xFF);
 }
 
+
 //wakeup handshake
 void DAC_i2c_wakeup(void){
 	printf("dac wakeup\n");
@@ -358,8 +358,6 @@ void DAC_i2c_wakeup(void){
 		if (dac_register_setup() == -1){
 			panic("error in dac register setup\n");
 		}
-//		sleep_ms(500);
-//		confirm_register_setup();
 
 	}
 	else{

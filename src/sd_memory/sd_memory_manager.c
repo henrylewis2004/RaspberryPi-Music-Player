@@ -13,22 +13,16 @@
 
 // internal \\
 
-#ifndef BUFFER_REFIL_CNT
-#define BUFFER_REFIL_CNT 1
-#endif /* ifndef BUFFER_REFIL_CNT */
-
 
 typedef struct {
 	FIL file;
 	uint32_t data_byte_length;
 	uint32_t bytes_read_total;
 
-	uint32_t buffer_refil[BUFFER_REFIL_CNT][I2S_BUFFER_WORDS];
-	uint curBuffer;
 	wav_file wfile;
 } playing_song;
 
-playing_song* curSongPtr;
+static playing_song cur_play_song;
 
 static FATFS file_system;
 
@@ -134,12 +128,12 @@ static int sd_write_file(char* filepath, char* data_in,size_t input_size, bool w
 }
 
 // wav
-static wav_file read_wav(char* filepath, FIL* file){
-	FRESULT fr = f_open(file, filepath, FA_READ);
+static wav_file read_wav(char* filepath, playing_song* curSong){
+	FRESULT fr = f_open(&curSong->file, filepath, FA_READ);
 
 	//open file
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(file);
+		f_close(&curSong->file);
 		panic("f_open(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
@@ -148,78 +142,78 @@ static wav_file read_wav(char* filepath, FIL* file){
 	uint bytes_read;
 
 	//header
-	fr = f_read(file,wfile.header.id,4,&bytes_read);
+	fr = f_read(&curSong->file,wfile.header.id,4,&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(file);
+		f_close(&curSong->file);
 		panic("f_read(%s) wav header id error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
-	fr = f_read(file,&wfile.header.fileSize,sizeof(uint32_t),&bytes_read);
+	fr = f_read(&curSong->file,&wfile.header.fileSize,sizeof(uint32_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(file);
+		f_close(&curSong->file);
 		panic("f_read(%s) wav header file size error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
-	fr = f_read(file,wfile.header.fileFormat,4,&bytes_read);
+	fr = f_read(&curSong->file,wfile.header.fileFormat,4,&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(file);
+		f_close(&curSong->file);
 		panic("f_read(%s) wav header file format error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
 	//format
-	fr = f_read(file,wfile.format.chunkId,4,&bytes_read);
+	fr = f_read(&curSong->file,wfile.format.chunkId,4,&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(file);
+		f_close(&curSong->file);
 		panic("f_read(%s) wav format id error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
-	fr = f_read(file,&wfile.format.chunkSize,sizeof(uint32_t),&bytes_read);
+	fr = f_read(&curSong->file,&wfile.format.chunkSize,sizeof(uint32_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(file);
+		f_close(&curSong->file);
 		panic("f_read(%s) wav format chunk size error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
-	fr = f_read(file,&wfile.format.audioFormat,sizeof(uint16_t),&bytes_read);
+	fr = f_read(&curSong->file,&wfile.format.audioFormat,sizeof(uint16_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(file);
+		f_close(&curSong->file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
-	fr = f_read(file,&wfile.format.numChannels,sizeof(uint16_t),&bytes_read);
+	fr = f_read(&curSong->file,&wfile.format.numChannels,sizeof(uint16_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(file);
+		f_close(&curSong->file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
-	fr = f_read(file,&wfile.format.sampleRate,sizeof(uint32_t),&bytes_read);
+	fr = f_read(&curSong->file,&wfile.format.sampleRate,sizeof(uint32_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(file);
+		f_close(&curSong->file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
-	fr = f_read(file,&wfile.format.byteRate,sizeof(uint32_t),&bytes_read);
+	fr = f_read(&curSong->file,&wfile.format.byteRate,sizeof(uint32_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(file);
-		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
-	}
-
-	fr = f_read(file,&wfile.format.blockAlign,sizeof(uint16_t),&bytes_read);
-	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(file);
+		f_close(&curSong->file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
-	fr = f_read(file,&wfile.format.bitsPerSample,sizeof(uint16_t),&bytes_read);
+	fr = f_read(&curSong->file,&wfile.format.blockAlign,sizeof(uint16_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(file);
+		f_close(&curSong->file);
+		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+	}
+
+	fr = f_read(&curSong->file,&wfile.format.bitsPerSample,sizeof(uint16_t),&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(&curSong->file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
 
 	//data
-	fr = f_read(file,wfile.data.chunkId,4,&bytes_read);
+	fr = f_read(&curSong->file,wfile.data.chunkId,4,&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(file);
+		f_close(&curSong->file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
-	fr = f_read(file,&wfile.data.chunkSize,sizeof(uint32_t),&bytes_read);
+	fr = f_read(&curSong->file,&wfile.data.chunkSize,sizeof(uint32_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(file);
+		f_close(&curSong->file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
@@ -271,51 +265,57 @@ void sd_functionality_test(void){
 	printf("sd tests finished\n");
 }
 
-uint sd_get_cur_buffer(void){
-	return curSongPtr->curBuffer;
-}
 
-uint sd_get_next_buffer(void){
-	if (sd_get_cur_buffer() + 1 + 1 > BUFFER_REFIL_CNT){
-		return 0;
-	}
-	return sd_get_cur_buffer() + 1;
-}
-
-
-uint32_t* sd_get_next_samples(void){
-	uint temp_buf = curSongPtr->curBuffer;
-	curSongPtr->curBuffer = sd_get_next_buffer();
-
-	return curSongPtr->buffer_refil[temp_buf];
-}
 
 void sd_set_playsong(char* filepath){
-	curSongPtr->wfile = read_wav(filepath, &curSongPtr->file);
-	curSongPtr->bytes_read_total = 0;
-	for (int i = 0; i < BUFFER_REFIL_CNT; i++){
-		sd_wav_read_data(i);
-	}
+	cur_play_song.wfile = read_wav(filepath, &cur_play_song);
+	cur_play_song.bytes_read_total = 0;
+	cur_play_song.data_byte_length = cur_play_song.wfile.data.chunkSize;
 }
 
-bool sd_wav_read_data(uint buf){
+bool sd_wav_read_data(uint32_t* buffer_refil){
+	uint sample_count = I2S_BUFFER_WORDS;
 	uint32_t read_size = I2S_BUFFER_WORDS * sizeof(uint32_t);
 
-	if (curSongPtr->data_byte_length - curSongPtr->bytes_read_total < read_size){
-		read_size = curSongPtr->data_byte_length - curSongPtr->bytes_read_total;
+	if (cur_play_song.data_byte_length - cur_play_song.bytes_read_total < read_size){
+		read_size = cur_play_song.data_byte_length - cur_play_song.bytes_read_total;
+		sample_count = read_size / sizeof(uint32_t);
+	}
+	else if (cur_play_song.data_byte_length - cur_play_song.bytes_read_total == 0){
+		memset(buffer_refil, 0, I2S_BUFFER_WORDS * sizeof(uint32_t));
+		return true;
 	}
 
 
+	uint16_t raw_samples[sample_count * 2];
+
 	uint bytes_read;
-	FRESULT fr = f_read(&curSongPtr->file,curSongPtr->buffer_refil[buf],read_size,&bytes_read);
+	FRESULT fr = f_read(&cur_play_song.file,raw_samples,read_size,&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&curSongPtr->file);
+		f_close(&cur_play_song.file);
 		panic("f_read error: %s (%d)\n", FRESULT_str(fr), fr);
 		return false;
 	}
-	curSongPtr->bytes_read_total += bytes_read;
+	
 
-	if (curSongPtr->bytes_read_total >= curSongPtr->data_byte_length){
+	for (uint i = 0; i < sample_count; i++) {
+		int16_t left  = raw_samples[2 * i];
+		int16_t right = raw_samples[2 * i + 1];
+		buffer_refil[i] = ((uint32_t)(uint16_t)left << 16) | (uint16_t)right;
+	}
+
+	
+	// If the read was shorter than the full buffer, zero out the remainder
+	if (bytes_read < I2S_BUFFER_WORDS * sizeof(uint32_t)) {
+		uint32_t remaining_words = I2S_BUFFER_WORDS - sample_count;
+		memset(&buffer_refil[sample_count], 0, remaining_words * sizeof(uint32_t));
+	}
+	
+
+
+	cur_play_song.bytes_read_total += bytes_read;
+
+	if (cur_play_song.bytes_read_total >= cur_play_song.data_byte_length){
 		return true; //stream finished
 	}
 
@@ -325,5 +325,5 @@ bool sd_wav_read_data(uint buf){
 
 //TODO: add checing 
 void sd_wav_close_playing_song(void){
-	f_close(&curSongPtr->file);
+	f_close(&cur_play_song.file);
 }
