@@ -12,7 +12,7 @@
 //project headers
 #include "audio_dac_i2c_bridge.h"
 #include "audio_dac_registers.h"
-#include "audio_dac_values.h"
+#include "audio_dac_pin_values.h"
 
 
 // internal \\

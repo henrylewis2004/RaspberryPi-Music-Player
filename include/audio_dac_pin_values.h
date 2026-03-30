@@ -39,9 +39,5 @@
 #define DAC_MCLK_GPIO_PIN 10
 #endif
 
-//i2s audio values
-#ifndef DAC_SAMPLE_RATE
-#define DAC_SAMPLE_RATE 44100
-#endif 
 
 #endif

@@ -1,13 +1,13 @@
 #ifndef AUDIO_DAC_I2S_BRIDGE_H
 #define AUDIO_DAC_I2S_BRIDGE_H
 
-#define I2S_BUFFER_WORDS 512
+typedef void (*buffer_callback_t)(uint32_t*);
 
-void DAC_i2s_init();
+void i2s_set_buffer_callback(buffer_callback_t buffer_callback);
+void DAC_i2s_init(buffer_callback_t buffer_callback);
 void DAC_start_dma(void);
+void DAC_stop_dma(void);
 
-static inline uint32_t i2s_pack_sample(int16_t left, int16_t right){
-	return ((uint32_t)(uint16_t)left << 16) | (uint16_t)right;
-}
+buffer_callback_t i2s_get_buffer_callback_function(void);
 
 #endif

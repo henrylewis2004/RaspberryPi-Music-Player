@@ -1,50 +1,38 @@
 // C stdlib headers
 #include <stdlib.h>
+#include <stdbool.h>
 // FatFS headers
 #include "f_util.h"
 #include "ff.h"
 //project headers
+#include "pico/stdlib.h"
 #include "sd_memory_manager.h"
 #include "hw_config.h"
-
-
-#ifndef WAV_FILE
-#define WAV_FILE
-
-typedef struct{
-	struct header{
-		char id[4];
-		uint32_t fileSize; //file size - 8 bytes
-		char fileFormat[4];
-
-	};
-
-	struct format{
-		char chunkId[4];
-		uint32_t chunkSize;
-		uint16_t audioFormat;
-		uint16_t numChannels;
-		uint32_t sampleRate;
-		uint32_t byteRate;
-		uint16_t blockAlign;
-		uint16_t bitsPerSample;
-	};
-
-	struct data {
-		char chunkId[4];
-		uint32_t chunkSize;
-		// add data pointer 
-	};
-
-} wav_file;
-
-
-#endif
+#include "wav_file.h"
+#include "audio_dac_i2s_values.h"
 
 // internal \\
 
+#ifndef BUFFER_REFIL_CNT
+#define BUFFER_REFIL_CNT 2
+#endif /* ifndef BUFFER_REFIL_CNT */
+
+
+typedef struct {
+	FIL file;
+	uint32_t data_byte_length;
+	uint32_t bytes_read_total;
+
+	uint32_t buffer_refil[BUFFER_REFIL_CNT][I2S_BUFFER_WORDS];
+	uint32_t curBuffer;
+	wav_file wfile;
+} playing_song;
+
+playing_song* curSongPtr;
+
 static FATFS file_system;
 
+//file system methods
 static int sd_mount(void){
 	FRESULT fr = f_mount(&file_system,"",1);
 	if (fr != FR_OK){
@@ -89,15 +77,12 @@ static char* sd_read_file(char* filepath, uint file_size){
 	if (fr != FR_OK && fr != FR_EXIST){
 		f_close(&file);
 		panic("f_open(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
-		return NULL;
 	}
 
 	//read file
 	char* file_buffer = malloc(file_size);
-	if (file_buffer == NULL){
-		f_close(&file);
+	if (file_buffer == NULL){ f_close(&file);
 		panic("sd_read error: failed to create file_buffer\n");
-		return NULL;
 	}
 
 	uint bytes_read;
@@ -107,7 +92,6 @@ static char* sd_read_file(char* filepath, uint file_size){
 	if (fr != FR_OK && fr != FR_EXIST){
 		f_close(&file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
-		return NULL;
 	}
 	f_close(&file);
 
@@ -150,15 +134,13 @@ static int sd_write_file(char* filepath, char* data_in,size_t input_size, bool w
 }
 
 // wav
-int16_t* read_wav(char* path){
-	FIL file;
-	FRESULT fr = f_open(&file, filepath, FA_READ);
+static wav_file read_wav(char* filepath, FIL* file){
+	FRESULT fr = f_open(file, filepath, FA_READ);
 
 	//open file
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&file);
+		f_close(file);
 		panic("f_open(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
-		return NULL;
 	}
 
 	//read file
@@ -166,41 +148,85 @@ int16_t* read_wav(char* path){
 	uint bytes_read;
 
 	//header
-	fr = f_read(&file,wfile.header.id,4,&bytes_read);
-	fr = f_read(&file,wfile.header.fileSize,sizeof(uint32_t),&bytes_read);
-	fr = f_read(&file,wfile.header.fileFormat,4,&bytes_read);
+	fr = f_read(file,wfile.header.id,4,&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&file);
-		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
-		return NULL;
+		f_close(file);
+		panic("f_read(%s) wav header id error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+	}
+	fr = f_read(file,&wfile.header.fileSize,sizeof(uint32_t),&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(file);
+		panic("f_read(%s) wav header file size error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+	}
+	fr = f_read(file,wfile.header.fileFormat,4,&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(file);
+		panic("f_read(%s) wav header file format error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
 	//format
-	fr = f_read(&file,wfile.format.chunkId,4,&bytes_read);
-	fr = f_read(&file,wfile.header.fileSize,sizeof(uint32_t),&bytes_read);
-	fr = f_read(&file,wfile.header.fileFormat,4,&bytes_read);
+	fr = f_read(file,wfile.format.chunkId,4,&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&file);
+		f_close(file);
+		panic("f_read(%s) wav format id error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+	}
+	fr = f_read(file,&wfile.format.chunkSize,sizeof(uint32_t),&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(file);
+		panic("f_read(%s) wav format chunk size error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+	}
+	fr = f_read(file,&wfile.format.audioFormat,sizeof(uint16_t),&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
-		return NULL;
+	}
+
+	fr = f_read(file,&wfile.format.numChannels,sizeof(uint16_t),&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(file);
+		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+	}
+
+	fr = f_read(file,&wfile.format.sampleRate,sizeof(uint32_t),&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(file);
+		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+	}
+	fr = f_read(file,&wfile.format.byteRate,sizeof(uint32_t),&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(file);
+		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+	}
+
+	fr = f_read(file,&wfile.format.blockAlign,sizeof(uint16_t),&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(file);
+		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+	}
+
+	fr = f_read(file,&wfile.format.bitsPerSample,sizeof(uint16_t),&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(file);
+		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
 
-	char* file_buffer = malloc(1024);
-	if (file_buffer == NULL){
-		f_close(&file);
-		panic("sd_read error: failed to create file_buffer\n");
-		return NULL;
+	//data
+	fr = f_read(file,wfile.data.chunkId,4,&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(file);
+		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+	}
+	fr = f_read(file,&wfile.data.chunkSize,sizeof(uint32_t),&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(file);
+		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
-
-
-	f_close(&file);
-
-
-	return 0;
-
+	//need to change to malloc (if data is needed)
+	return wfile;
 }
+
 
 
 // public \\
@@ -212,6 +238,7 @@ void sd_init(void){
 void sd_close(void){
 	sd_unmount();
 }
+
 
 void sd_functionality_test(void){
 	printf("sd_mount\n");
@@ -242,4 +269,61 @@ void sd_functionality_test(void){
 
 	sd_unmount();
 	printf("sd tests finished\n");
+}
+
+uint32_t sd_get_cur_buffer(void){
+	return curSongPtr->curBuffer;
+}
+
+uint32_t sd_get_next_buffer(void){
+	if (sd_get_cur_buffer() > BUFFER_REFIL_CNT){
+		return 0;
+	}
+	return sd_get_cur_buffer() + 1;
+}
+
+
+uint32_t* sd_get_next_samples(void){
+	uint32_t temp_buf = curSongPtr->curBuffer;
+	curSongPtr->curBuffer = sd_get_next_buffer();
+
+	return curSongPtr->buffer_refil[temp_buf];
+}
+
+void sd_set_playsong(char* filepath){
+	curSongPtr->wfile = read_wav(filepath, &curSongPtr->file);
+	curSongPtr->bytes_read_total = 0;
+	for (int i = 0; i < BUFFER_REFIL_CNT; i++){
+		sd_wav_read_data(i);
+	}
+}
+
+bool sd_wav_read_data(uint buf){
+	uint32_t read_size = I2S_BUFFER_WORDS * sizeof(uint32_t);
+
+	if (curSongPtr->data_byte_length - curSongPtr->bytes_read_total < read_size){
+		read_size = curSongPtr->data_byte_length - curSongPtr->bytes_read_total;
+	}
+
+
+	uint bytes_read;
+	FRESULT fr = f_read(&curSongPtr->file,curSongPtr->buffer_refil[buf],read_size,&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(&curSongPtr->file);
+		panic("f_read error: %s (%d)\n", FRESULT_str(fr), fr);
+		return false;
+	}
+	curSongPtr->bytes_read_total += bytes_read;
+
+	if (curSongPtr->bytes_read_total >= curSongPtr->data_byte_length){
+		return true; //stream finished
+	}
+
+	return false;
+}
+
+
+//TODO: add checing 
+void sd_wav_close_playing_song(void){
+	f_close(&curSongPtr->file);
 }

@@ -12,7 +12,7 @@
 #include "led_manager.h"
 #include "audio_player.h"
 #include "sd_memory_manager.h"
-#include "audio_dac_values.h"
+#include "audio_dac_pin_values.h"
 //#include "input.h"
 
 static bool aliveMessage(struct repeating_timer *t){
@@ -42,7 +42,11 @@ int main(void){
 	printf("hello father\n");
 
 	sleep_ms(500);
-	play_noise();
+	play_song("test.wav");
+	//play_noise();
+
+	sleep_ms(5000);
+	stop_playback();
 
 
 
@@ -55,9 +59,13 @@ int main(void){
 	add_repeating_timer_ms(-5000,aliveMessage,NULL,&alive_message_timer);
 
 
+	for(;;);
 
 
 	//infinite loop
-	for(;;);
-	return 0;
+	/*
+	while(true){
+		wfi();
+	}
+	*/
 }
