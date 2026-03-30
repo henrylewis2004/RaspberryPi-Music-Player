@@ -52,19 +52,12 @@ int main(void){
 
 	sleep_ms(100);
 	
-	//play_song("test.wav");
-	play_noise();
+	play_song("test.wav");
+	//play_noise();
 
-	add_alarm_in_ms(10000, &stop_playback_callback, NULL,true);
+	add_alarm_in_ms(40000, &stop_playback_callback, NULL,true);
 
 	
-
-
-
-
-
-
-
 	//alive message
 	struct repeating_timer alive_message_timer;
 	add_repeating_timer_ms(-5000,aliveMessage,NULL,&alive_message_timer);

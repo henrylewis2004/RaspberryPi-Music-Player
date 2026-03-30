@@ -153,7 +153,7 @@ static int dac_configure_clocks(void){
 	set_bits(DAC_CLOCK_MUX1,0x03,0,0b11);
 
 	//set data format I2S
-	dac_reg_write(DAC_CODEC_IF,0x00);
+	dac_reg_write(DAC_CODEC_IF,0xC0);
 
 	//configure codec clock dividers for oversamply and dsp (might not be needed?)
 	dac_reg_write(DAC_NDAC_REG,147);
