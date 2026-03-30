@@ -3,6 +3,7 @@
 
 //pico headers
 #include "pico/stdlib.h"
+#include "pico/bootrom.h"
 #include "my_debug.h"
 #include "hardware/clocks.h"
 #include "hardware/pwm.h"
@@ -21,6 +22,11 @@ static bool aliveMessage(struct repeating_timer *t){
 }
 
 // main \\
+
+int64_t stop_playback_callback(alarm_id_t id, void *user_data){
+	stop_playback();
+	return 0;
+}
 
 int main(void){
 	set_sys_clock_khz(150000,true); //150mhz / 10 = 15 MHz
@@ -42,11 +48,13 @@ int main(void){
 	printf("hello father\n");
 
 	sleep_ms(500);
-	play_song("test.wav");
-	//play_noise();
+//	play_song("test.wav");
+	play_noise();
 
-	sleep_ms(5000);
-	stop_playback();
+	add_alarm_in_ms(1000, &stop_playback_callback, NULL,true);
+
+//	sleep_ms(5000);
+//	stop_playback();
 
 
 

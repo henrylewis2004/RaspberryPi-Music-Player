@@ -54,7 +54,7 @@ bool audio_buffer_refil_requested(void){
 
 void audio_buffer_refil(void){
 	buffer_refil_request = false;
-	sd_read_wav_data(sd_get_cur_buffer());
+	sd_wav_read_data(sd_get_cur_buffer());
 }
 
 

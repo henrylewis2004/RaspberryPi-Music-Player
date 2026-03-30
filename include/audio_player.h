@@ -6,7 +6,7 @@ void audio_init(void);
 void audio_close(void);
 
 bool audio_buffer_refil_requested(void);
-bool audio_buffer_refil(void);
+void audio_buffer_refil(void);
 void play_song(char* filepath);
 void stop_playback(void);
 
