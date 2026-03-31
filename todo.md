@@ -1,9 +1,9 @@
 # TODO
 
 ## done
-- playing sounds X
-- reading wav header x
-- playing wav file X
+- ~~playing sounds 
+- reading wav header 
+- playing wav file ~~
 
 ## need todo
 - play / pause button
