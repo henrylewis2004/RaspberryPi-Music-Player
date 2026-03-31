@@ -1,11 +1,8 @@
 # TODO
 
-## done
-- ~~playing sounds 
-- reading wav header 
-- playing wav file ~~
-
-## need todo
+- ~~playing sounds~~
+- ~~reading wav header~~ 
+- ~~playing wav file~~
 - play / pause button
 - file system
 - settings file
