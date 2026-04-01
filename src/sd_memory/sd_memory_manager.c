@@ -13,7 +13,6 @@
 
 // internal \\
 
-
 typedef struct {
 	FIL file;
 	uint32_t data_byte_length;

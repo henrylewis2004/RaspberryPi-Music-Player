@@ -25,12 +25,6 @@ volatile uint32_t* refil_buffer;
 static void wav_buffer_callback(uint32_t* buf){
 	buffer_refil_request = true;
 	refil_buffer = buf;
-	/*
-	bool finished = sd_wav_read_data(buf);
-	if (finished){
-		stop_playback();
-	}
-	*/
 }
 
 

@@ -2,7 +2,7 @@
 #define AUDIO_DAC_I2S_VALUES_H
 
 #ifndef I2S_BUFFER_WORDS
-#define I2S_BUFFER_WORDS 512
+#define I2S_BUFFER_WORDS 4096
 #endif
 
 #ifndef DAC_SAMPLE_RATE
