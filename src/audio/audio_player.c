@@ -109,3 +109,13 @@ void stop_playback(void){
 	DAC_stop_dma();
 	sd_close();
 }
+
+void audio_plause(bool pause){
+	if pause{
+		DAC_stop_dma();
+	}
+	else{
+		DAC_start_dma();
+	}
+}
+

@@ -67,3 +67,16 @@ bool led_blink(void){
 void led_blink_stop(void){
 	cancel_repeating_timer(&blink_timer);
 }
+
+/*
+void led_alive(void){
+	led_set(true);
+	sleep_ms(500);
+	led_set(false);
+	sleep_ms(500);
+	led_set(true);
+	sleep_ms(500);
+	led_set(false);
+	sleep_ms(500);
+}
+*/

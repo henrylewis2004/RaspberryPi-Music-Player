@@ -14,7 +14,10 @@
 #include "audio_player.h"
 #include "sd_memory_manager.h"
 #include "audio_dac_pin_values.h"
+#include "button_pins.h"
 //#include "input.h"
+
+volatile bool paused = false;
 
 static bool aliveMessage(struct repeating_timer *t){
 	printf("I Breathe Father\n");
@@ -25,9 +28,10 @@ static bool aliveMessage(struct repeating_timer *t){
 
 int64_t stop_playback_callback(alarm_id_t id, void *user_data){
 	stop_playback();
-	audio_close();
 	return 0;
 }
+
+
 
 int main(void){
 	set_sys_clock_khz(150000,true); //150mhz / 10 = 15 MHz
@@ -36,7 +40,6 @@ int main(void){
 			       
 	//led
 	led_blink();
-
 	
 	printf("audio_init\n");
 	dma_unclaim_mask(0x30); //unclaim channels 4 & 5
@@ -46,6 +49,8 @@ int main(void){
 	printf("sd_functionality_test\n");
 	dma_unclaim_mask(0x0f); //unclaim channels (0-3)
 	sd_init();
+
+	setupButton(PLAY_PAUSE_PIN);
 
 	//sleep_ms(1500);
 	//printf("hello father\n");
@@ -70,6 +75,9 @@ int main(void){
 		if (audio_buffer_refil_requested()){
 			audio_buffer_refil();
 		}
+
+
+
 
 
 
