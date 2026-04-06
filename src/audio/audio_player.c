@@ -28,12 +28,6 @@ static void wav_buffer_callback(uint32_t* buf){
 }
 
 
-/*
-static inline uint32_t i2s_pack_sample(int16_t left, int16_t right){
-	return ((uint32_t)(uint16_t)left << 16) | (uint16_t)right;
-}
-*/
-
 static void test_buffer_callback(uint32_t *buf){
 	static float phase = 0.0f;
 	for (size_t i = 0; i < I2S_BUFFER_WORDS; i ++){

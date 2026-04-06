@@ -5,16 +5,42 @@
 - ~~playing sounds~~
 - ~~reading wav header~~ 
 - ~~playing wav file~~
+### next TODO
+- play / pause function
+- stop function
+- reset song
+- ~~dac register volume functions~~
+- higher volume functions (audio_player.c)
+### next TODO
+- song queue
+- skip song function
+- skip song button
+### next TODO
 - play / pause button
 - stop button
-- skip song button
 - volume buttons
-- song queue
+- home button (placeholder until home screen implemented)
+- 2D analog stick button wiring
+### next TODO
 - file system
-- select song
-- settings file
 - song data type
+- select song
+### next TODO
+- screen wiring
+- screen hello world
+### next TODO
+- screen pages (home, queue, songs, artists, playing, settings?)
+### next TODO
 - safe power off
+### next TODO
+- battery wiring
+- power saving stuff
+### next TODO
+- settings file
+> - screen brightness
+> - init volume
+> - init screen (default to home)
+
 
 
 ## Power saving measures to implement
