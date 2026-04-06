@@ -7,6 +7,7 @@ void i2s_set_buffer_callback(buffer_callback_t buffer_callback);
 void DAC_i2s_init(buffer_callback_t buffer_callback);
 void DAC_start_dma(void);
 void DAC_stop_dma(void);
+void DAC_toggle_pause(void);
 
 buffer_callback_t i2s_get_buffer_callback_function(void);
 uint32_t* get_audio_buffer(uint buf);

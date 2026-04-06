@@ -20,6 +20,9 @@ static uint i2s_state_machine;
 
 buffer_callback_t buffer_callback;
 
+volatile bool paused = false;
+volatile uint playing_buffer;
+
 //dma
 static uint32_t audio_buffer[DMA_CHANNEL_COUNT][I2S_BUFFER_WORDS];
 
@@ -86,6 +89,9 @@ static void dma_irq_handler(void){
 			dma_channel_set_read_addr(dma_channel[i], audio_buffer[i], false);
 			dma_channel_set_trans_count(dma_channel[i], I2S_BUFFER_WORDS, false);
 		}
+		else{
+			playing_buffer = i;
+		}
 	}
 }
 
@@ -110,6 +116,7 @@ void DAC_start_dma(void){
 		buffer_callback(audio_buffer[i]);
 	}
 	dma_channel_start(dma_channel[0]);
+	playing_buffer = 0;
 }
 
 
@@ -119,6 +126,29 @@ void DAC_stop_dma(void){
 		dma_channel_abort(dma_channel[i]);
 		dma_channel_cleanup(dma_channel[i]);
 	}
+}
+
+void DAC_toggle_pause(void){
+	if (paused){
+		//then play
+		for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
+			dma_channel_set_irq1_enabled(dma_channel[i], true);
+		}
+
+		dma_channel_start(dma_channel[playing_buffer]);
+	}
+	else{
+		//then pause
+		for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
+			dma_channel_set_irq1_enabled(dma_channel[i], false);
+		}
+
+		dma_channel_abort(dma_channel[playing_buffer]);
+	}
+
+	paused = !paused;
+
+
 }
 
 buffer_callback_t i2s_get_buffer_callback_function(void){

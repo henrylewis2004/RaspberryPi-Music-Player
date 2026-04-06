@@ -24,10 +24,15 @@ static bool aliveMessage(struct repeating_timer *t){
 	return true;
 }
 
+static bool pause_toggle(struct repeating_timer *t){
+	audio_pause_song();
+	return true;
+}
+
 // main \\
 
 int64_t stop_playback_callback(alarm_id_t id, void *user_data){
-	stop_playback();
+	audio_stop_playback();
 	return 0;
 }
 
@@ -57,15 +62,16 @@ int main(void){
 
 	sleep_ms(100);
 	
-	play_song("test.wav");
+	audio_play_song("test.wav");
 	//play_noise();
 
-	add_alarm_in_ms(40000, &stop_playback_callback, NULL,true);
+//	add_alarm_in_ms(40000, &stop_playback_callback, NULL,true);
 
 	
 	//alive message
 	struct repeating_timer alive_message_timer;
-	add_repeating_timer_ms(-5000,aliveMessage,NULL,&alive_message_timer);
+	//add_repeating_timer_ms(-5000,aliveMessage,NULL,&alive_message_timer);
+	add_repeating_timer_ms(-5000,pause_toggle,NULL,&alive_message_timer);
 
 
 

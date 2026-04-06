@@ -83,12 +83,12 @@ void audio_close(void){
 	sd_close();
 }
 
-void play_noise(void){
+void audio_play_noise(void){
 	i2s_set_buffer_callback(test_buffer_callback);
 	DAC_start_dma();	
 }
 
-void play_song(char* filepath){
+void audio_play_song(char* filepath){
 	i2s_set_buffer_callback(wav_buffer_callback);
 	sd_set_playsong(filepath);
 	
@@ -99,17 +99,13 @@ void play_song(char* filepath){
 	
 }
 
-void stop_playback(void){
+void audio_plause_song(void){
+	DAC_toggle_pause();
+}
+
+void audio_stop_playback(void){
 	DAC_stop_dma();
 	sd_close();
 }
 
-void audio_plause(bool pause){
-	if pause{
-		DAC_stop_dma();
-	}
-	else{
-		DAC_start_dma();
-	}
-}
 
