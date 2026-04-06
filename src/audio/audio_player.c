@@ -17,6 +17,7 @@
 #include "string.h"
 
 
+
 // internal \\
 
 volatile bool buffer_refil_request;
@@ -57,7 +58,7 @@ void audio_buffer_refil(void){
 		if (i2s_get_buffer_callback_function() == wav_buffer_callback){
 			sd_wav_close_playing_song();
 		}
-		stop_playback();
+		audio_stop_playback();
 	}
 }
 
@@ -65,8 +66,7 @@ void audio_buffer_refil(void){
 
 
 
-void audio_init(void){
-	DAC_i2c_wakeup();
+void audio_init(void){ DAC_i2c_wakeup();
 	printf("wakeup finished\n");
 	DAC_i2s_init(wav_buffer_callback);
 	printf("i2s init finished\n");
@@ -99,13 +99,17 @@ void audio_play_song(char* filepath){
 	
 }
 
-void audio_plause_song(void){
+void audio_pause_song(void){
 	DAC_toggle_pause();
 }
 
 void audio_stop_playback(void){
 	DAC_stop_dma();
 	sd_close();
+}
+
+void audio_volume_up(float volume){
+	ramp_set_dac_volume(volume, AUDIO_VOLUME_RAMP_STEPS, AUDIO_VOLUME_STEPS_TIMER_MS)
 }
 
 

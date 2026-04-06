@@ -17,7 +17,7 @@
 #include "button_pins.h"
 //#include "input.h"
 
-volatile bool paused = false;
+volatile bool stop_pause = false;
 
 static bool aliveMessage(struct repeating_timer *t){
 	printf("I Breathe Father\n");
@@ -25,13 +25,16 @@ static bool aliveMessage(struct repeating_timer *t){
 }
 
 static bool pause_toggle(struct repeating_timer *t){
-	audio_pause_song();
+	if (!stop_pause){
+		audio_pause_song();
+	}
 	return true;
 }
 
 // main \\
 
 int64_t stop_playback_callback(alarm_id_t id, void *user_data){
+	stop_pause = true;
 	audio_stop_playback();
 	return 0;
 }
@@ -55,7 +58,7 @@ int main(void){
 	dma_unclaim_mask(0x0f); //unclaim channels (0-3)
 	sd_init();
 
-	setupButton(PLAY_PAUSE_PIN);
+	//setupButton(PLAY_PAUSE_PIN);
 
 	//sleep_ms(1500);
 	//printf("hello father\n");
@@ -65,13 +68,13 @@ int main(void){
 	audio_play_song("test.wav");
 	//play_noise();
 
-//	add_alarm_in_ms(40000, &stop_playback_callback, NULL,true);
 
 	
 	//alive message
 	struct repeating_timer alive_message_timer;
 	//add_repeating_timer_ms(-5000,aliveMessage,NULL,&alive_message_timer);
-	add_repeating_timer_ms(-5000,pause_toggle,NULL,&alive_message_timer);
+	add_repeating_timer_ms(-2000,pause_toggle,NULL,&alive_message_timer);
+	add_alarm_in_ms(50000, &stop_playback_callback, NULL,true);
 
 
 
@@ -81,11 +84,6 @@ int main(void){
 		if (audio_buffer_refil_requested()){
 			audio_buffer_refil();
 		}
-
-
-
-
-
 
 		__wfi();
 	}

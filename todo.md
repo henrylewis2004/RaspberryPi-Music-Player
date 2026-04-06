@@ -6,11 +6,12 @@
 - ~~reading wav header~~ 
 - ~~playing wav file~~
 ### next TODO
-- play / pause function
-- stop function
+- ~~play / pause function~~ //NOTE: maybe change dac_mute to ramp vol instead
+- ~~stop function~~
 - reset song
+> - just stop and start song ? - need to keep track of currently playing song however so maybe implement when creating the queue
 - ~~dac register volume functions~~
-- higher volume functions (audio_player.c)
+- higher system volume functions (audio_player.c)
 ### next TODO
 - song queue
 - skip song function

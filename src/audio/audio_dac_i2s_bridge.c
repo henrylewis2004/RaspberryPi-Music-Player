@@ -8,12 +8,15 @@
 #include "hardware/irq.h"
 
 //project headers
+#include "audio_dac_i2c_bridge.h"
 #include "audio_dac_i2s_bridge.h"
 #include "audio_dac_i2s_values.h"
 #include "dac_i2s.pio.h"
 #include "audio_dac_pin_values.h"
 
 // internal \\
+
+// NOTE: maybe add some internal state management to know if playing, paused, stopped etc (might be added to another object)
 
 static PIO i2s_pio;
 static uint i2s_state_machine;
@@ -116,18 +119,22 @@ void DAC_start_dma(void){
 		buffer_callback(audio_buffer[i]);
 	}
 	dma_channel_start(dma_channel[0]);
+
 	playing_buffer = 0;
+	paused = false;
 }
 
 
 void DAC_stop_dma(void){
+	//maybe add volume to 0 
 	for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
 		dma_channel_set_irq1_enabled(dma_channel[i], false);
 		dma_channel_abort(dma_channel[i]);
 		dma_channel_cleanup(dma_channel[i]);
 	}
-}
 
+}
+//NOTE: maybe change dac_mute to ramp vol instead
 void DAC_toggle_pause(void){
 	if (paused){
 		//then play
@@ -136,14 +143,16 @@ void DAC_toggle_pause(void){
 		}
 
 		dma_channel_start(dma_channel[playing_buffer]);
+		dac_mute(false);
 	}
 	else{
 		//then pause
+		dac_mute(true);
 		for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
 			dma_channel_set_irq1_enabled(dma_channel[i], false);
+			dma_channel_abort(dma_channel[i]);
 		}
 
-		dma_channel_abort(dma_channel[playing_buffer]);
 	}
 
 	paused = !paused;
