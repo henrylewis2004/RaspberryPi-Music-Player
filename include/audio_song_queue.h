@@ -19,6 +19,4 @@ struct song_queue {
 
 };
 
-#define song_queue_size_t (MAX_SONG_PATH_LENGTH + 16 + sizeof(unsigned int))
-
 #endif // !DEBUG
