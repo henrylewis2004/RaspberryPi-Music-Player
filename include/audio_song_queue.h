@@ -9,15 +9,16 @@
 #define MAX_SONG_PATH_LENGTH 128
 #endif
 
-typedef struct {
-	char* path[MAX_SONG_PATH_LENGTH];
+typedef struct song_queue song_queue;
+
+struct song_queue {
+	char path[MAX_SONG_PATH_LENGTH];
 
 	song_queue* previous_song; //NOTE: maybe include at a later date?
 	song_queue* next_song;
 
-	uint song_index;
-} song_queue;
+};
 
-typedef const uint song_queue_size_t = MAX_SONG_PATH_LENGTH + 16 + sizeof(uint);
+#define song_queue_size_t (MAX_SONG_PATH_LENGTH + 16 + sizeof(unsigned int))
 
 #endif // !DEBUG

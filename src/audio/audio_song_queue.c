@@ -1,43 +1,81 @@
 //c headers
 #include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
 
 // project headers
 #include "audio_song_queue.h"
 
+//NOTE: might need to be volatile (when adding buttons?)
+song_queue* top_song;
+song_queue* last_song;
 
-volatile song_queue* top_song;
-volatile song_queue* last_song;
-
-volatile song_queue* queue_index_list[MAX_SONG_QUEUE_LENGTH];
+uint8_t queue_length = 0;
 
 // internal
-static int new_song(char* filepath){
+static int add_song(char* filepath){
+	if (queue_length >= MAX_SONG_QUEUE_LENGTH){
+		return -1;
+	}
+
+	queue_length++;
+
 	if (top_song == NULL){
 		top_song = malloc(song_queue_size_t);
-		top_song->path = filepath;
+		strncpy(top_song->path, filepath, sizeof(filepath));
+
+		if (sizeof(filepath) < MAX_SONG_PATH_LENGTH){
+			top_song->path[sizeof(filepath)] = '\0';
+		}
+
 		last_song = top_song;
 		return 0;
 	}
 
 	song_queue* new_song = malloc(song_queue_size_t);
-	new_song->path = filepath;
+
+	strncpy(new_song->path, filepath, sizeof(filepath));
+	if (sizeof(filepath) < MAX_SONG_PATH_LENGTH){
+		top_song->path[sizeof(filepath)] = '\0';
+	}
+
 	new_song->previous_song = last_song;
 
 	last_song->next_song = new_song;
 	last_song = new_song;
 
+	return 0;
+
 }
 
-static int remove_song_from_queue(uint song_index){
+static int remove_song_from_queue(uint8_t song_index){
+	if (song_index > MAX_SONG_QUEUE_LENGTH){
+		return -1;
+	}
+
 	song_queue* cur_song = top_song;
-	for (int i = 0; i < song_index; i++){
+	if (cur_song == NULL){
+		return -1;
+	}
+
+	for (int i = 0; i <= song_index; i++){
 		if (i == song_index){
 			cur_song->previous_song->next_song = cur_song->next_song;
+			cur_song->next_song->previous_song = cur_song->previous_song;
 			free(cur_song);
+
+			if (queue_length > 0){
+				queue_length -= 1;
+			}
+
 			return 0;
 		}
 
 		cur_song = cur_song->next_song;
+
+		if (cur_song == NULL){
+			return -1;
+		}
 	}
 
 	return -1; //song not found (incorrect index)
@@ -46,7 +84,7 @@ static int remove_song_from_queue(uint song_index){
 
 // public
 int song_queue_add_song(char* filepath){
-	new_song(filepath):
+	add_song(filepath);
 }
 
 int queue_next_song(void){
@@ -61,5 +99,5 @@ int queue_next_song(void){
 }
 
 char* get_next_song_path(void){
-	return top_song->next_song.path;
+	return top_song->next_song->path;
 }

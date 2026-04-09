@@ -33,6 +33,7 @@ add_executable(Pico-Music
 	src/audio/audio_player.c
 	src/audio/audio_dac_i2c_bridge.c
 	src/audio/audio_dac_i2s_bridge.c
+	src/audio/audio_song_queue.c
 
 	#input
 	src/input.c
