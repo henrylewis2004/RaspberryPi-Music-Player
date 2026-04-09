@@ -11,9 +11,13 @@
 - reset song
 > - just stop and start song ? - need to keep track of currently playing song however so maybe implement when creating the queue
 - ~~dac register volume functions~~
-- higher system volume functions (audio_player.c)
+- ~~higher system volume functions (audio_player.c)~~
 ### next TODO
 - song queue
+> - add multiple songs to sd card (5-10)
+> - linked list with a pointer to next song
+> - contains wav file path
+> - song info? link to song data type? (question for file system, now just get songs to play in order with skip)
 - skip song function
 - skip song button
 ### next TODO

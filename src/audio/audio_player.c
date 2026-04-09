@@ -108,8 +108,11 @@ void audio_stop_playback(void){
 	sd_close();
 }
 
-void audio_volume_up(float volume){
-	ramp_set_dac_volume(volume, AUDIO_VOLUME_RAMP_STEPS, AUDIO_VOLUME_STEPS_TIMER_MS)
+void audio_volume_up(void){
+	ramp_set_dac_volume(AUDIO_VOLUME_UP, AUDIO_VOLUME_RAMP_STEPS, AUDIO_VOLUME_STEPS_TIMER_MS);
 }
 
+void audio_volume_down(void){
+	ramp_set_dac_volume(AUDIO_VOLUME_DOWN, AUDIO_VOLUME_RAMP_STEPS, AUDIO_VOLUME_STEPS_TIMER_MS);
+}
 
