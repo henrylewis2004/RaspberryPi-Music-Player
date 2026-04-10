@@ -44,11 +44,18 @@ static void test_buffer_callback(uint32_t *buf){
 	}
 }
 
+static void audio_play_song(char* filepath){
+	i2s_set_buffer_callback(wav_buffer_callback);
+	sd_set_playsong(filepath);
+	
+	for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
+		sd_wav_read_data(get_audio_buffer(i));
+	}
+	DAC_start_dma();
+	
+}
+
 //public
-
-
-
-
 bool audio_buffer_refil_requested(void){
 	return buffer_refil_request;
 }
@@ -63,9 +70,6 @@ void audio_buffer_refil(void){
 		audio_stop_playback();
 	}
 }
-
-
-
 
 
 void audio_init(void){ DAC_i2c_wakeup();
@@ -90,16 +94,6 @@ void audio_play_noise(void){
 	DAC_start_dma();	
 }
 
-void audio_play_song(char* filepath){
-	i2s_set_buffer_callback(wav_buffer_callback);
-	sd_set_playsong(filepath);
-	
-	for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
-		sd_wav_read_data(get_audio_buffer(i));
-	}
-	DAC_start_dma();
-	
-}
 
 void audio_pause_song(void){
 	DAC_toggle_pause();
@@ -122,12 +116,17 @@ void audio_skip_song(void){
 	audio_stop_playback();
 	song_queue_goto_next_song();
 
-	if (song_queue_get_top_song_path() != NULL){
-		audio_play_song(song_queue_get_top_song_path());
-	}
-
+	audio_play_top_queue();
 }
 
 void audio_add_song_to_queue(char* filepath){
 	song_queue_add_song(filepath);
+}
+
+int audio_play_top_queue(void){
+	if (song_queue_get_top_song_path() != NULL){
+		audio_play_song(song_queue_get_top_song_path());
+		return 0;
+	}
+	return -1;
 }
