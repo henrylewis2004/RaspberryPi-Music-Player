@@ -17,28 +17,22 @@
 #include "button_pins.h"
 //#include "input.h"
 
-volatile bool stop_pause = false;
-
 static bool aliveMessage(struct repeating_timer *t){
 	printf("I Breathe Father\n");
-	return true;
-}
-
-static bool pause_toggle(struct repeating_timer *t){
-	if (!stop_pause){
-		audio_skip_song();
-	}
 	return true;
 }
 
 // main \\
 
 int64_t stop_playback_callback(alarm_id_t id, void *user_data){
-	stop_pause = true;
 	audio_stop_playback();
 	return 0;
 }
 
+int64_t play_next_queue(alarm_id_t id, void *user_data){
+	audio_skip_song();
+	return 0;
+}
 
 
 int main(void){
@@ -65,12 +59,10 @@ int main(void){
 
 	sleep_ms(100);
 	
+	//audio_play_song("track02.cdda.wav");
 	
 	audio_add_song_to_queue("track02.cdda.wav");
 	audio_add_song_to_queue("track03.cdda.wav");
-	audio_add_song_to_queue("track04.cdda.wav");
-	audio_add_song_to_queue("track05.cdda.wav");
-	audio_add_song_to_queue("track06.cdda.wav");
 	audio_play_top_queue();
 	
 	//play_noise();
@@ -80,8 +72,9 @@ int main(void){
 	//alive message
 	struct repeating_timer alive_message_timer;
 	//add_repeating_timer_ms(-5000,aliveMessage,NULL,&alive_message_timer);
-	add_repeating_timer_ms(-10000,pause_toggle,NULL,&alive_message_timer);
-	add_alarm_in_ms(50000, &stop_playback_callback, NULL,true);
+	//add_repeating_timer_ms(-10000,pause_toggle,NULL,&alive_message_timer);
+	add_alarm_in_ms(10000, &play_next_queue, NULL,true);
+	add_alarm_in_ms(20000, &stop_playback_callback, NULL,true);
 
 
 

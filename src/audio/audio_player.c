@@ -44,7 +44,10 @@ static void test_buffer_callback(uint32_t *buf){
 	}
 }
 
-static void audio_play_song(char* filepath){
+
+//public
+
+void audio_play_song(char* filepath){
 	i2s_set_buffer_callback(wav_buffer_callback);
 	sd_set_playsong(filepath);
 	
@@ -52,10 +55,10 @@ static void audio_play_song(char* filepath){
 		sd_wav_read_data(get_audio_buffer(i));
 	}
 	DAC_start_dma();
+	dac_mute(false);
 	
 }
 
-//public
 bool audio_buffer_refil_requested(void){
 	return buffer_refil_request;
 }
@@ -113,6 +116,8 @@ void audio_volume_down(void){
 }
 
 void audio_skip_song(void){
+	dac_mute(true);
+
 	audio_stop_playback();
 	song_queue_goto_next_song();
 
@@ -128,5 +133,6 @@ int audio_play_top_queue(void){
 		audio_play_song(song_queue_get_top_song_path());
 		return 0;
 	}
+	panic("error playing top of song queue\n");
 	return -1;
 }
