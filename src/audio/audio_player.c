@@ -44,9 +44,6 @@ static void test_buffer_callback(uint32_t *buf){
 	}
 }
 
-
-//public
-
 void audio_play_song(char* filepath){
 	i2s_set_buffer_callback(wav_buffer_callback);
 	sd_set_playsong(filepath);
@@ -59,6 +56,10 @@ void audio_play_song(char* filepath){
 	
 }
 
+
+//public
+
+
 bool audio_buffer_refil_requested(void){
 	return buffer_refil_request;
 }
@@ -67,10 +68,17 @@ void audio_buffer_refil(void){
 	buffer_refil_request = false;
 	bool finished = sd_wav_read_data(refil_buffer);
 	if (finished){
+		audio_stop_playback();
 		if (i2s_get_buffer_callback_function() == wav_buffer_callback){
 			sd_wav_close_playing_song();
+			song_queue_goto_next_song();
+
+			if (song_queue_top_has_song() != NULL){
+				audio_play_top_queue();
+			}
 		}
-		audio_stop_playback();
+
+
 	}
 }
 
@@ -103,8 +111,9 @@ void audio_pause_song(void){
 }
 
 void audio_stop_playback(void){
-	DAC_stop_dma();
-	sd_close();
+	dac_mute(true);
+	DAC_pause_dma();
+	sd_wav_close_playing_song();
 }
 
 void audio_volume_up(void){
@@ -116,12 +125,14 @@ void audio_volume_down(void){
 }
 
 void audio_skip_song(void){
+	//NOTE: maybe change to ramp sound down instead?
 	dac_mute(true);
 
 	audio_stop_playback();
 	song_queue_goto_next_song();
 
 	audio_play_top_queue();
+	audio_play_song("track03.cdda.wav");
 }
 
 void audio_add_song_to_queue(char* filepath){

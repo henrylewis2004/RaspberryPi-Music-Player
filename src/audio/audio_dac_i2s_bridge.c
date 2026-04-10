@@ -67,7 +67,7 @@ static void dma_i2s_init(void){
 		);
 
 		//enabled irq1 to know when to refil
-		dma_channel_set_irq1_enabled(dma_channel[i],true);
+	//	dma_channel_set_irq1_enabled(dma_channel[i],true);
 	}
 
 	//register IRQ handler
@@ -116,6 +116,7 @@ void DAC_i2s_init(buffer_callback_t callback){
 
 void DAC_start_dma(void){
 	for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
+		dma_channel_set_irq1_enabled(dma_channel[i], true);
 		buffer_callback(audio_buffer[i]);
 	}
 	dma_channel_start(dma_channel[0]);
@@ -128,9 +129,17 @@ void DAC_start_dma(void){
 void DAC_stop_dma(void){
 	//maybe add volume to 0 
 	for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
+	//	dma_channel_abort(dma_channel[i]);
+		dma_channel_cleanup(dma_channel[i]);
+	}
+
+}
+
+void DAC_pause_dma(void){
+	//maybe add volume to 0 
+	for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
 		dma_channel_set_irq1_enabled(dma_channel[i], false);
 		dma_channel_abort(dma_channel[i]);
-		dma_channel_cleanup(dma_channel[i]);
 	}
 
 }

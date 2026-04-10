@@ -14,14 +14,14 @@ static uint8_t queue_length = 0;
 
 // internal
 static int add_song(char* filepath){
-	if (queue_length >= MAX_SONG_QUEUE_LENGTH){
+	if (queue_length > MAX_SONG_QUEUE_LENGTH){
 		return -1;
 	}
 
 	queue_length++;
 
 	if (top_song == NULL){
-		top_song = malloc(sizeof(song_queue));
+		top_song = calloc(1,sizeof(song_queue));
 		strncpy(top_song->path, filepath, MAX_SONG_PATH_LENGTH);
 
 		top_song->path[MAX_SONG_PATH_LENGTH - 1] = '\0';
@@ -30,15 +30,13 @@ static int add_song(char* filepath){
 		return 0;
 	}
 
-	song_queue* new_song = malloc(sizeof(song_queue));
+	song_queue* new_song = calloc(1,sizeof(song_queue));
 
 	strncpy(new_song->path, filepath, MAX_SONG_PATH_LENGTH);
 	new_song->path[MAX_SONG_PATH_LENGTH - 1] = '\0';
 
-	if (last_song != NULL){
-		new_song->previous_song = last_song;
-		last_song->next_song = new_song;
-	}
+	new_song->previous_song = last_song;
+	last_song->next_song = new_song;
 
 	last_song = new_song;
 
@@ -47,7 +45,7 @@ static int add_song(char* filepath){
 }
 
 static int remove_song_from_queue(uint8_t song_index){
-	if (song_index > MAX_SONG_QUEUE_LENGTH || song_index > queue_length){
+	if (song_index >= MAX_SONG_QUEUE_LENGTH || song_index >= queue_length){
 		return -1;
 	}
 
@@ -68,7 +66,6 @@ static int remove_song_from_queue(uint8_t song_index){
 		else{
 			free(top_song);
 			top_song = NULL;
-			free(last_song);
 			last_song=NULL;
 		}
 		
@@ -158,6 +155,10 @@ char* song_queue_get_next_song_path(void){
 	return top_song->next_song->path;
 }
 
+bool song_queue_top_has_song(void){
+	return (top_song != NULL);
+}
+
 char* song_queue_get_top_song_path(void){
 	if (top_song == NULL || top_song->path ==NULL){
 		return NULL;
@@ -166,8 +167,8 @@ char* song_queue_get_top_song_path(void){
 }
 
 int song_queue_clear(void){
-	for (int i = 0; i <= queue_length; i++){
-		if (remove_song_from_queue(i) < 0){
+	while(queue_length > 0){
+		if (remove_song_from_queue(0) < 0){
 			return -1;
 		}
 	}

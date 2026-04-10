@@ -19,6 +19,7 @@
 > - ~~contains wav file path~~
 > - song info? link to song data type? (question for file system, now just get songs to play in order with skip)
 - ~~skip song function~~
+- ~~implement song ending~~ //NOTE: needs testing
 ### next TODO
 - play / pause button
 - stop button

@@ -38,6 +38,5 @@ void audio_skip_song(void);
 void audio_add_song_to_queue(char* filepath);
 int audio_play_top_queue(void);
 
-void audio_play_song(char* filepath);
 
 #endif // !AUDIO_PLAYER_H
