@@ -65,11 +65,13 @@ int main(void){
 
 	sleep_ms(100);
 	
-	audio_play_song("test.wav", true);
-	audio_play_song("test.wav", false);
-	audio_play_song("test.wav", false);
-	audio_play_song("test.wav", false);
-	audio_play_song("test.wav", false);
+	audio_play_song("track02.cdda.wav");
+	
+	audio_add_song_to_queue("track03.cdda.wav");
+	audio_add_song_to_queue("track04.cdda.wav");
+	audio_add_song_to_queue("track05.cdda.wav");
+	audio_add_song_to_queue("track06.cdda.wav");
+	
 	//play_noise();
 
 

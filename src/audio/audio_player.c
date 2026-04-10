@@ -90,20 +90,14 @@ void audio_play_noise(void){
 	DAC_start_dma();	
 }
 
-void audio_play_song(char* filepath, bool play_now){
-	if (play_now){
-		i2s_set_buffer_callback(wav_buffer_callback);
-		sd_set_playsong(filepath);
-		
-		for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
-			sd_wav_read_data(get_audio_buffer(i));
-		}
-		DAC_start_dma();
+void audio_play_song(char* filepath){
+	i2s_set_buffer_callback(wav_buffer_callback);
+	sd_set_playsong(filepath);
+	
+	for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
+		sd_wav_read_data(get_audio_buffer(i));
 	}
-	else{
-		song_queue_add_song(filepath);
-
-	}
+	DAC_start_dma();
 	
 }
 
@@ -129,7 +123,11 @@ void audio_skip_song(void){
 	song_queue_goto_next_song();
 
 	if (song_queue_get_top_song_path() != NULL){
-		audio_play_song(song_queue_get_top_song_path(), true);
+		audio_play_song(song_queue_get_top_song_path());
 	}
 
+}
+
+void audio_add_song_to_queue(char* filepath){
+	song_queue_add_song(filepath);
 }
