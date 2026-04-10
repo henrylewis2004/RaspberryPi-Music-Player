@@ -28,12 +28,14 @@ void audio_play_noise(void);
 bool audio_buffer_refil_requested(void);
 void audio_buffer_refil(void);
 
-void audio_play_song(char* filepath);
+void audio_play_song(char* filepath, bool play_now);
 void audio_pause_song(void);
 void audio_stop_playback(void);
 
 void audio_volume_up(void);
 void audio_volume_down(void);
+
+void audio_skip_song(void);
 
 
 #endif // !AUDIO_PLAYER_H

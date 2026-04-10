@@ -19,4 +19,14 @@ struct song_queue {
 
 };
 
+//methods
+int song_queue_add_song(char* filepath);
+int song_queue_remove_song_by_index(uint8_t index);
+
+int song_queue_goto_next_song(void);
+char* song_queue_get_next_song_path(void);
+char* song_queue_get_top_song_path(void);
+
+int song_queue_clear(void);
+
 #endif // !DEBUG

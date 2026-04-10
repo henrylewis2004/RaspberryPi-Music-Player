@@ -15,17 +15,17 @@
 ### next TODO
 - song queue
 > - add multiple songs to sd card (5-10)
-> - linked list with a pointer to next song
-> - contains wav file path
+> - ~~linked list with a pointer to next song~~
+> - ~~contains wav file path~~
 > - song info? link to song data type? (question for file system, now just get songs to play in order with skip)
 - skip song function
-- skip song button
 ### next TODO
 - play / pause button
 - stop button
 - volume buttons
 - home button (placeholder until home screen implemented)
 - 2D analog stick button wiring
+- skip song button
 ### next TODO
 - file system
 - song data type

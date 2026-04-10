@@ -143,13 +143,34 @@ int song_queue_add_song(char* filepath){
 	return add_song(filepath);
 }
 
-int queue_next_song(void){
+int song_queue_remove_song_by_index(uint8_t index){
+	return remove_song_from_queue(index);
+}
+
+int song_queue_goto_next_song(void){
 	return remove_song_from_queue(0);
 }
 
-char* get_next_song_path(void){
+char* song_queue_get_next_song_path(void){
 	if (top_song == NULL || top_song->next_song==NULL){
 		return NULL;
 	}
 	return top_song->next_song->path;
+}
+
+char* song_queue_get_top_song_path(void){
+	if (top_song == NULL || top_song->path ==NULL){
+		return NULL;
+	}
+	return top_song->path;
+}
+
+int song_queue_clear(void){
+	for (int i = 0; i <= queue_length; i++){
+		if (remove_song_from_queue(i) < 0){
+			return -1;
+		}
+	}
+
+	return 0;
 }

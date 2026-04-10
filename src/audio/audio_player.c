@@ -13,6 +13,8 @@
 #include "audio_dac_i2s_bridge.h"
 #include "audio_dac_i2s_values.h"
 
+#include "audio_song_queue.h"
+
 #include "sd_memory_manager.h"
 #include "string.h"
 
@@ -88,14 +90,20 @@ void audio_play_noise(void){
 	DAC_start_dma();	
 }
 
-void audio_play_song(char* filepath){
-	i2s_set_buffer_callback(wav_buffer_callback);
-	sd_set_playsong(filepath);
-	
-	for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
-		sd_wav_read_data(get_audio_buffer(i));
+void audio_play_song(char* filepath, bool play_now){
+	if (play_now){
+		i2s_set_buffer_callback(wav_buffer_callback);
+		sd_set_playsong(filepath);
+		
+		for (int i = 0; i < DMA_CHANNEL_COUNT; i++){
+			sd_wav_read_data(get_audio_buffer(i));
+		}
+		DAC_start_dma();
 	}
-	DAC_start_dma();
+	else{
+		song_queue_add_song(filepath);
+
+	}
 	
 }
 
@@ -116,3 +124,12 @@ void audio_volume_down(void){
 	ramp_set_dac_volume(AUDIO_VOLUME_DOWN, AUDIO_VOLUME_RAMP_STEPS, AUDIO_VOLUME_STEPS_TIMER_MS);
 }
 
+void audio_skip_song(void){
+	audio_stop_playback();
+	song_queue_goto_next_song();
+
+	if (song_queue_get_top_song_path() != NULL){
+		audio_play_song(song_queue_get_top_song_path(), true);
+	}
+
+}
