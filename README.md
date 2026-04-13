@@ -39,7 +39,7 @@ For progress see [todo.md](https://github.com/henrylewis2004/RaspberryPi-Music-P
 | 3 (GND) | x | 38 (GND) | Common Ground |
 | 4 (GP2) | x | 37 (3V3_EN) | x |
 | 5 (GP3) | DAC RST | 36 (3V3(OUT)) | Common 3V |
-| 6 (GP4) | DAC SDA | 35 () | x |
+| 6 (GP4) | DAC SDA | 35 (ADC_VREF) | x |
 | 7 (GP5) | DAC SCL | 34 (GP28) | x |
 | 8 (GND) | x | 33 (GND) | x |
 | 9 (GP6) | DAC DIN | 32 (GP27) | x |
