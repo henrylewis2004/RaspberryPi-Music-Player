@@ -6,8 +6,11 @@ A music player using a RaspberryPi Pico 2 W
 [no-OS-FatFS-SD-SDIO-SPI-RPI-Pico by carlk3](https://github.com/carlk3/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/tree/main) - used for SDIO Micro SD card interface
 
 
-[Adafruit CircuitPython TLV320](https://github.com/adafruit/Adafruit_CircuitPython_TLV320/tree/main) - adapted into C and then used to configure the audio DAC
+[Adafruit CircuitPython TLV320](https://github.com/adafruit/Adafruit_CircuitPython_TLV320/tree/main) - referenced and then used to configure the audio DAC in C
 
+## Progress
+
+For progress see [Todo.md](https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/todo.md)
 
 ## Components Used
 | Function | Component | Aquired |
@@ -22,6 +25,25 @@ A music player using a RaspberryPi Pico 2 W
 | Input Buttons | [2-Axis Joystick](https://thepihut.com/products/psp-2-axis-analog-thumb-joystick), [An on/off switch](https://thepihut.com/products/breadboard-friendly-spdt-slide-switch), [3x Buttons](https://thepihut.com/products/180-piece-ultimate-tactile-button-kit), *POTENTIALLY MORE TBD* | O |
 
 ## Wiring
+
+### Microcontroller - [Raspberry Pi Pico 2 W](https://www.raspberrypi.com/products/raspberry-pi-pico-2/)
+
+<p align="left">
+    <img src="https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/.github/images/adafruit_microsd_pins.jpg" width=600 />,
+    <img src="https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/.github/images/adafruit_microsd_pins.jpg" width=600 />
+</p>
+
+| Board PIN | Pico PIN | GPIO PIN |
+|-|-|-|
+| 3V | 3V3(OUT) - 36 | n/a |
+| GND | GND - 38 | n/a |
+| DET | 21 | 16 |
+| CLK | 22 | 17 |
+| CMD | 24 | 18 |
+| D0 | 25 | 19 |
+| D1 | 26 | 20 |
+| D2 | 27 | 21 |
+| D3 | 29 | 22 |
 
 ### Memory Storage - [Adafruit Micro SD SPI or SDIO Card Breakout Board](https://www.adafruit.com/product/4682?srsltid=AfmBOoperZd8N_q_g0DlBwCeuqUr0O1IKYDF3KCDKo4BibNNp2DtdHoi)
 
