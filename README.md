@@ -10,7 +10,7 @@ A music player using a RaspberryPi Pico 2 W
 
 ## Progress
 
-For progress see [Todo.md](https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/todo.md)
+For progress see [todo.md](https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/todo.md)
 
 ## Components Used
 | Function | Component | Aquired |
@@ -29,8 +29,7 @@ For progress see [Todo.md](https://github.com/henrylewis2004/RaspberryPi-Music-P
 ### Microcontroller - [Raspberry Pi Pico 2 W](https://www.raspberrypi.com/products/raspberry-pi-pico-2/)
 
 <p align="left">
-    <img src="https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/.github/images/adafruit_microsd_pins.jpg" width=600 />,
-    <img src="https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/.github/images/adafruit_microsd_pins.jpg" width=600 />
+    <img src="https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/.github/images/pico2w-pinout.png" width=600 />
 </p>
 
 | Board PIN | Pico PIN | GPIO PIN |
