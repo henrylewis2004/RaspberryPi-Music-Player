@@ -32,17 +32,29 @@ For progress see [todo.md](https://github.com/henrylewis2004/RaspberryPi-Music-P
     <img src="https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/.github/images/pico2w-pinout.svg" width=600 />
 </p>
 
-| Board PIN | Pico PIN | GPIO PIN |
-|-|-|-|
-| 3V | 3V3(OUT) - 36 | n/a |
-| GND | GND - 38 | n/a |
-| DET | 21 | 16 |
-| CLK | 22 | 17 |
-| CMD | 24 | 18 |
-| D0 | 25 | 19 |
-| D1 | 26 | 20 |
-| D2 | 27 | 21 |
-| D3 | 29 | 22 |
+| PICO PIN | Board PIN | PICO PIN | Board PIN |
+|-|-|-|-|
+| 1 (GP0) | x | 40 (VBUS) | x |
+| 2 (GP1) | x | 39 (VSYS) | x |
+| 3 (GND) | x | 38 (GND) | x |
+| 4 (GP2) | x | 37 (3V3_EN) | x |
+| 5 (GP3) | x | 36 (3V3(OUT)) | x |
+| 6 (GP4) | x | 35 () | x |
+| 7 (GP5) | x | 34 (GP28) | x |
+| 8 (GND) | x | 33 (GND) | x |
+| 9 (GP6) | x | 32 (GP27) | x |
+| 10 (GP7) | x | 31 (GP26) | x |
+| 11 (GP8) | x | 30 (RUN) | x |
+| 12 (GP9) | x | 29 (GP22) | x |
+| 13 (GND) | x | 28 (GND) | x |
+| 14 (GP10) | x | 27 (GP21) | x |
+| 15 (GP11) | x | 26 (GP20) | x |
+| 16 (GP12) | x | 25 (GP19) | x |
+| 17 (GP13) | x | 24 (GP18) | x |
+| 18 (GND) | x | 23 (GND) | x |
+| 19 (GP14) | x | 22 (GP17) | x |
+| 20 (GP15) | x | 21 (GP16) | x |
+
 
 ### Memory Storage - [Adafruit Micro SD SPI or SDIO Card Breakout Board](https://www.adafruit.com/product/4682?srsltid=AfmBOoperZd8N_q_g0DlBwCeuqUr0O1IKYDF3KCDKo4BibNNp2DtdHoi)
 
