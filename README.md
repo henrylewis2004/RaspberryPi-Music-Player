@@ -3,7 +3,7 @@ A music player using a RaspberryPi Pico 2 W
 
 ## Libraries used
 
-[Raspberry Pi Pico C/C++ SDK](https://github.com/raspberrypi/pico-sdk) 
+[Raspberry Pi Pico C/C++ SDK](https://github.com/raspberrypi/pico-sdk) - used for variation functions on the pico board (dma, interupts, etc)
 
 [no-OS-FatFS-SD-SDIO-SPI-RPI-Pico by carlk3](https://github.com/carlk3/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/tree/main) - used for SDIO Micro SD card interface
 
