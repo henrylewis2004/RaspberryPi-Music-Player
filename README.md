@@ -27,15 +27,6 @@ A music player using a RaspberryPi Pico 2 W
 | Settings file (*ui, startup screen, etc*) | O |
 
 
-
-### SD card access
-
-| Sub-Function | Implimented |
-|-|-|
-| SD file reading | X |
-| SD file writing | X |
-
-
 For progress see [todo.md](https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/todo.md)
 
 ## Components Used
