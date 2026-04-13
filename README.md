@@ -10,6 +10,32 @@ A music player using a RaspberryPi Pico 2 W
 
 ## Progress
 
+| Function | Implimented |
+|-|-|
+| ~~SD card functionality~~ | X |
+| ~~DAC setup~~ | X |
+| ~~DAC playback~~ | X |
+| ~~audio start/stop/pause functions~~ | X |
+| ~~audio volume functions~~ | X |
+| ~~song queue~~ | X |
+| Button wiring and implementation | O |
+| Song metadata storage and retrieval | O |
+| OLED screen wiring and implemenation | O |
+| Audio player pages (*home, select song, playing, queue, etc*) | O |
+| Battery wiring and implimentation | O |
+| Battery saving methods | O |
+| Settings file (*ui, startup screen, etc*) | O |
+
+
+
+### SD card access
+
+| Sub-Function | Implimented |
+|-|-|
+| SD file reading | X |
+| SD file writing | X |
+
+
 For progress see [todo.md](https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/todo.md)
 
 ## Components Used
