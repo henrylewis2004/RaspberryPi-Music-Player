@@ -11,6 +11,18 @@ A music player using a RaspberryPi Pico 2 W
 
 ## Progress
 
+### Key Progress
+
+| Function | Implimented |
+|-|-|
+| ~~Song playback~~ | X |
+| Song library | O |
+| UI & Menus | O |
+| Physical input & wiring | O |
+| Battery optimisation | O |
+
+### ~~Song playback~~
+
 | Function | Implimented |
 |-|-|
 | ~~SD card functionality~~ | X |
@@ -19,13 +31,47 @@ A music player using a RaspberryPi Pico 2 W
 | ~~audio start/stop/pause functions~~ | X |
 | ~~audio volume functions~~ | X |
 | ~~song queue~~ | X |
-| Button wiring and implementation | O |
-| Song metadata storage and retrieval | O |
-| OLED screen wiring and implemenation | O |
-| Audio player pages (*home, select song, playing, queue, etc*) | O |
-| Battery wiring and implimentation | O |
-| Battery saving methods | O |
+
+### Song library
+
+| Function | Implimented |
+|-|-|
+| Song metadata file extraction (ID3 tagging) | O |
+| Song metadata storage | O |
+| Song metadata retrieval | O |
+
+
+### UI & Menus
+
+| Function | Implimented |
+|-|-|
+| Home page | O |
+| Select song page | O |
+| Select album page | O |
+| Playing song page | O |
+| Song queue page | O |
+| Settings page? | O |
 | Settings file (*ui, startup screen, etc*) | O |
+
+### Physical input & wiring
+
+| Function | Implimented |
+|-|-|
+| ~~SD card breakout~~ | X |
+| ~~DAC breakout~~ | X |
+| Button wiring | O |
+| Button interrupt functions | O |
+| Screen breakout | O |
+| Battery wiring | O |
+| Safe shutdown & battery disconnect | O |
+
+
+### Battery optimisation
+
+| Function | Implimented |
+|-|-|
+| Battery saving methods | O |
+
 
 
 For progress see [todo.md](https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/todo.md)
