@@ -44,7 +44,7 @@ static void test_buffer_callback(uint32_t *buf){
 	}
 }
 
-void audio_play_song(char* filepath){
+static void audio_play_song(char* filepath){
 	i2s_set_buffer_callback(wav_buffer_callback);
 	sd_set_playsong(filepath);
 	
@@ -52,6 +52,7 @@ void audio_play_song(char* filepath){
 		sd_wav_read_data(get_audio_buffer(i));
 	}
 	DAC_start_dma();
+	ramp_set_dac_volume(-20,5,10); //TODO: implement curvolume
 	dac_mute(false);
 	
 }
@@ -70,10 +71,10 @@ void audio_buffer_refil(void){
 	if (finished){
 		audio_stop_playback();
 		if (i2s_get_buffer_callback_function() == wav_buffer_callback){
-			sd_wav_close_playing_song();
+			//sd_wav_close_playing_song();
 			song_queue_goto_next_song();
 
-			if (song_queue_top_has_song() != NULL){
+			if (song_queue_top_has_song()){
 				audio_play_top_queue();
 			}
 		}
@@ -126,6 +127,7 @@ void audio_volume_down(void){
 
 void audio_skip_song(void){
 	//NOTE: maybe change to ramp sound down instead?
+	ramp_set_dac_volume(-100,5,10);
 	dac_mute(true);
 
 	audio_stop_playback();
