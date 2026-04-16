@@ -280,6 +280,7 @@ bool sd_wav_read_data(uint32_t* buffer_refil){
 		read_size = cur_play_song.data_byte_length - cur_play_song.bytes_read_total;
 		sample_count = read_size / sizeof(uint32_t);
 	}
+	//NOTE: needs changing
 	else if (cur_play_song.data_byte_length - cur_play_song.bytes_read_total == 0){
 		memset(buffer_refil, 0, I2S_BUFFER_WORDS * sizeof(uint32_t));
 		return true;

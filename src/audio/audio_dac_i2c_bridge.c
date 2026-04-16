@@ -222,10 +222,10 @@ static int dac_register_setup(void){
 		return -1;
 	}
 
-	//unmute
-	if (dac_mute(false) == -1){
-		return -1;
-	}
+	//unmute NOTE: only unmute when prompted to play?
+	//if (dac_mute(false) == -1){
+		//return -1;
+	//}
 
 	// Read back DAC data path
 	dac_set_page(DAC_REG_PG0);
@@ -323,6 +323,14 @@ int ramp_set_dac_volume(float target_volume_db, uint steps, uint step_timer_ms){
 		sleep_ms(step_timer_ms);
 	}
 	return 0;
+}
+
+int dac_set_volume_quick(float target_volume_db){
+	return ramp_set_dac_volume(target_volume_db, VOLUME_RAMP_QUICK_STEP_COUNT, VOLUME_RAMP_QUICK_STEP_TIME_MS);
+}
+
+int dac_set_volume(float target_volume_db){
+	return ramp_set_dac_volume(target_volume_db, VOLUME_RAMP_STEP_COUNT, VOLUME_RAMP_STEP_TIME_MS);
 }
 
 int set_channel_volume(bool right_channel, float volume_db){

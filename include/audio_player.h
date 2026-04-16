@@ -2,6 +2,7 @@
 #define AUDIO_PLAYER_H
 
 // audio volume settings
+// NOTE: needs changing
 #ifndef AUDIO_VOLUME_UP
 #define AUDIO_VOLUME_UP 25 //db
 #endif

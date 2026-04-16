@@ -52,7 +52,7 @@ static void audio_play_song(char* filepath){
 		sd_wav_read_data(get_audio_buffer(i));
 	}
 	DAC_start_dma();
-	ramp_set_dac_volume(-20,5,10); //TODO: implement curvolume
+	dac_set_volume_quick(-20); //TODO: implement curvolume
 	dac_mute(false);
 	
 }
@@ -127,7 +127,7 @@ void audio_volume_down(void){
 
 void audio_skip_song(void){
 	//NOTE: maybe change to ramp sound down instead?
-	ramp_set_dac_volume(-100,5,10);
+	dac_set_volume_quick(-100);
 	dac_mute(true);
 
 	audio_stop_playback();
