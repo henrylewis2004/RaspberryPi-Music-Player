@@ -21,6 +21,9 @@ void start_init(void){
 	set_sys_clock_khz(150000,true); //150mhz / 10 = 15 MHz
 	stdio_init_all();
 	dma_claim_mask(0xfff); //claim all dma channels
+
+	//led
+	led_blink();
 			       
 	
 	printf("audio_init\n");
@@ -50,11 +53,22 @@ int64_t play_next_queue(alarm_id_t id, void *user_data){
 
 int main(void){
 	start_init();
-	//led
-	led_blink();
 	
-	audio_add_song_to_queue("track03.cdda.wav");
-	audio_add_song_to_queue("track02.cdda.wav");
+	audio_add_song_to_queue("californication/track01.cdda.wav");
+	audio_add_song_to_queue("californication/track02.cdda.wav");
+	audio_add_song_to_queue("californication/track03.cdda.wav");
+	audio_add_song_to_queue("californication/track04.cdda.wav");
+	audio_add_song_to_queue("californication/track05.cdda.wav");
+	audio_add_song_to_queue("californication/track06.cdda.wav");
+	audio_add_song_to_queue("californication/track07.cdda.wav");
+	audio_add_song_to_queue("californication/track08.cdda.wav");
+	audio_add_song_to_queue("californication/track09.cdda.wav");
+	audio_add_song_to_queue("californication/track10.cdda.wav");
+	audio_add_song_to_queue("californication/track11.cdda.wav");
+	audio_add_song_to_queue("californication/track12.cdda.wav");
+	audio_add_song_to_queue("californication/track13.cdda.wav");
+	audio_add_song_to_queue("californication/track14.cdda.wav");
+	audio_add_song_to_queue("californication/track15.cdda.wav");
 	audio_play_top_queue();
 	
 	//add_alarm_in_ms(10000, &play_next_queue, NULL,true);

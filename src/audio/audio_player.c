@@ -25,6 +25,8 @@
 volatile bool buffer_refil_request;
 volatile uint32_t* refil_buffer;
 
+volatile float curvolume;
+
 static void wav_buffer_callback(uint32_t* buf){
 	buffer_refil_request = true;
 	refil_buffer = buf;
@@ -52,7 +54,7 @@ static void audio_play_song(char* filepath){
 		sd_wav_read_data(get_audio_buffer(i));
 	}
 	DAC_start_dma();
-	dac_set_volume_quick(-20); //TODO: implement curvolume
+	dac_set_volume_quick(curvolume); //TODO: implement curvolume
 	dac_mute(false);
 	
 }
@@ -84,10 +86,11 @@ void audio_buffer_refil(void){
 }
 
 
-void audio_init(void){ DAC_i2c_wakeup();
-	printf("wakeup finished\n");
+void audio_init(void){ 
+	DAC_i2c_wakeup();
 	DAC_i2s_init(wav_buffer_callback);
-	printf("i2s init finished\n");
+
+	curvolume = get_dac_volume();
 }
 
 void audio_close(void){
@@ -118,10 +121,12 @@ void audio_stop_playback(void){
 }
 
 void audio_volume_up(void){
+	curvolume += AUDIO_VOLUME_UP;
 	ramp_set_dac_volume(AUDIO_VOLUME_UP, AUDIO_VOLUME_RAMP_STEPS, AUDIO_VOLUME_STEPS_TIMER_MS);
 }
 
 void audio_volume_down(void){
+	curvolume += AUDIO_VOLUME_DOWN;
 	ramp_set_dac_volume(AUDIO_VOLUME_DOWN, AUDIO_VOLUME_RAMP_STEPS, AUDIO_VOLUME_STEPS_TIMER_MS);
 }
 
@@ -134,7 +139,6 @@ void audio_skip_song(void){
 	song_queue_goto_next_song();
 
 	audio_play_top_queue();
-	audio_play_song("track03.cdda.wav");
 }
 
 void audio_add_song_to_queue(char* filepath){

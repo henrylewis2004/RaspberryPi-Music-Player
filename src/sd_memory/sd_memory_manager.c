@@ -273,6 +273,12 @@ void sd_set_playsong(char* filepath){
 }
 
 bool sd_wav_read_data(uint32_t* buffer_refil){
+	//might need changing?
+	//on last buffer swap one could be playing whilst the other "reads" but returns finished so does it stop playback early?
+	if (cur_play_song.bytes_read_total >= cur_play_song.data_byte_length){
+		return true; //stream finished
+	}
+
 	uint sample_count = I2S_BUFFER_WORDS;
 	uint32_t read_size = I2S_BUFFER_WORDS * sizeof(uint32_t);
 
@@ -281,10 +287,12 @@ bool sd_wav_read_data(uint32_t* buffer_refil){
 		sample_count = read_size / sizeof(uint32_t);
 	}
 	//NOTE: needs changing
+	/* don't think it ever fires?
 	else if (cur_play_song.data_byte_length - cur_play_song.bytes_read_total == 0){
 		memset(buffer_refil, 0, I2S_BUFFER_WORDS * sizeof(uint32_t));
 		return true;
 	}
+	*/
 
 
 	uint16_t raw_samples[sample_count * 2];
@@ -315,9 +323,6 @@ bool sd_wav_read_data(uint32_t* buffer_refil){
 
 	cur_play_song.bytes_read_total += bytes_read;
 
-	if (cur_play_song.bytes_read_total >= cur_play_song.data_byte_length){
-		return true; //stream finished
-	}
 
 	return false;
 }

@@ -3,12 +3,14 @@
 
 // audio volume settings
 // NOTE: needs changing
+
+
 #ifndef AUDIO_VOLUME_UP
-#define AUDIO_VOLUME_UP 25 //db
+#define AUDIO_VOLUME_UP 5 //db
 #endif
 
 #ifndef AUDIO_VOLUME_DOWN
-#define AUDIO_VOLUME_DOWN -25 //db
+#define AUDIO_VOLUME_DOWN -5 //db
 #endif
 
 #ifndef AUDIO_VOLUME_RAMP_STEPS  //number of steps to change volume (incrementing by x at a time)

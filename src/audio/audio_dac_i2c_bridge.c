@@ -201,7 +201,7 @@ static int dac_configure_headphones(void){
 	//set page 0
 	dac_set_page(DAC_REG_PG0);
 	dac_mute(false);
-	ramp_set_dac_volume(-20.0f,50,10);
+	ramp_set_dac_volume(DEFAULT_AUDIO_VOLUME,50,10);
 
 	return 0;
 }
