@@ -115,6 +115,7 @@ void audio_pause_song(void){
 }
 
 void audio_stop_playback(void){
+	dac_set_volume_quick(-100);
 	dac_mute(true);
 	DAC_pause_dma();
 	sd_wav_close_playing_song();
@@ -122,12 +123,14 @@ void audio_stop_playback(void){
 
 void audio_volume_up(void){
 	curvolume += AUDIO_VOLUME_UP;
-	ramp_set_dac_volume(AUDIO_VOLUME_UP, AUDIO_VOLUME_RAMP_STEPS, AUDIO_VOLUME_STEPS_TIMER_MS);
+	//ramp_set_dac_volume(curvolume, AUDIO_VOLUME_RAMP_STEPS, AUDIO_VOLUME_STEPS_TIMER_MS);
+	dac_set_volume(curvolume);
 }
 
 void audio_volume_down(void){
 	curvolume += AUDIO_VOLUME_DOWN;
-	ramp_set_dac_volume(AUDIO_VOLUME_DOWN, AUDIO_VOLUME_RAMP_STEPS, AUDIO_VOLUME_STEPS_TIMER_MS);
+	//ramp_set_dac_volume(curvolume, AUDIO_VOLUME_RAMP_STEPS, AUDIO_VOLUME_STEPS_TIMER_MS);
+	dac_set_volume(curvolume);
 }
 
 void audio_skip_song(void){
