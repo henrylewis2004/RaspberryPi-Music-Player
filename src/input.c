@@ -9,6 +9,10 @@
 // internal \\
 
 void button_playback(uint gpio, uint32_t events){
+	if (gpio == PLAY_BUTTON_PIN){
+		printf("play button pressed");
+		return;
+	}
 	printf("button pressed!\n");
 }
 
@@ -20,13 +24,10 @@ void button_init(int gpio_pin){
 	gpio_set_irq_enabled_with_callback(gpio_pin,GPIO_IRQ_EDGE_FALL,true,&button_playback);
 }
 
-void play_button_init(void){
-	button_init(PLAY_BUTTON_PIN);
-}
 
 
 // public \\
 
 void input_init(void){
-	play_button_init();
+	button_init(PLAY_BUTTON_PIN);
 }

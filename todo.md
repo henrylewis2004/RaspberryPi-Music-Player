@@ -22,7 +22,7 @@
 - ~~implement song ending~~ //NOTE: needs testing
 ### next TODO
 - play / pause button
-- stop button
+- stop button (dont need just use skip)
 - volume buttons
 - home button (placeholder until home screen implemented)
 - 2D analog stick button wiring
