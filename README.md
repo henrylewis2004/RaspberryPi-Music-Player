@@ -61,7 +61,7 @@ A music player using a RaspberryPi Pico 2 W
 | ~~DAC breakout~~ | X |
 | Button wiring | O |
 | Button interrupt functions | O |
-| Screen breakout | O |
+| Screen wiring | O |
 | Battery wiring | O |
 | Safe shutdown & battery disconnect | O |
 
