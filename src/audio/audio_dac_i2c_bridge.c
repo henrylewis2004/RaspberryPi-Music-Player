@@ -20,7 +20,7 @@
 //register writing methods
 static int dac_reg_write(uint8_t reg, uint8_t val){
 	uint8_t buffer[2] = {reg,val};
-	return i2c_write_blocking(I2C_PORT,DAC_ADDR, buffer, sizeof(buffer), false);
+	return i2c_write_blocking(DAC_I2C_PORT,DAC_ADDR, buffer, sizeof(buffer), false);
 }
 
 static int dac_set_page(uint8_t page){
@@ -29,7 +29,7 @@ static int dac_set_page(uint8_t page){
 
 static int dac_set_reg(uint8_t reg){
 	uint8_t buffer[1] = {reg};
-	return i2c_write_blocking(I2C_PORT,DAC_ADDR, buffer, sizeof(buffer), true);
+	return i2c_write_blocking(DAC_I2C_PORT,DAC_ADDR, buffer, sizeof(buffer), true);
 }
 
 static int dac_read_register(uint8_t reg ){
@@ -38,7 +38,7 @@ static int dac_read_register(uint8_t reg ){
 
 	//read from register
 	uint8_t value;
-	if (i2c_read_blocking(I2C_PORT,DAC_ADDR,&value,sizeof(value),false) == PICO_ERROR_GENERIC){
+	if (i2c_read_blocking(DAC_I2C_PORT,DAC_ADDR,&value,sizeof(value),false) == PICO_ERROR_GENERIC){
 		panic("error reading from register,  reg: %d\n",reg);
 		return -1;
 	}
@@ -56,7 +56,7 @@ static int set_bits(uint8_t reg, uint8_t mask, uint8_t shift,uint value){
 //dac methods
 static bool dac_addr_response(void){
 	uint8_t dummy;
-	int result = i2c_read_blocking(I2C_PORT,DAC_ADDR,&dummy,1,false);
+	int result = i2c_read_blocking(DAC_I2C_PORT,DAC_ADDR,&dummy,1,false);
 	return (result >= 0);
 }
 
@@ -64,11 +64,11 @@ static bool dac_addr_response(void){
 
 // dac init
 static void dac_i2c_start(void){
-#if !defined(I2C_PORT) || !defined(DAC_SDA_GPIO_PIN) || !defined(DAC_SCL_GPIO_PIN)
+#if !defined(DAC_I2C_PORT) || !defined(DAC_SDA_GPIO_PIN) || !defined(DAC_SCL_GPIO_PIN)
 	#warning i2c/bus_scan example requires a board with I2C pins
     puts("Default I2C pins were not defined\n");
 #else
-	i2c_init(I2C_PORT,400*1000);
+	i2c_init(DAC_I2C_PORT,400*1000);
 
 	gpio_set_function(DAC_SDA_GPIO_PIN,GPIO_FUNC_I2C);
 	gpio_set_function(DAC_SCL_GPIO_PIN,GPIO_FUNC_I2C);
@@ -88,7 +88,7 @@ static void dac_reset(void){
 
 	//reset dac
 	gpio_put(DAC_RESET_GPIO_PIN,false);
-	sleep_ms(100);
+	sleep_ms(50);
 	gpio_put(DAC_RESET_GPIO_PIN,true);
 	sleep_ms(10);
 }
@@ -357,7 +357,7 @@ int set_channel_volume(bool right_channel, float volume_db){
 
 //wakeup handshake
 void DAC_i2c_wakeup(void){
-	printf("dac wakeup\n");
+//	printf("dac wakeup\n");
 	dac_i2c_start();
 	mclk_init();
 	dac_reset();

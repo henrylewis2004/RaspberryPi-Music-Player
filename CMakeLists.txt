@@ -17,6 +17,7 @@ pico_sdk_init()
 
 add_subdirectory(
 	lib/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src
+	lib/u8g2/csrc
 )
 
 add_executable(Pico-Music
@@ -35,6 +36,10 @@ add_executable(Pico-Music
 	src/audio/audio_dac_i2s_bridge.c
 	src/audio/audio_song_queue.c
 
+	#display
+	src/display/display_manager.c
+	src/display/display_hardware_bridge.c
+
 	#input
 	src/input.c
 )
@@ -42,7 +47,6 @@ add_executable(Pico-Music
 target_include_directories(Pico-Music PRIVATE
 	${CMAKE_CURRENT_LIST_DIR}/include
 	${CMAKE_CURRENT_LIST_DIR}/src
-
 )
 
 pico_generate_pio_header(Pico-Music ${CMAKE_CURRENT_LIST_DIR}/src/audio/dac_i2s.pio)
@@ -52,7 +56,7 @@ pico_generate_pio_header(Pico-Music ${CMAKE_CURRENT_LIST_DIR}/src/audio/dac_i2s.
 ## link libraries
 target_link_libraries(Pico-Music
 	pico_stdlib
-	pico_cyw43_arch_none #for light / wifi module?
+	pico_cyw43_arch_none #for light / wifi module? NOTE: get rid? might be needed for lbuetooth?
 
 	#i2c
 	hardware_i2c 
@@ -66,6 +70,13 @@ target_link_libraries(Pico-Music
 	hardware_pio #used to stream i2s
 	hardware_dma
 	hardware_irq
+
+	#spi NOTE: maybe get rid of now
+	#	hardware_spi
+
+	#display
+	u8g2
+
 	
 )
 

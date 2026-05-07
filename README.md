@@ -9,6 +9,8 @@ A music player using a RaspberryPi Pico 2 W
 
 [Adafruit CircuitPython TLV320](https://github.com/adafruit/Adafruit_CircuitPython_TLV320/tree/main) - referenced and then used to configure the audio DAC in C
 
+[U8g2](https://github.com/olikraus/u8g2) - display library used for the SH1107 OLED
+
 ## Progress
 
 ### Key Progress

@@ -2,8 +2,8 @@
 #define AUDIO_DAC_PINS_H
 
 //i2c port 
-#ifndef I2C_PORT
-#define I2C_PORT i2c0
+#ifndef DAC_I2C_PORT
+#define DAC_I2C_PORT i2c0
 #endif 
 
 // pins

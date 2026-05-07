@@ -14,6 +14,7 @@
 #include "audio_player.h"
 #include "sd_memory_manager.h"
 #include "audio_dac_pin_values.h"
+#include "display_manager.h"
 //#include "input.h"
 
 // internal
@@ -34,6 +35,8 @@ void start_init(void){
 	printf("sd_functionality_test\n");
 	dma_unclaim_mask(0x0f); //unclaim channels (0-3)
 	sd_init();
+
+	display_init();
 
 	sleep_ms(10);
 }
@@ -71,6 +74,7 @@ int main(void){
 	audio_add_song_to_queue("californication/track15.cdda.wav");
 	audio_play_top_queue();
 	
+	display_test_run();
 	//add_alarm_in_ms(10000, &play_next_queue, NULL,true);
 	//add_alarm_in_ms(20000, &stop_playback_callback, NULL,true);
 
