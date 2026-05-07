@@ -17,7 +17,7 @@ pico_sdk_init()
 
 add_subdirectory(
 	lib/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src
-	lib/u8g2/csrc
+	#	lib/u8g2/csrc
 )
 
 add_executable(Pico-Music
@@ -75,7 +75,7 @@ target_link_libraries(Pico-Music
 	#	hardware_spi
 
 	#display
-	u8g2
+	#u8g2
 
 	
 )

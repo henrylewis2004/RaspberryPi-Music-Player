@@ -36,7 +36,7 @@ void start_init(void){
 	dma_unclaim_mask(0x0f); //unclaim channels (0-3)
 	sd_init();
 
-	display_init();
+	//display_init();
 
 	sleep_ms(10);
 }
@@ -57,6 +57,7 @@ int64_t play_next_queue(alarm_id_t id, void *user_data){
 int main(void){
 	start_init();
 	
+		/*
 	audio_add_song_to_queue("californication/track01.cdda.wav");
 	audio_add_song_to_queue("californication/track02.cdda.wav");
 	audio_add_song_to_queue("californication/track03.cdda.wav");
@@ -72,9 +73,27 @@ int main(void){
 	audio_add_song_to_queue("californication/track13.cdda.wav");
 	audio_add_song_to_queue("californication/track14.cdda.wav");
 	audio_add_song_to_queue("californication/track15.cdda.wav");
+	 */
+
+	audio_add_song_to_queue("Revolver/track01.wav");
+	audio_add_song_to_queue("Revolver/track03.wav");
+	audio_add_song_to_queue("Revolver/track02.wav");
+	audio_add_song_to_queue("Revolver/track04.wav");
+	audio_add_song_to_queue("Revolver/track05.wav");
+	audio_add_song_to_queue("Revolver/track06.wav");
+	audio_add_song_to_queue("Revolver/track07.wav");
+	audio_add_song_to_queue("Revolver/track08.wav");
+	audio_add_song_to_queue("Revolver/track09.wav");
+	audio_add_song_to_queue("Revolver/track10.wav");
+	audio_add_song_to_queue("Revolver/track11.wav");
+	audio_add_song_to_queue("Revolver/track12.wav");
+	audio_add_song_to_queue("Revolver/track13.wav");
+	audio_add_song_to_queue("Revolver/track14.wav");
+	audio_add_song_to_queue("Revolver/track15.wav");
+
 	audio_play_top_queue();
 	
-	display_test_run();
+	//display_test_run();
 	//add_alarm_in_ms(10000, &play_next_queue, NULL,true);
 	//add_alarm_in_ms(20000, &stop_playback_callback, NULL,true);
 

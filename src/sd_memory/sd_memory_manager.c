@@ -1,6 +1,7 @@
 // C stdlib headers
 #include <stdlib.h>
 #include <stdbool.h>
+//#include <string.h>
 // FatFS headers
 #include "f_util.h"
 #include "ff.h"
@@ -205,11 +206,43 @@ static wav_file read_wav(char* filepath, playing_song* curSong){
 
 
 	//data
+	/*
 	fr = f_read(&curSong->file,wfile.data.chunkId,4,&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
 		f_close(&curSong->file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
+	*/
+
+	uint32_t count = 0;
+	while (f_read(&curSong->file,wfile.data.chunkId,4,&bytes_read) == FR_OK ){
+		if (memcmp(wfile.data.chunkId, "data",4) == 0){
+			break;
+		}
+		if (count > 20){ //check 20 chunks
+			f_close(&curSong->file);
+			panic("data f_read(%s) error, cannot find data section!: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+		}
+		count++;
+
+		uint32_t chunksize;
+
+		fr = f_read(&curSong->file,&chunksize,sizeof(chunksize),&bytes_read);
+		if (fr != FR_OK && fr != FR_EXIST){
+			f_close(&curSong->file);
+			panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+		}
+
+
+		//word alignment
+		if (chunksize & 1){
+			chunksize++;
+		}
+
+		f_lseek(&curSong->file, f_tell(&curSong->file) + chunksize);
+
+	}
+
 	fr = f_read(&curSong->file,&wfile.data.chunkSize,sizeof(uint32_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
 		f_close(&curSong->file);
