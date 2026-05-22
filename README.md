@@ -1,6 +1,10 @@
 # RaspberryPi-Music-Player
 A music player using a RaspberryPi Pico 2 W
 
+<p align="center">
+    <img src=".github/images/breadboard_picture.jpg" width=400 />
+</p>
+
 ## Libraries used
 
 [Raspberry Pi Pico C/C++ SDK](https://github.com/raspberrypi/pico-sdk) - used for variation functions on the pico board (dma, interupts, etc)
