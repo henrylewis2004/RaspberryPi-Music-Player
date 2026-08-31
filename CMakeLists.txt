@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 4.2)
 
 set(PICO_BOARD pico2_w CACHE STRING "Board type")
+set(PICO_SDK_PATH "../pico-sdk/" CACHE PATH "Path to the Pico SDK") #note: might have to change for your setup
 
 # initialize the SDK based on PICO_SDK_PATH
 # note: this must happen before project()
