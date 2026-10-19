@@ -31,7 +31,7 @@ void audio_play_noise(void);
 bool audio_buffer_refil_requested(void);
 void audio_buffer_refil(void);
 
-void audio_pause_song(void);
+int audio_play_pause_song(void);
 void audio_stop_playback(void);
 
 void audio_volume_up(void);
@@ -41,5 +41,6 @@ void audio_skip_song(void);
 void audio_add_song_to_queue(char* filepath);
 int audio_play_top_queue(void);
 
+bool audio_has_song_selected(void);
 
 #endif // !AUDIO_PLAYER_H

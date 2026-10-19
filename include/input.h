@@ -25,7 +25,21 @@
 #define ANALOG_STICK_PIN X
 #endif // !2D_ANALOG_STICK_PIN
        
+//structs
+typedef struct {
+	bool play_button;
+	bool skip_button;
 
+	bool vol_up_button;
+	bool vol_down_button;
+
+	bool power_button;
+} input_flags;
+
+//functions
 void input_init(void);
+void input_reset_flags(void);
+input_flags input_get_flags(void);
+input_flags input_get_reset_flags(void);
 
 #endif

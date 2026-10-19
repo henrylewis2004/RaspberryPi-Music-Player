@@ -6,19 +6,27 @@
 #endif
 
 #ifndef VOLUME_RAMP_QUICK_STEP_COUNT
-#define VOLUME_RAMP_QUICK_STEP_COUNT 10
+#define VOLUME_RAMP_QUICK_STEP_COUNT 5
+#endif
+
+#ifndef VOLUME_MAX
+#define VOLUME_MAX 24.0
+#endif
+
+#ifndef VOLUME_MIN
+#define VOLUME_MIN -63.5
 #endif
 
 #ifndef VOLUME_RAMP_QUICK_STEP_TIME_MS
-#define VOLUME_RAMP_QUICK_STEP_TIME_MS 5
+#define VOLUME_RAMP_QUICK_STEP_TIME_MS 2
 #endif
 
 #ifndef VOLUME_RAMP_STEP_COUNT
-#define VOLUME_RAMP_STEP_COUNT 20
+#define VOLUME_RAMP_STEP_COUNT 10
 #endif
 
 #ifndef VOLUME_RAMP_STEP_TIME_MS
-#define VOLUME_RAMP_STEP_TIME_MS 10
+#define VOLUME_RAMP_STEP_TIME_MS 5
 #endif
 
 int dac_mute(bool mute);

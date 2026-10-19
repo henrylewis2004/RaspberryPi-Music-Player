@@ -20,7 +20,15 @@
 //register writing methods
 static int dac_reg_write(uint8_t reg, uint8_t val){
 	uint8_t buffer[2] = {reg,val};
-	return i2c_write_blocking(DAC_I2C_PORT,DAC_ADDR, buffer, sizeof(buffer), false);
+	int res = i2c_write_blocking(DAC_I2C_PORT,DAC_ADDR, buffer, sizeof(buffer), false);
+
+	if (res == 2){
+		return PICO_OK;
+	}
+	else{
+		return PICO_ERROR_GENERIC;
+	}
+
 }
 
 static int dac_set_page(uint8_t page){
@@ -277,6 +285,7 @@ static int mclk_init(){
 	return 0;
 }
 
+// audio
 static float get_dac_channel_volume(bool right_channel){
 	uint8_t reg = right_channel ? DAC_RIGHT_CHANNEL_REG : DAC_LEFT_CHANNEL_REG;
 
@@ -285,6 +294,16 @@ static float get_dac_channel_volume(bool right_channel){
 	return raw / 2.0f;
 
 }
+
+static void volume_check(float* volume_db){
+	if (*volume_db > VOLUME_MAX){
+		*volume_db = VOLUME_MAX;
+	}
+	else if (*volume_db < VOLUME_MIN){
+		*volume_db = VOLUME_MIN;
+	}
+}
+
 
 //public
 
@@ -310,17 +329,37 @@ int dac_mute(bool mute){
 }
 
 int ramp_set_dac_volume(float target_volume_db, uint steps, uint step_timer_ms){
+	printf("steps = %d, step_timer_ms = %d\n",steps,step_timer_ms);
+	if (steps <= 0 || step_timer_ms <= 0){
+		return -1;
+	}
+
 	float initial_volume_db = get_dac_volume();
+	printf("get_dac_volume = %f\n",initial_volume_db);
+
+	volume_check(&initial_volume_db);
+	volume_check(&target_volume_db);
+
 	float step = (target_volume_db - initial_volume_db) / steps;
+	printf("step = %f, initial_volume_db = %f, target_volume_db=%f\n",step,initial_volume_db,target_volume_db);
 	for (int i = 0; i <= steps; i++){
 		float vol = initial_volume_db + step * i;
-		if (set_channel_volume(true,vol) == PICO_ERROR_GENERIC){
+		int res = set_channel_volume(true,vol);
+		printf("set_channel_volume(true) response = %d\n",res);
+		if (res != PICO_OK){
+			panic("PANIC set_channel_volume failure res = %d\n",res);
 			return -1;
 		}
-		if (set_channel_volume(false,vol) == PICO_ERROR_GENERIC){
+
+		res = set_channel_volume(false,vol);
+		printf("set_channel_volume(false) response = %d\n",res);
+		if (res != PICO_OK){
+			panic("PANIC set_channel_volume failure res = %d\n",res);
 			return -1;
 		}
+		printf("sleep for %d\n", step_timer_ms);
 		sleep_ms(step_timer_ms);
+		printf("slept for %d\n", step_timer_ms);
 	}
 	return 0;
 }
@@ -330,6 +369,19 @@ int dac_set_volume_quick(float target_volume_db){
 }
 
 int dac_set_volume(float target_volume_db){
+	/*
+	volume_check(&target_volume_db);
+
+	if (set_channel_volume(true,target_volume_db) == PICO_ERROR_GENERIC){
+		return -1;
+	}
+	if (set_channel_volume(false,target_volume_db) == PICO_ERROR_GENERIC){
+		return -1;
+	}
+
+	return 0;
+	*/
+
 	return ramp_set_dac_volume(target_volume_db, VOLUME_RAMP_STEP_COUNT, VOLUME_RAMP_STEP_TIME_MS);
 }
 
@@ -338,12 +390,8 @@ int set_channel_volume(bool right_channel, float volume_db){
 	const uint8_t channel_register = (right_channel)? DAC_RIGHT_CHANNEL_REG : DAC_LEFT_CHANNEL_REG;
 	dac_set_page(0x00);
 
-	if (volume_db > 24.0){
-		volume_db = 24.0;
-	}
-	else if (volume_db < -63.5){
-		volume_db = -63.5;
-	}
+	volume_check(&volume_db);
+
 
 	int reg_value = (int)(volume_db * 2);
 	if (reg_value == 0x80 || reg_value > 0x30){

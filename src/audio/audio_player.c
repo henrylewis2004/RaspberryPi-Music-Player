@@ -27,6 +27,8 @@ volatile uint32_t* refil_buffer;
 
 volatile float curvolume;
 
+static bool song_playing = false;
+
 static void wav_buffer_callback(uint32_t* buf){
 	buffer_refil_request = true;
 	refil_buffer = buf;
@@ -56,6 +58,8 @@ static void audio_play_song(char* filepath){
 	DAC_start_dma();
 	dac_set_volume_quick(curvolume); //TODO: implement curvolume
 	dac_mute(false);
+
+	song_playing = true;
 	
 }
 
@@ -110,8 +114,16 @@ void audio_play_noise(void){
 }
 
 
-void audio_pause_song(void){
-	DAC_toggle_pause();
+int audio_play_pause_song(void){
+	if (song_playing){
+		DAC_toggle_pause();
+		return 0;
+	}else
+	if (song_queue_get_top_song_path() != NULL){
+		audio_play_top_queue();
+		return 0;
+	}
+	return -1;
 }
 
 void audio_stop_playback(void){
@@ -119,25 +131,22 @@ void audio_stop_playback(void){
 	dac_mute(true);
 	DAC_pause_dma();
 	sd_wav_close_playing_song();
+
+	song_playing = false;
 }
 
 void audio_volume_up(void){
 	curvolume += AUDIO_VOLUME_UP;
-	//ramp_set_dac_volume(curvolume, AUDIO_VOLUME_RAMP_STEPS, AUDIO_VOLUME_STEPS_TIMER_MS);
-	dac_set_volume(curvolume);
+	dac_set_volume_quick(curvolume);
 }
 
 void audio_volume_down(void){
 	curvolume += AUDIO_VOLUME_DOWN;
-	//ramp_set_dac_volume(curvolume, AUDIO_VOLUME_RAMP_STEPS, AUDIO_VOLUME_STEPS_TIMER_MS);
-	dac_set_volume(curvolume);
+	dac_set_volume_quick(curvolume);
 }
 
 void audio_skip_song(void){
-	//NOTE: maybe change to ramp sound down instead?
-	dac_set_volume_quick(-100);
-	dac_mute(true);
-
+	printf("audio-skip-song\n");
 	audio_stop_playback();
 	song_queue_goto_next_song();
 
@@ -155,4 +164,8 @@ int audio_play_top_queue(void){
 	}
 	panic("error playing top of song queue\n");
 	return -1;
+}
+
+bool audio_has_song_selected(void){
+	return song_queue_top_has_song();
 }

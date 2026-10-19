@@ -72,8 +72,6 @@ target_link_libraries(Pico-Music
 	hardware_dma
 	hardware_irq
 
-	#spi NOTE: maybe get rid of now
-	#	hardware_spi
 
 	#display
 	#u8g2
@@ -84,8 +82,8 @@ target_link_libraries(Pico-Music
 
 
 ##
-pico_enable_stdio_usb(Pico-Music 0)
-pico_enable_stdio_uart(Pico-Music 1)
+pico_enable_stdio_usb(Pico-Music 1)
+pico_enable_stdio_uart(Pico-Music 0)
 
 pico_add_extra_outputs(Pico-Music)
 

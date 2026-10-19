@@ -15,7 +15,9 @@
 #include "sd_memory_manager.h"
 #include "audio_dac_pin_values.h"
 #include "display_manager.h"
-//#include "input.h"
+#include "input.h"
+
+static input_flags input_button_flags;
 
 // internal
 void start_init(void){
@@ -25,39 +27,34 @@ void start_init(void){
 
 	//led
 	led_blink();
+	sleep_ms(5000);
+	printf("first i breathe!\n");
 			       
-	
+	//audio
 	printf("audio_init\n");
 	dma_unclaim_mask(0x30); //unclaim channels 4 & 5
 	audio_init();
 
-	
-	printf("sd_functionality_test\n");
+	//sd card
+	printf("sd_init\n");
 	dma_unclaim_mask(0x0f); //unclaim channels (0-3)
 	sd_init();
 
 	//display_init();
+	
+	//input
+	printf("input init\n");
+	input_init();
 
 	sleep_ms(10);
 }
-
-int64_t stop_playback_callback(alarm_id_t id, void *user_data){
-	audio_stop_playback();
-	return 0;
-}
-
-int64_t play_next_queue(alarm_id_t id, void *user_data){
-	audio_skip_song();
-	return 0;
-}
-
 
 // main \\
 
 int main(void){
 	start_init();
-	
-		/*
+
+	printf("add songs to queue\n");
 	audio_add_song_to_queue("californication/track01.cdda.wav");
 	audio_add_song_to_queue("californication/track02.cdda.wav");
 	audio_add_song_to_queue("californication/track03.cdda.wav");
@@ -73,7 +70,6 @@ int main(void){
 	audio_add_song_to_queue("californication/track13.cdda.wav");
 	audio_add_song_to_queue("californication/track14.cdda.wav");
 	audio_add_song_to_queue("californication/track15.cdda.wav");
-	 */
 
 	audio_add_song_to_queue("Revolver/track01.wav");
 	audio_add_song_to_queue("Revolver/track03.wav");
@@ -94,19 +90,25 @@ int main(void){
 	audio_play_top_queue();
 	
 	//display_test_run();
-	//add_alarm_in_ms(10000, &play_next_queue, NULL,true);
-	//add_alarm_in_ms(20000, &stop_playback_callback, NULL,true);
-
-
 
 	//infinite loop
 
 	while(true){
+		input_button_flags = input_get_flags();
+
 		if (audio_buffer_refil_requested()){
 			audio_buffer_refil();
 		}
+		if (input_button_flags.play_button){
+			//input_button_flags.play_button = false;
+			audio_play_pause_song();
+
+		}
+
+		input_button_flags = input_get_reset_flags();
 
 		__wfi();
+	
 	}
 
 	
