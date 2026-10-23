@@ -126,7 +126,7 @@ uint8_t display_pico_gpio_delay(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void
 //public
 
 void display_hardware_init(void){
-	u8g2_Setup_sh1107_128x128_f(&u8g2,U8G2_R0,display_pico_byte_hw_spi_communication,display_pico_gpio_delay);
+	u8g2_Setup_sh1107_pimoroni_128x128_f(&u8g2,U8G2_R1,display_pico_byte_hw_spi_communication,display_pico_gpio_delay);
 
 	u8g2_InitDisplay(&u8g2);
 	u8g2_SetPowerSave(&u8g2, 1); 
@@ -139,9 +139,9 @@ void display_hardware_draw_test(void){
 
 	// Draw some text and graphics.
 	u8g2_SetFont(&u8g2, u8g2_font_ncenB08_tr);
-	u8g2_DrawStr(&u8g2, 10, 20, "Hello Pico!");
+	u8g2_DrawStr(&u8g2, 0, 10, "Hello Pico!");
 
-	u8g2_DrawFrame(&u8g2, 5, 30, 118, 60);
+	u8g2_DrawFrame(&u8g2, 0, 30, 118, 60);
 	u8g2_DrawCircle(&u8g2, 64, 90, 15, U8G2_DRAW_ALL);
 
 	// Transfer the framebuffer to the display.

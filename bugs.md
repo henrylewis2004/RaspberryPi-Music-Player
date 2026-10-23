@@ -9,3 +9,5 @@
 
 * volume change pauses music
     > decrease step timer
+
+* NOTE: had to change u8g2 cmake to exclude font file and only add a single file (and add headers to single font file)
