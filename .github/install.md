@@ -19,6 +19,8 @@ If missing the Raspberry Pi C/C++ SDK make sure to download with
 
 > NOTE: make sure to set the sdk path in CMakeLists.txt with to the path of the downloaded sdk - <code>set(PICO_SDK_PATH "/path/to/sdk/" CACHE PATH "Path to the Pico SDK")</code>
 
+Additionally the u8g2 CMakeLists.txt and chosen font need to overwritten.
+
 ### Compile and flash executable to Raspberry Pi 
 Compile the executable by 
 
