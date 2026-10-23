@@ -107,7 +107,7 @@ For progress see [todo.md](https://github.com/henrylewis2004/RaspberryPi-Music-P
 | 1 (GP0) | x | 40 (VBUS) | x |
 | 2 (GP1) | x | 39 (VSYS) | x |
 | 3 (GND) | x | 38 (GND) | Common Ground |
-| 4 (GP2) | x | 37 (3V3_EN) | x |
+| 4 (GP2) | display reset | 37 (3V3_EN) | x |
 | 5 (GP3) | DAC RST | 36 (3V3(OUT)) | Common 3V |
 | 6 (GP4) | DAC SDA | 35 (ADC_VREF) | x |
 | 7 (GP5) | DAC SCL | 34 (GP28) | x |
@@ -119,11 +119,11 @@ For progress see [todo.md](https://github.com/henrylewis2004/RaspberryPi-Music-P
 | 13 (GND) | x | 28 (GND) | x |
 | 14 (GP10) | DAC MCLK | 27 (GP21) | SD D2 |
 | 15 (GP11) | x | 26 (GP20) | SD D1 |
-| 16 (GP12) | x | 25 (GP19) | SD D0 |
-| 17 (GP13) | x | 24 (GP18) | SD CMD |
+| 16 (GP12) | display DC | 25 (GP19) | SD D0 |
+| 17 (GP13) | display CS | 24 (GP18) | SD CMD |
 | 18 (GND) | x | 23 (GND) | x |
-| 19 (GP14) | x | 22 (GP17) | SD CLK |
-| 20 (GP15) | x | 21 (GP16) | SD DET |
+| 19 (GP14) | display CLK | 22 (GP17) | SD CLK |
+| 20 (GP15) | display DIN | 21 (GP16) | SD DET |
 
 > NOTE:
 > Common ground pin (38) might need changing when adding more components.

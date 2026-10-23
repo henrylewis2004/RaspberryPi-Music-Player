@@ -1,10 +1,12 @@
 // C stdlib headers
 #include <stdlib.h>
 #include <stdbool.h>
+
 //#include <string.h>
 // FatFS headers
 #include "f_util.h"
 #include "ff.h"
+
 //project headers
 #include "pico/stdlib.h"
 #include "sd_memory_manager.h"

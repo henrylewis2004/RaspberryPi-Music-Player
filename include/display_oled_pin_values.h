@@ -6,6 +6,10 @@
 #define DISPLAY_SPI_PORT spi1
 #endif
 
+#ifndef SYSTEM_CLOCK
+#define SYSTEM_CLOCK
+#endif
+
 //pins
 #ifndef DISPLAY_DIN_GPIO_PIN
 #define DISPLAY_DIN_GPIO_PIN 15

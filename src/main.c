@@ -10,6 +10,7 @@
 #include "hardware/dma.h"
 
 //project headers
+#include "system_var.h"
 #include "led_manager.h"
 #include "audio_player.h"
 #include "sd_memory_manager.h"
@@ -21,7 +22,7 @@ static input_flags input_button_flags;
 
 // internal
 void start_init(void){
-	set_sys_clock_khz(150000,true); //150mhz / 10 = 15 MHz
+	set_sys_clock_khz(SYSTEM_CLOCK_RATE,true); //150mhz / 10 = 15 MHz
 	stdio_init_all();
 	dma_claim_mask(0xfff); //claim all dma channels
 
@@ -29,31 +30,34 @@ void start_init(void){
 	led_blink();
 	sleep_ms(5000);
 	printf("first i breathe!\n");
+	/*
 			       
 	//audio
 	printf("audio_init\n");
 	dma_unclaim_mask(0x30); //unclaim channels 4 & 5
 	audio_init();
+	printf("audio_init finished\n");
 
 	//sd card
 	printf("sd_init\n");
 	dma_unclaim_mask(0x0f); //unclaim channels (0-3)
 	sd_init();
+	printf("sd_init finished\n");
 
-	//display_init();
-	
 	//input
 	printf("input init\n");
 	input_init();
+	printf("input init finished\n");
+
+	*/
+	//display 
+	display_init();
+	display_test_run();
 
 	sleep_ms(10);
 }
 
-// main \\
-
-int main(void){
-	start_init();
-
+void song_test(bool play_now){  
 	printf("add songs to queue\n");
 	audio_add_song_to_queue("californication/track01.cdda.wav");
 	audio_add_song_to_queue("californication/track02.cdda.wav");
@@ -87,12 +91,20 @@ int main(void){
 	audio_add_song_to_queue("Revolver/track14.wav");
 	audio_add_song_to_queue("Revolver/track15.wav");
 
-	audio_play_top_queue();
+	if (play_now){
+		audio_play_top_queue();
+	}
+
+}
+
+// main \\
+
+int main(void){
+	start_init();
+
+	//song_test(true);
 	
-	//display_test_run();
-
 	//infinite loop
-
 	while(true){
 		input_button_flags = input_get_flags();
 
@@ -101,8 +113,8 @@ int main(void){
 		}
 		if (input_button_flags.play_button){
 			//input_button_flags.play_button = false;
+			printf("Play_pause_song called\n");
 			audio_play_pause_song();
-
 		}
 
 		input_button_flags = input_get_reset_flags();

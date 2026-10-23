@@ -2,7 +2,7 @@
 #define INPUT_H
 
 #ifndef PLAY_BUTTON_PIN
-#define PLAY_BUTTON_PIN 15
+#define PLAY_BUTTON_PIN 26
 #endif // !PLAY_BUTTON_PIN
        
 #ifndef SKIP_SONG_BUTTON_PIN

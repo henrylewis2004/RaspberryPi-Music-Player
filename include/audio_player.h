@@ -13,15 +13,6 @@
 #define AUDIO_VOLUME_DOWN -5 //db
 #endif
 
-#ifndef AUDIO_VOLUME_RAMP_STEPS  //number of steps to change volume (incrementing by x at a time)
-#define AUDIO_VOLUME_RAMP_STEPS 50 
-#endif
-
-#ifndef AUDIO_VOLUME_STEPS_TIMER_MS //time to wait between each volume change step
-#define AUDIO_VOLUME_STEPS_TIMER_MS 25
-#endif
-
-
 //methods
 void audio_init(void);
 void audio_close(void);

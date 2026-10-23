@@ -10,6 +10,7 @@
 #include "hardware/clocks.h"
 
 //project headers
+#include "system_var.h"
 #include "audio_dac_i2c_bridge.h"
 #include "audio_dac_registers.h"
 #include "audio_dac_pin_values.h"
@@ -76,7 +77,7 @@ static void dac_i2c_start(void){
 	#warning i2c/bus_scan example requires a board with I2C pins
     puts("Default I2C pins were not defined\n");
 #else
-	i2c_init(DAC_I2C_PORT,400*1000);
+	i2c_init(DAC_I2C_PORT,SYSTEM_BAUD_RATE);
 
 	gpio_set_function(DAC_SDA_GPIO_PIN,GPIO_FUNC_I2C);
 	gpio_set_function(DAC_SCL_GPIO_PIN,GPIO_FUNC_I2C);
