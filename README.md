@@ -168,15 +168,15 @@ For progress see [todo.md](https://github.com/henrylewis2004/RaspberryPi-Music-P
 ### Display Screen - [WAVESHARE 1.5" OLED Display Module (128 x128)](https://thepihut.com/products/1-5-oled-display-module-128-x128?_su_rec=PYX1cnAvJ408xM3xV7tAIgx0pFzPHYRDJvXXw_Gw9n1EU39LxHCDm2RAgXbZzBpTrbwdpJIJ_2ATNOJNZCy_ri0eachOWTtbd_apLxqN4O_f5-hssBH_CuHBoLVyZE6bEIbbLBA948NEhXix4cwkXPvWygCojjIWVnuzGft5rjEef3-1xBfnDP4k5c_E3q0C3N3IWwaW7rJtGlV_mXOUiwGIJSCpPGHxWXwvYRVIFLhG1aQsG0Mu2y0HKRUIRuYeVQ-4u6E&_su_rec_id=36b9d120-b2f0-41f6-af62-bcc5f9631420-1792779477)
 
 <p align="left">
-    <img src="https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/.github/images/adafruit_dac_pins.jpg" width=600 />
+    <img src="https://github.com/henrylewis2004/RaspberryPi-Music-Player/blob/main/.github/images/oled_display.jpg" width=600 />
 </p>
 
 | Board PIN | Pico PIN | GPIO PIN |
 |-|-|-|
 | VIN  | 3V3(OUT) - 36 | n/a |
 | GND | GND - 38 | n/a |
-| RST | x | 2 |
-| clk | x | 14 |
-| din | x | 15 |
-| CS | x | 13 |
-| DC | x | 12 |
+| RST | 4 | 2 |
+| clk | 19 | 14 |
+| din | 20 | 15 |
+| CS | 17 | 13 |
+| DC | 16 | 12 |
