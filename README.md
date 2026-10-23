@@ -89,10 +89,10 @@ For progress see [todo.md](https://github.com/henrylewis2004/RaspberryPi-Music-P
 | Audio DAC | [Adafruit TLV320DAC3100](https://www.adafruit.com/product/6309?srsltid=AfmBOorzJw4PwT3HF0vGFX7eqOSgBaOBtBcg8bkU7igFjqLHTnfaYH3e)| X |
 | Memory Storage | [Adafruit Micro SD SPI or SDIO Card Breakout Board](https://www.adafruit.com/product/4682?srsltid=AfmBOoperZd8N_q_g0DlBwCeuqUr0O1IKYDF3KCDKo4BibNNp2DtdHoi)| X |
 | Micro SD Card | Some Micro SD Card (Formatted to FAT32) | X |
-| Screen | *TBD* | O |
-| Battery | [2000mAh 3.7V LiPo Battery](https://thepihut.com/products/2000mah-3-7v-lipo-battery) | O |
+| Screen | [WAVESHARE 1.5" OLED Display Module (128 x128)](https://thepihut.com/products/1-5-oled-display-module-128-x128?_su_rec=PYX1cnAvJ408xM3xV7tAIgx0pFzPHYRDJvXXw_Gw9n1EU39LxHCDm2RAgXbZzBpTrbwdpJIJ_2ATNOJNZCy_ri0eachOWTtbd_apLxqN4O_f5-hssBH_CuHBoLVyZE6bEIbbLBA948NEhXix4cwkXPvWygCojjIWVnuzGft5rjEef3-1xBfnDP4k5c_E3q0C3N3IWwaW7rJtGlV_mXOUiwGIJSCpPGHxWXwvYRVIFLhG1aQsG0Mu2y0HKRUIRuYeVQ-4u6E&_su_rec_id=36b9d120-b2f0-41f6-af62-bcc5f9631420-1792779477) | x |
+| Battery | [2000mAh 3.7V LiPo Battery](https://thepihut.com/products/2000mah-3-7v-lipo-battery) | x |
 | Battery Charger | *TBD* | O |
-| Input Buttons | [2-Axis Joystick](https://thepihut.com/products/psp-2-axis-analog-thumb-joystick), [An on/off switch](https://thepihut.com/products/breadboard-friendly-spdt-slide-switch), [3x Buttons](https://thepihut.com/products/180-piece-ultimate-tactile-button-kit), *POTENTIALLY MORE TBD* | O |
+| Input Buttons | [2-Axis Joystick](https://thepihut.com/products/psp-2-axis-analog-thumb-joystick), [An on/off switch](https://thepihut.com/products/breadboard-friendly-spdt-slide-switch), [3x Buttons](https://thepihut.com/products/180-piece-ultimate-tactile-button-kit), *POTENTIALLY MORE TBD* | x |
 
 ## Wiring
 
