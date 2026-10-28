@@ -1,5 +1,5 @@
 #ifndef BUTTON_PINS_H
-#define BUTTON_PINS_Hb
+#define BUTTON_PINS_H
 
 #ifndef PLAY_PAUSE_PIN
 #define PLAY_PAUSE_PIN 9

@@ -14,7 +14,7 @@ typedef struct song_queue song_queue;
 struct song_queue {
 	char path[MAX_SONG_PATH_LENGTH];
 
-//	song_queue* previous_song; //NOTE: maybe include at a later date?
+	song_queue* previous_song; //NOTE: maybe include at a later date?
 	song_queue* next_song;
 
 };

@@ -43,9 +43,13 @@ add_executable(Pico-Music
 	#display
 	src/display/display_manager.c
 	src/display/display_hardware_bridge.c
+	src/display/display_util.c
 
 	#input
 	src/input.c
+
+	#library
+	#src/library_manager.c
 )
 
 target_include_directories(Pico-Music PRIVATE

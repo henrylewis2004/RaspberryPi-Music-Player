@@ -7,12 +7,15 @@
 #include "system_var.h"
 #include "display_hardware_bridge.h"
 #include "display_oled_pin_values.h"
+#include "display_position_sizes.h"
+#include "display_util.h"
 
 static u8g2_t u8g2;
 
 //internal
 
 //u8g2 callbacks for display setup
+
 //u8x8 byte communication
 uint8_t display_pico_byte_hw_spi_communication(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr){
 	uint8_t *data;
@@ -123,30 +126,109 @@ uint8_t display_pico_gpio_delay(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void
 	return 1;
 }
 
+
+//top bar
+//play indicator
+void hardware_draw_play(bool playing){ 
+	if (playing){
+		u8g2_DrawTriangle(&u8g2, PLAY_TRIANGLE_X0, PLAY_TRIANGLE_Y0, PLAY_TRIANGLE_X1, PLAY_TRIANGLE_Y1, PLAY_TRIANGLE_X2, PLAY_TRIANGLE_Y2);
+	}
+	else{
+		u8g2_DrawBox(&u8g2,PAUSED_BOX_X, PAUSED_BOX_Y, PAUSED_BOX_W, PAUSED_BOX_H);
+		u8g2_DrawBox(&u8g2,PAUSED_BOX_X + PAUSED_BOX_W + 2, PAUSED_BOX_Y, PAUSED_BOX_W, PAUSED_BOX_H);
+	}
+}
+
+//battery
+void hardware_draw_bat(u8g2_uint_t width){ //might need to change to float
+	u8g2_DrawBox(&u8g2,BATTERY_IND_X, BATTERY_IND_Y, width, BATTERY_IND_H);
+}
+
+void hardware_draw_bat_level(float level){ //4 levels (need to calculate battery level before calling)
+	u8g2_DrawFrame(&u8g2, BATTERY_IND_X, BATTERY_IND_Y, BATTERY_IND_W, BATTERY_IND_H);
+	hardware_draw_bat((u8g2_uint_t)(BATTERY_IND_W * level));
+
+}
+
+// play screen
+void hardware_draw_play_progress(float progress){ 
+	//borders
+	u8g2_DrawLine(&u8g2, PLAY_PROGRESS_L_X, PLAY_PROGRESS_Y, PLAY_PROGRESS_L_X, PLAY_PROGRESS_Y+PLAY_PROGRESS_V);
+	u8g2_DrawLine(&u8g2, PLAY_PROGRESS_R_X, PLAY_PROGRESS_Y, PLAY_PROGRESS_R_X, PLAY_PROGRESS_Y+PLAY_PROGRESS_V);
+
+	//progress
+	u8g2_DrawLine(&u8g2, PLAY_PROGRESS_LINE_X, PLAY_PROGRESS_LINE_Y, (u8g2_uint_t)(PLAY_PROGRESS_LINE_X_2 * progress), PLAY_PROGRESS_LINE_Y);
+
+}
+
+void hardware_draw_play_screen_song_text(char *artist, char *album, char *title, char *time){ 
+	u8g2_SetFont(&u8g2, u8g2_font_ncenB08_tr);
+
+	//artist
+	char text[PLAY_MAX_TEXT];
+	text_size_sanitise(&u8g2,PLAY_MAX_TEXT, artist, text, sizeof(text));
+	
+	u8g2_uint_t str_length = u8g2_GetStrWidth(&u8g2,text)/2;	
+	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X/2) - str_length, PLAY_ARTIST_Y, text);
+
+	//album
+	text[0] = '\0';
+	text_size_sanitise(&u8g2,PLAY_MAX_TEXT, album, text, sizeof(text));
+	
+	str_length = u8g2_GetStrWidth(&u8g2,text)/2;	
+	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X/2) - str_length, PLAY_ALBUM_Y, text);
+
+	//title
+	text[0] = '\0';
+	text_size_sanitise(&u8g2,PLAY_MAX_TEXT, title, text, sizeof(text));
+	
+	str_length = u8g2_GetStrWidth(&u8g2,text)/2;	
+	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X/2) - str_length, PLAY_TITLE_Y, text);
+
+	//time
+	str_length = u8g2_GetStrWidth(&u8g2,time)/2;	
+	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X/2) - str_length, PLAY_TIME_Y, time);
+
+}
+
 //public
 
 void display_hardware_init(void){
-	u8g2_Setup_sh1107_pimoroni_128x128_f(&u8g2,U8G2_R1,display_pico_byte_hw_spi_communication,display_pico_gpio_delay);
+	u8g2_Setup_sh1107_pimoroni_128x128_f(&u8g2,U8G2_R0,display_pico_byte_hw_spi_communication,display_pico_gpio_delay);
 
 	u8g2_InitDisplay(&u8g2);
 	u8g2_SetPowerSave(&u8g2, 1); 
+	u8g2_SetContrast(&u8g2, 255); 
 
 	u8g2_ClearBuffer(&u8g2);
+	u8g2_SendBuffer(&u8g2);
 }
 
 void display_hardware_draw_test(void){
 	u8g2_ClearBuffer(&u8g2);
 
-	// Draw some text and graphics.
-	u8g2_SetFont(&u8g2, u8g2_font_ncenB08_tr);
-	u8g2_DrawStr(&u8g2, 0, 10, "Hello Pico!");
-
-	u8g2_DrawFrame(&u8g2, 0, 30, 118, 60);
-	u8g2_DrawCircle(&u8g2, 64, 90, 15, U8G2_DRAW_ALL);
+	hardware_draw_play(true);
+	hardware_draw_bat_level(0.5);
+	hardware_draw_play_progress(0.7);
+	hardware_draw_play_screen_song_text("Red Hot Chili Peppers", "Californication", "Around the World","-01:24");
 
 	// Transfer the framebuffer to the display.
 	u8g2_SendBuffer(&u8g2);
 	u8g2_SetPowerSave(&u8g2, 0); 
 }
 
+void display_hardware_top_bar(bool song_playing, float battery_level){
+	//add clear top row buffer
+	hardware_draw_play(song_playing);
+	hardware_draw_bat_level(battery_level);
 
+	u8g2_SendBuffer(&u8g2);
+}
+
+void display_hardware_play_screen(char *artist, char *album, char *title, char *time_text, float progress){
+	//add clear row buffer
+	hardware_draw_play_screen_song_text(artist,album,title,time_text);
+	hardware_draw_play_progress(progress);
+
+	u8g2_SendBuffer(&u8g2);
+}
