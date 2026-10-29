@@ -25,16 +25,16 @@
 - ~volume buttons~
 - home button (placeholder until home screen implemented)
 - 2D analog stick button wiring
-- skip song button
+- ~skip song button~
 ### next TODO
 - file system
 - song data type
 - select song
 ### next TODO
-- screen wiring
-- screen hello world
+- ~screen wiring~
+- ~screen hello world~
 ### next TODO
-- screen pages (home, queue, songs, artists, playing, settings?)
+- ~screen pages (home, queue, songs, artists, playing, settings?)~
 ### next TODO
 - safe power off
 ### next TODO

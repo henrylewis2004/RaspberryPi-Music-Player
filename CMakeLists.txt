@@ -49,7 +49,8 @@ add_executable(Pico-Music
 	src/input.c
 
 	#library
-	#src/library_manager.c
+	src/library_manager.c
+
 )
 
 target_include_directories(Pico-Music PRIVATE
@@ -78,7 +79,6 @@ target_link_libraries(Pico-Music
 	hardware_pio #used to stream i2s
 	hardware_dma
 	hardware_irq
-
 
 	#display
 	u8g2
