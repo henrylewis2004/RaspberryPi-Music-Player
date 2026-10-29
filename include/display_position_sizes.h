@@ -143,7 +143,7 @@
 #endif 
 
 // list screens (main menu + song select)
-//
+
 #ifndef LIST_SELECTOR_W
 #define LIST_SELECTOR_W 8
 #endif 
@@ -172,6 +172,14 @@
 #define LIST_ITEM_GAP 14
 #endif 
 
+#ifndef LIST_MAIN_MENU_ITEM_Y0
+#define LIST_MAIN_MENU_ITEM_Y0 40
+#endif 
+
+#ifndef LIST_MAIN_MENU_ITEM_GAP
+#define LIST_MAIN_MENU_ITEM_GAP 18
+#endif 
+
 #ifndef LIST_MAX_SEC_TEXT_LENGTH
 #define LIST_MAX_SEC_TEXT_LENGTH 10
 #endif 
@@ -180,5 +188,9 @@
 #define LIST_SEC_ITEM_EDGE_GAP 3
 #endif 
 
+//selection indicator
+#ifndef LIST_SELECTION_INDC_X
+#define LIST_SELECTION_INDC_X 5
+#endif 
 
 #endif 

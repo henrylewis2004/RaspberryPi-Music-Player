@@ -13,6 +13,7 @@
 #include "display_oled_pin_values.h"
 #include "display_position_sizes.h"
 #include "display_util.h"
+#include "screen_index.h"
 
 static u8g2_t u8g2;
 
@@ -219,7 +220,7 @@ void hardware_draw_play_screen_song_progress(char *time, float progress){
 
 //lists
 
-void hardware_draw_list(uint start_x, uint start_y, uint item_gap, const char *items[], size_t item_count, bool numbering, bool ending, bool center){ //number = list each item with a number, ending = fill empty items with ---
+void hardware_draw_list(uint start_x, uint start_y, uint item_gap, const char *items[], size_t item_count, bool numbering, bool ending, bool centre){ //number = list each item with a number, ending = fill empty items with ---
 	if (item_count <= 0 || items == NULL){
 		return;
 	}
@@ -239,7 +240,7 @@ void hardware_draw_list(uint start_x, uint start_y, uint item_gap, const char *i
 
 		text_size_sanitise(&u8g2,LIST_MAX_TEXT_LENGTH, intext, text, sizeof(text));
 
-		if (center){
+		if (centre){
 			u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X - u8g2_GetStrWidth(&u8g2,text))/2, start_y + item_gap * cnt, text);
 		}
 		else{
@@ -278,10 +279,23 @@ void hardware_draw_list_secondary(uint x_edge_gap, uint start_y, uint item_gap, 
 	
 }
 
-void hardware_select_list(uint start_x, uint start_y, uint item_gap, uint index, uint previous_index){
+void hardware_clear_selection_ind(uint start_x, uint start_y, uint item_gap, uint previous_index, bool mirror){
 	hardware_clear_section(start_x, start_y + item_gap * previous_index,LIST_SELECTOR_W,LIST_SELECTOR_H);
+	if (mirror){
+		hardware_clear_section(128 - start_x - u8g2_GetStrWidth(&u8g2,DISPLAY_SELECTION_INDC_MIRROR), start_y + item_gap * previous_index,LIST_SELECTOR_W,LIST_SELECTOR_H);
+	}
+}
 
-	//TODO: add indicator icon
+void hardware_selection_ind(uint start_x, uint start_y, uint item_gap, uint index, uint previous_index, bool mirror){
+	hardware_clear_selection_ind(start_x,start_y,item_gap,previous_index,mirror);
+
+	u8g2_SetFont(&u8g2, u8g2_font_ncenB08_tr);
+
+	u8g2_DrawStr(&u8g2, start_x, start_y + item_gap * index, DISPLAY_SELECTION_INDC);
+	if (mirror){
+		u8g2_DrawStr(&u8g2, 128 - start_x - u8g2_GetStrWidth(&u8g2,DISPLAY_SELECTION_INDC_MIRROR) , start_y + item_gap * index, DISPLAY_SELECTION_INDC_MIRROR);
+	}
+	
 }
 
 
@@ -315,14 +329,16 @@ void display_hardware_draw_test(void){
 	*/
 	hardware_draw_top_text("Main Menu");
 
-	const char *items[] = {"Playing","Artists","Playlists","Options"};
+	const char *items[] = SCREEN_MAIN_MENU_ITEMS;//{"Playing","Song Queue","Artists","Playlists","Options"};
 
-	hardware_draw_list(LIST_ITEM_X0,LIST_ITEM_Y0,LIST_ITEM_GAP, items,4,false,false,true);
+	display_hardware_draw_list(SCREEN_MAIN_MENU,items,sizeof(items)/sizeof(items[0]),NULL,0,true);
+	display_hardware_draw_list_selection_indicator(2, 0, SCREEN_MAIN_MENU);
 
 	u8g2_SendBuffer(&u8g2);
 
 }
 
+//top bar
 void display_hardware_draw_top_bar(bool song_playing, float battery_level,bool clear){
 	if (clear){
 		hardware_clear_section(PLAY_TRIANGLE_X0,PLAY_TRIANGLE_Y0,128, TOP_BAR_Y);
@@ -332,17 +348,14 @@ void display_hardware_draw_top_bar(bool song_playing, float battery_level,bool c
 	hardware_draw_bat_level(battery_level);
 	u8g2_DrawHLine(&u8g2, TOP_BAR_X,TOP_BAR_Y,TOP_BAR_W);
 
-	u8g2_SendBuffer(&u8g2);
 }
 
-void display_hardware_draw_top_play_ind(bool song_playing,bool clear){
+void display_hardware_draw_top_play_ind(bool song_playing,bool clear ){
 	if (clear){
 		hardware_clear_section(PLAY_TRIANGLE_X0,PLAY_TRIANGLE_Y0,PLAY_TRIANGLE_X2 - PLAY_TRIANGLE_X0, PLAY_TRIANGLE_Y2);
 	}
 
 	hardware_draw_play(song_playing);
-
-	u8g2_SendBuffer(&u8g2);
 }
 
 void display_hardware_draw_top_bat_ind(float battery_level,bool clear){
@@ -351,10 +364,13 @@ void display_hardware_draw_top_bat_ind(float battery_level,bool clear){
 	}
 
 	hardware_draw_bat_level(battery_level);
-
-	u8g2_SendBuffer(&u8g2);
 }
 
+void display_hardware_draw_top_text(char *text){
+	hardware_draw_top_text(text);
+}
+
+//play screen
 void display_hardware_draw_play_screen(char *artist, char *album, char *title, char *time_text, float progress, bool clear){
 	if (clear){
 		//text
@@ -365,8 +381,6 @@ void display_hardware_draw_play_screen(char *artist, char *album, char *title, c
 
 	hardware_draw_play_screen_song_text(artist,album,title);
 	hardware_draw_play_screen_song_progress(time_text, progress);
-
-	u8g2_SendBuffer(&u8g2);
 }
 
 void display_hardware_play_screen_update_time(char *time_text, float progress, bool clear){
@@ -375,10 +389,64 @@ void display_hardware_play_screen_update_time(char *time_text, float progress, b
 	}
 
 	hardware_draw_play_screen_song_progress(time_text, progress);
-
-	u8g2_SendBuffer(&u8g2);
 }
 
+//list
+void display_hardware_draw_list(uint SCREEN, const char *items[], size_t item_count, const char *secondary_items[], size_t secondary_items_count, bool clear){
+	if (clear){
+		display_hardware_clear_list_area(LIST_ITEM_X0);
+	}
+	if (SCREEN == SCREEN_PLAYING){
+		return;
+	}
+	else if (SCREEN==SCREEN_MAIN_MENU){
+		hardware_draw_list(LIST_ITEM_X0,LIST_MAIN_MENU_ITEM_Y0,LIST_MAIN_MENU_ITEM_GAP, items,item_count,false,false,true);
+	}
+	else{
+		bool numbering = false;
+		bool ending = true;
+		bool centre = false;
+
+		if (SCREEN == SCREEN_QUEUE || SCREEN == SCREEN_TITLES ){
+			numbering = true;
+		}
+		else if (SCREEN = SCREEN_OPTIONS){
+			ending = false;
+		}
+
+		hardware_draw_list(LIST_ITEM_X0,LIST_ITEM_Y0,LIST_ITEM_GAP, items,item_count,numbering,ending,centre);
+
+		if (secondary_items != NULL){
+			hardware_draw_list_secondary(LIST_SEC_ITEM_EDGE_GAP, LIST_ITEM_Y0, LIST_ITEM_GAP, secondary_items,secondary_items_count);  //album year + song length
+		}
+	}
+}
+
+void display_hardware_clear_list_area(uint x){
+	hardware_clear_section(x,TOP_BAR_Y+1,128,128); 
+}
+
+
+// selection indicator
+void display_hardware_draw_list_selection_indicator(uint index, uint previous_index, uint SCREEN){
+	if (SCREEN == SCREEN_MAIN_MENU){ 
+		hardware_selection_ind(LIST_SELECTION_INDC_X, LIST_MAIN_MENU_ITEM_Y0, LIST_MAIN_MENU_ITEM_GAP,index,previous_index,true);
+	}
+	else{
+		hardware_selection_ind(LIST_SELECTION_INDC_X, LIST_ITEM_Y0, LIST_ITEM_GAP,index,previous_index,false);
+	}
+}
+
+void display_hardware_clear_selection_ind(uint index, uint SCREEN){
+	if (SCREEN==SCREEN_MAIN_MENU){
+		hardware_clear_selection_ind(LIST_SELECTION_INDC_X,LIST_MAIN_MENU_ITEM_Y0,LIST_MAIN_MENU_ITEM_GAP,index,true);
+	}
+	else{
+		hardware_clear_selection_ind(LIST_SELECTION_INDC_X,LIST_MAIN_MENU_ITEM_Y0,LIST_MAIN_MENU_ITEM_GAP,index,false);
+	}
+}
+
+// clear + send functions
 void display_hardware_clear_screen(void){
 	u8g2_ClearBuffer(&u8g2);
 }
