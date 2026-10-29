@@ -10,6 +10,25 @@
 #endif 
 
 //top bar
+#ifndef TOP_BAR_TEXT_MAX_LENGTH
+#define TOP_BAR_TEXT_MAX_LENGTH 70
+#endif 
+
+#ifndef TOP_BAR_TEXT_Y
+#define TOP_BAR_TEXT_Y 10
+#endif 
+
+#ifndef TOP_BAR_X
+#define TOP_BAR_X 0
+#endif 
+
+#ifndef TOP_BAR_Y
+#define TOP_BAR_Y 12
+#endif 
+
+#ifndef TOP_BAR_W
+#define TOP_BAR_W 128
+#endif 
 
 //playing triangle
 #ifndef PLAY_TRIANGLE_X0
@@ -56,7 +75,7 @@
 //battery indicator
 
 #ifndef BATTERY_IND_X
-#define BATTERY_IND_X 113
+#define BATTERY_IND_X 108
 #endif 
 
 #ifndef BATTERY_IND_Y
@@ -122,5 +141,36 @@
 #ifndef PLAY_PROGRESS_LINE_X_2
 #define PLAY_PROGRESS_LINE_X_2 116
 #endif 
+
+// list screens (main menu + song select)
+
+#ifndef LIST_MAX_COUNT
+#define LIST_MAX_COUNT 8
+#endif 
+
+#ifndef LIST_MAX_TEXT_LENGTH
+#define LIST_MAX_TEXT_LENGTH 100
+#endif 
+
+#ifndef LIST_ITEM_X0
+#define LIST_ITEM_X0 10
+#endif 
+
+#ifndef LIST_ITEM_Y0
+#define LIST_ITEM_Y0 25
+#endif 
+
+#ifndef LIST_ITEM_GAP
+#define LIST_ITEM_GAP 14
+#endif 
+
+#ifndef LIST_MAX_SEC_TEXT_LENGTH
+#define LIST_MAX_SEC_TEXT_LENGTH 10
+#endif 
+
+#ifndef LIST_SEC_ITEM_EDGE_GAP
+#define LIST_SEC_ITEM_EDGE_GAP 3
+#endif 
+
 
 #endif 

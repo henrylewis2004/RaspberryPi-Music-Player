@@ -1,3 +1,7 @@
+// c headers
+#include <stdio.h>
+#include <string.h>
+
 // library headers
 #include "pico/stdlib.h"
 #include "u8g2.h"
@@ -126,8 +130,30 @@ uint8_t display_pico_gpio_delay(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void
 	return 1;
 }
 
+//util
+
+void hardware_clear_section(uint x, uint y, uint w, uint h){
+	u8g2_SetDrawColor(&u8g2, 0);
+	u8g2_DrawBox(&u8g2,x,y,w,h);
+
+	u8g2_SetDrawColor(&u8g2, 1);
+}
 
 //top bar
+//header text
+
+void hardware_draw_top_text(char *top_text){
+	u8g2_SetFont(&u8g2, u8g2_font_ncenB08_tr);
+
+	//artist
+	char text[TOP_BAR_TEXT_MAX_LENGTH+1];
+	text_size_sanitise(&u8g2,TOP_BAR_TEXT_MAX_LENGTH, top_text, text, sizeof(text));
+	
+	u8g2_uint_t str_length = u8g2_GetStrWidth(&u8g2,text)/2;	
+	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X/2) - str_length, TOP_BAR_TEXT_Y, text);
+
+}
+
 //play indicator
 void hardware_draw_play(bool playing){ 
 	if (playing){
@@ -151,7 +177,7 @@ void hardware_draw_bat_level(float level){ //4 levels (need to calculate battery
 }
 
 // play screen
-void hardware_draw_play_progress(float progress){ 
+void hardware_draw_progress_bar(float progress){ 
 	//borders
 	u8g2_DrawLine(&u8g2, PLAY_PROGRESS_L_X, PLAY_PROGRESS_Y, PLAY_PROGRESS_L_X, PLAY_PROGRESS_Y+PLAY_PROGRESS_V);
 	u8g2_DrawLine(&u8g2, PLAY_PROGRESS_R_X, PLAY_PROGRESS_Y, PLAY_PROGRESS_R_X, PLAY_PROGRESS_Y+PLAY_PROGRESS_V);
@@ -161,11 +187,11 @@ void hardware_draw_play_progress(float progress){
 
 }
 
-void hardware_draw_play_screen_song_text(char *artist, char *album, char *title, char *time){ 
+void hardware_draw_play_screen_song_text(char *artist, char *album, char *title){ 
 	u8g2_SetFont(&u8g2, u8g2_font_ncenB08_tr);
 
 	//artist
-	char text[PLAY_MAX_TEXT];
+	char text[PLAY_MAX_TEXT+1];
 	text_size_sanitise(&u8g2,PLAY_MAX_TEXT, artist, text, sizeof(text));
 	
 	u8g2_uint_t str_length = u8g2_GetStrWidth(&u8g2,text)/2;	
@@ -184,12 +210,73 @@ void hardware_draw_play_screen_song_text(char *artist, char *album, char *title,
 	
 	str_length = u8g2_GetStrWidth(&u8g2,text)/2;	
 	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X/2) - str_length, PLAY_TITLE_Y, text);
+}
 
-	//time
-	str_length = u8g2_GetStrWidth(&u8g2,time)/2;	
+void hardware_draw_play_screen_song_progress(char *time, float progress){ 
+	u8g2_SetFont(&u8g2, u8g2_font_ncenB08_tr);
+
+	//artist
+	u8g2_uint_t str_length = u8g2_GetStrWidth(&u8g2,time)/2;	
 	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X/2) - str_length, PLAY_TIME_Y, time);
 
+	hardware_draw_progress_bar(progress);
 }
+
+//lists
+
+void hardware_draw_list(uint start_x, uint start_y, uint item_gap, const char *items[], size_t item_count, bool numbering, bool ending){ //number = list each item with a number, ending = fill empty items with ---
+	if (item_count <= 0 || items == NULL){
+		return;
+	}
+
+	u8g2_SetFont(&u8g2, u8g2_font_ncenB08_tr);
+
+	char text[LIST_MAX_TEXT_LENGTH+1];
+	uint cnt = 0;
+	while(cnt < LIST_MAX_COUNT && cnt < item_count && items[cnt] != NULL){
+		text[0] = '\0';
+		char intext[256];
+		if (numbering){
+			snprintf(intext,sizeof(intext),"%u. %s", cnt+1, items[cnt]);
+		}else{
+			snprintf(intext,sizeof(intext),"%s", items[cnt]);
+		}
+
+		text_size_sanitise(&u8g2,LIST_MAX_TEXT_LENGTH, intext, text, sizeof(text));
+		u8g2_DrawStr(&u8g2, start_x, start_y + item_gap * cnt, text);
+
+		cnt++;
+	}
+
+	if (ending && cnt < LIST_MAX_COUNT){
+		for (int i = cnt; i < LIST_MAX_COUNT; i++){
+			u8g2_DrawStr(&u8g2, start_x, start_y + item_gap * i, "---");
+		}	
+	}
+
+}
+
+void hardware_draw_list_secondary(uint x_edge_gap, uint start_y, uint item_gap, const char *items[],size_t item_count){  //album year + song length
+	if (item_count <= 0 || items == NULL){
+		return;
+	}
+
+	u8g2_SetFont(&u8g2, u8g2_font_ncenB08_tr);
+
+	char text[LIST_MAX_SEC_TEXT_LENGTH+1];
+	uint cnt = 0;
+	while(cnt < LIST_MAX_COUNT && cnt < item_count && items[cnt] != NULL){
+		text[0] = '\0';
+
+		text_size_sanitise(&u8g2,LIST_MAX_TEXT_LENGTH, items[cnt], text, sizeof(text));
+		u8g2_uint_t str_length = u8g2_GetStrWidth(&u8g2,text);
+		u8g2_DrawStr(&u8g2, 128 - x_edge_gap - str_length, start_y + item_gap * cnt, text);
+
+		cnt++;
+	}
+	
+}
+
 
 //public
 
@@ -198,37 +285,97 @@ void display_hardware_init(void){
 
 	u8g2_InitDisplay(&u8g2);
 	u8g2_SetPowerSave(&u8g2, 1); 
-	u8g2_SetContrast(&u8g2, 255); 
+	u8g2_SetContrast(&u8g2, 64); 
 
 	u8g2_ClearBuffer(&u8g2);
 	u8g2_SendBuffer(&u8g2);
 }
 
 void display_hardware_draw_test(void){
+	u8g2_SetPowerSave(&u8g2, 0); 
 	u8g2_ClearBuffer(&u8g2);
 
-	hardware_draw_play(true);
-	hardware_draw_bat_level(0.5);
-	hardware_draw_play_progress(0.7);
-	hardware_draw_play_screen_song_text("Red Hot Chili Peppers", "Californication", "Around the World","-01:24");
+	display_hardware_draw_top_bar(true,0.5,false);
+	/*
+	display_hardware_draw_play_screen("Red Hot Chili Peppers", "Californication", "Around the World","-01:24",0.7,false);
 
-	// Transfer the framebuffer to the display.
+
+	display_hardware_draw_top_bar(false,0.8,true);
+	display_hardware_draw_play_screen("pee pee", "poo po", "world;y","-02:24",0.2,true);
+
+	display_hardware_play_screen_update_time("-1:20",0.4,true);
+
+	*/
+	hardware_draw_top_text("Main Menu");
+
+	const char *items[] = {"Playing","Artists","Playlists","Options"};
+
+	hardware_draw_list(LIST_ITEM_X0,LIST_ITEM_Y0,LIST_ITEM_GAP, items,4,false,false);
+
 	u8g2_SendBuffer(&u8g2);
-	u8g2_SetPowerSave(&u8g2, 0); 
+
 }
 
-void display_hardware_top_bar(bool song_playing, float battery_level){
-	//add clear top row buffer
+void display_hardware_draw_top_bar(bool song_playing, float battery_level,bool clear){
+	if (clear){
+		hardware_clear_section(PLAY_TRIANGLE_X0,PLAY_TRIANGLE_Y0,128, TOP_BAR_Y);
+	}
+
 	hardware_draw_play(song_playing);
+	hardware_draw_bat_level(battery_level);
+	u8g2_DrawHLine(&u8g2, TOP_BAR_X,TOP_BAR_Y,TOP_BAR_W);
+
+	u8g2_SendBuffer(&u8g2);
+}
+
+void display_hardware_draw_top_play_ind(bool song_playing,bool clear){
+	if (clear){
+		hardware_clear_section(PLAY_TRIANGLE_X0,PLAY_TRIANGLE_Y0,PLAY_TRIANGLE_X2 - PLAY_TRIANGLE_X0, PLAY_TRIANGLE_Y2);
+	}
+
+	hardware_draw_play(song_playing);
+
+	u8g2_SendBuffer(&u8g2);
+}
+
+void display_hardware_draw_top_bat_ind(float battery_level,bool clear){
+	if (clear){
+		hardware_clear_section(BATTERY_IND_X,BATTERY_IND_Y,BATTERY_IND_W, BATTERY_IND_H);
+	}
+
 	hardware_draw_bat_level(battery_level);
 
 	u8g2_SendBuffer(&u8g2);
 }
 
-void display_hardware_play_screen(char *artist, char *album, char *title, char *time_text, float progress){
-	//add clear row buffer
-	hardware_draw_play_screen_song_text(artist,album,title,time_text);
-	hardware_draw_play_progress(progress);
+void display_hardware_draw_play_screen(char *artist, char *album, char *title, char *time_text, float progress, bool clear){
+	if (clear){
+		//text
+		hardware_clear_section(0,TOP_BAR_Y+1,128,PLAY_TITLE_Y); 
+		//progress
+		hardware_clear_section(PLAY_PROGRESS_L_X, PLAY_PROGRESS_Y, PLAY_PROGRESS_R_X - PLAY_PROGRESS_L_X, PLAY_PROGRESS_V);
+	}
 
+	hardware_draw_play_screen_song_text(artist,album,title);
+	hardware_draw_play_screen_song_progress(time_text, progress);
+
+	u8g2_SendBuffer(&u8g2);
+}
+
+void display_hardware_play_screen_update_time(char *time_text, float progress, bool clear){
+	if (clear){
+		hardware_clear_section(PLAY_PROGRESS_L_X, PLAY_PROGRESS_Y, PLAY_PROGRESS_R_X - PLAY_PROGRESS_L_X, 128 - PLAY_PROGRESS_Y); //NOTE: might want to just clear buffer instead
+	}
+
+	hardware_draw_play_screen_song_progress(time_text, progress);
+
+	u8g2_SendBuffer(&u8g2);
+}
+
+void display_hardware_clear_screen(void){
+	u8g2_ClearBuffer(&u8g2);
+}
+
+void display_hardware_draw_screen(void){
 	u8g2_SendBuffer(&u8g2);
 }
