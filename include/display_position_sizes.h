@@ -143,6 +143,14 @@
 #endif 
 
 // list screens (main menu + song select)
+//
+#ifndef LIST_SELECTOR_W
+#define LIST_SELECTOR_W 8
+#endif 
+
+#ifndef LIST_SELECTOR_H
+#define LIST_SELECTOR_H 8
+#endif 
 
 #ifndef LIST_MAX_COUNT
 #define LIST_MAX_COUNT 8

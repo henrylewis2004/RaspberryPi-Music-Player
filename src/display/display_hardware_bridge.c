@@ -149,8 +149,7 @@ void hardware_draw_top_text(char *top_text){
 	char text[TOP_BAR_TEXT_MAX_LENGTH+1];
 	text_size_sanitise(&u8g2,TOP_BAR_TEXT_MAX_LENGTH, top_text, text, sizeof(text));
 	
-	u8g2_uint_t str_length = u8g2_GetStrWidth(&u8g2,text)/2;	
-	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X/2) - str_length, TOP_BAR_TEXT_Y, text);
+	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X - u8g2_GetStrWidth(&u8g2,text))/2, TOP_BAR_TEXT_Y, text);
 
 }
 
@@ -194,37 +193,33 @@ void hardware_draw_play_screen_song_text(char *artist, char *album, char *title)
 	char text[PLAY_MAX_TEXT+1];
 	text_size_sanitise(&u8g2,PLAY_MAX_TEXT, artist, text, sizeof(text));
 	
-	u8g2_uint_t str_length = u8g2_GetStrWidth(&u8g2,text)/2;	
-	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X/2) - str_length, PLAY_ARTIST_Y, text);
+	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X - u8g2_GetStrWidth(&u8g2,text))/2, PLAY_ARTIST_Y, text);
 
 	//album
 	text[0] = '\0';
 	text_size_sanitise(&u8g2,PLAY_MAX_TEXT, album, text, sizeof(text));
 	
-	str_length = u8g2_GetStrWidth(&u8g2,text)/2;	
-	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X/2) - str_length, PLAY_ALBUM_Y, text);
+	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X - u8g2_GetStrWidth(&u8g2,text))/2, PLAY_ALBUM_Y, text);
 
 	//title
 	text[0] = '\0';
 	text_size_sanitise(&u8g2,PLAY_MAX_TEXT, title, text, sizeof(text));
 	
-	str_length = u8g2_GetStrWidth(&u8g2,text)/2;	
-	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X/2) - str_length, PLAY_TITLE_Y, text);
+	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X - u8g2_GetStrWidth(&u8g2,text))/2, PLAY_TITLE_Y, text);
 }
 
 void hardware_draw_play_screen_song_progress(char *time, float progress){ 
 	u8g2_SetFont(&u8g2, u8g2_font_ncenB08_tr);
 
 	//artist
-	u8g2_uint_t str_length = u8g2_GetStrWidth(&u8g2,time)/2;	
-	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X/2) - str_length, PLAY_TIME_Y, time);
+	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X - u8g2_GetStrWidth(&u8g2,time))/2, PLAY_TIME_Y, time);
 
 	hardware_draw_progress_bar(progress);
 }
 
 //lists
 
-void hardware_draw_list(uint start_x, uint start_y, uint item_gap, const char *items[], size_t item_count, bool numbering, bool ending){ //number = list each item with a number, ending = fill empty items with ---
+void hardware_draw_list(uint start_x, uint start_y, uint item_gap, const char *items[], size_t item_count, bool numbering, bool ending, bool center){ //number = list each item with a number, ending = fill empty items with ---
 	if (item_count <= 0 || items == NULL){
 		return;
 	}
@@ -243,7 +238,14 @@ void hardware_draw_list(uint start_x, uint start_y, uint item_gap, const char *i
 		}
 
 		text_size_sanitise(&u8g2,LIST_MAX_TEXT_LENGTH, intext, text, sizeof(text));
-		u8g2_DrawStr(&u8g2, start_x, start_y + item_gap * cnt, text);
+
+		if (center){
+			u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X - u8g2_GetStrWidth(&u8g2,text))/2, start_y + item_gap * cnt, text);
+		}
+		else{
+			u8g2_DrawStr(&u8g2, start_x, start_y + item_gap * cnt, text);
+		}
+
 
 		cnt++;
 	}
@@ -269,12 +271,17 @@ void hardware_draw_list_secondary(uint x_edge_gap, uint start_y, uint item_gap, 
 		text[0] = '\0';
 
 		text_size_sanitise(&u8g2,LIST_MAX_TEXT_LENGTH, items[cnt], text, sizeof(text));
-		u8g2_uint_t str_length = u8g2_GetStrWidth(&u8g2,text);
-		u8g2_DrawStr(&u8g2, 128 - x_edge_gap - str_length, start_y + item_gap * cnt, text);
+		u8g2_DrawStr(&u8g2, 128 - x_edge_gap - u8g2_GetStrWidth(&u8g2,text), start_y + item_gap * cnt, text);
 
 		cnt++;
 	}
 	
+}
+
+void hardware_select_list(uint start_x, uint start_y, uint item_gap, uint index, uint previous_index){
+	hardware_clear_section(start_x, start_y + item_gap * previous_index,LIST_SELECTOR_W,LIST_SELECTOR_H);
+
+	//TODO: add indicator icon
 }
 
 
@@ -310,7 +317,7 @@ void display_hardware_draw_test(void){
 
 	const char *items[] = {"Playing","Artists","Playlists","Options"};
 
-	hardware_draw_list(LIST_ITEM_X0,LIST_ITEM_Y0,LIST_ITEM_GAP, items,4,false,false);
+	hardware_draw_list(LIST_ITEM_X0,LIST_ITEM_Y0,LIST_ITEM_GAP, items,4,false,false,true);
 
 	u8g2_SendBuffer(&u8g2);
 
