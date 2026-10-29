@@ -28,7 +28,6 @@ void display_test_run(void){
 	display_hardware_draw_list_selection_indicator(2, 0, SCREEN_MAIN_MENU);
 
 	display_hardware_draw_screen();
-	*/
 
 	//top bar
 	display_hardware_draw_top_bar(true,0.8,SCREEN_PLAYING_TEXT,false);
@@ -37,6 +36,22 @@ void display_test_run(void){
 	display_hardware_draw_play_screen("My Chemical Romance", "The Black Parade","The Black Parade", 356, 0.5,false);
 
 	display_hardware_draw_screen();
+	*/
+	display_hardware_draw_top_bar(true,0.8,SCREEN_PLAYING_TEXT,false);
+	//display_goto_main_menu();
+	//display_goto_playing("test", "test", "test", 250, 0.5);
+	//const char *albums[] = {"Revolver","Help","Beatles White Album","Abbey Road"};
+	//const char *years[] = {"1967","1965","1968","1970"};
+						     
+	//display_goto_album_select("Beatles",albums, sizeof(albums)/sizeof(albums[0]),years, sizeof(years)/sizeof(years[0]));
+
+	//const char *titles[] = {"I'm only sleeping","Gotta get you into my life","Marianne","Taxman"};
+	//const char *lengths[] = {"3:13","2:56","04:12","01:34"};
+						     
+	//display_goto_title_select(1,"Revolver",titles, sizeof(titles)/sizeof(titles[0]),lengths, sizeof(lengths)/sizeof(lengths[0]));
+	//display_update_list_selection(1, 0, SCREEN_TITLES);
+	display_goto_options();
+	display_update_list_selection(0, 0, SCREEN_OPTIONS);
 
 }
 
@@ -94,6 +109,7 @@ void display_goto_album_select(char *artist_name, const char *albums[],size_t al
 	display_hardware_draw_screen();
 }
 
+//NOTE might have to change song lenths array
 void display_goto_title_select(uint numbering_start, char *album_name, const char *titles[],size_t titles_length,const char *song_lengths[], size_t song_lengths_count){
 	//top bar
 	display_hardware_draw_top_text(album_name, true);

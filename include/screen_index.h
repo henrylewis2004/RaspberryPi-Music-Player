@@ -34,7 +34,7 @@
 #endif
 
 #ifndef SCREEN_MAIN_MENU_TEXT
-#define SCREEN_MAIN_MENU_TEXT "Main Menu"
+#define SCREEN_MAIN_MENU_TEXT "MAIN MENU"
 #endif
 
 #ifndef SCREEN_MAIN_MENU_ITEMS
@@ -42,19 +42,19 @@
 #endif
 
 #ifndef SCREEN_PLAYING_TEXT
-#define SCREEN_PLAYING_TEXT "Playing"
+#define SCREEN_PLAYING_TEXT "PLAYING"
 #endif
 
 #ifndef SCREEN_QUEUE_TEXT
-#define SCREEN_QUEUE_TEXT "Song Queue"
+#define SCREEN_QUEUE_TEXT "SONG QUEUE"
 #endif
 
 #ifndef SCREEN_ARTISTS_TEXT
-#define SCREEN_ARTISTS_TEXT "Artists"
+#define SCREEN_ARTISTS_TEXT "ARTISTS"
 #endif
 
 #ifndef SCREEN_OPTIONS_TEXT
-#define SCREEN_OPTIONS_TEXT "Options"
+#define SCREEN_OPTIONS_TEXT "OPTIONS"
 #endif
 
 #ifndef SCREEN_OPTIONS_ITEMS

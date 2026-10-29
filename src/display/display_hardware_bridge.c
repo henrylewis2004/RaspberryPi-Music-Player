@@ -347,7 +347,7 @@ void display_hardware_draw_top_bat_ind(float battery_level,bool clear){
 
 void display_hardware_draw_top_text(char *text, bool clear){
 	if (clear){
-		hardware_clear_section(PLAY_TRIANGLE_X1 ,PLAY_TRIANGLE_Y0,BATTERY_IND_X - PLAY_TRIANGLE_X1, TOP_BAR_TEXT_Y);
+		hardware_clear_section(PLAY_TRIANGLE_X1 ,PLAY_TRIANGLE_Y0,BATTERY_IND_X - PLAY_TRIANGLE_X1, TOP_BAR_Y);
 	}
 
 	hardware_draw_top_text(text);
@@ -399,7 +399,7 @@ void display_hardware_draw_list(uint SCREEN, const char *items[], size_t item_co
 		if (SCREEN == SCREEN_QUEUE || SCREEN == SCREEN_TITLES ){
 			numbering = true;
 		}
-		else if (SCREEN = SCREEN_OPTIONS){
+		else if (SCREEN == SCREEN_OPTIONS){
 			ending = false;
 		}
 

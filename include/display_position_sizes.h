@@ -165,7 +165,7 @@
 #endif 
 
 #ifndef LIST_ITEM_X0
-#define LIST_ITEM_X0 10
+#define LIST_ITEM_X0 15
 #endif 
 
 #ifndef LIST_ITEM_Y0
