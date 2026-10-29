@@ -28,8 +28,8 @@ void start_init(void){
 
 	//led
 	led_blink();
-	sleep_ms(5000);
-	printf("first i breathe!\n");
+//	sleep_ms(5000);
+//	printf("first i breathe!\n");
 	/*
 			       
 	//audio

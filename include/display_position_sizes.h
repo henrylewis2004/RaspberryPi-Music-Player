@@ -142,6 +142,10 @@
 #define PLAY_PROGRESS_LINE_X_2 116
 #endif 
 
+#ifndef PLAY_PROGRESS_TEXT_MAX
+#define PLAY_PROGRESS_TEXT_MAX 100
+#endif
+
 // list screens (main menu + song select)
 
 #ifndef LIST_SELECTOR_W

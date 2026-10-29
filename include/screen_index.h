@@ -53,8 +53,12 @@
 #define SCREEN_ARTISTS_TEXT "Artists"
 #endif
 
-#ifndef SCREEN_OPTIONS
-#define SCREEN_OPTIONS "Options"
+#ifndef SCREEN_OPTIONS_TEXT
+#define SCREEN_OPTIONS_TEXT "Options"
+#endif
+
+#ifndef SCREEN_OPTIONS_ITEMS
+#define SCREEN_OPTIONS_ITEMS {"Contrast", "Volume", "example option","example option 2","example option 3"}
 #endif
 
 #endif

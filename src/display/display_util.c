@@ -43,4 +43,39 @@ void text_size_sanitise(u8g2_t *u8g2, uint max_length, const char *text, char *t
 
 }
 
-//void time_sanitise(){}
+void time_sanitise(uint seconds_remaining, char *text_out, size_t out_size){
+	uint hours = seconds_remaining / 3600;
+	uint minutes = (seconds_remaining - hours * 3600 )/ 60;
+	uint seconds = seconds_remaining - hours * 3600 - minutes * 60;;
+
+	snprintf(text_out, out_size, "-");
+
+	if (hours > 0){
+		if (hours < 10){
+			snprintf(text_out, out_size, "%s0%u:", text_out,hours);
+		}
+		else{
+			snprintf(text_out, out_size, "%s%u:", text_out,hours);
+		}
+		
+	}
+	if (minutes < 10){
+		snprintf(text_out, out_size, "%s0%u:", text_out,minutes);
+	}
+	else{
+		snprintf(text_out, out_size, "%s%u:", text_out,minutes);
+	}
+	if (seconds < 10){
+		snprintf(text_out, out_size, "%s0%u", text_out,seconds);
+	}
+	else{
+		snprintf(text_out, out_size, "%s%u", text_out,seconds);
+	}
+
+
+}
+
+
+
+
+
