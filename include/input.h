@@ -1,6 +1,10 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+#ifndef BUTTON_LATENCY_MS //time after a button press / final action that other inputs are ignored
+#define BUTTON_LATENCY_MS 100
+#endif 
+
 #ifndef PLAY_BUTTON_PIN
 #define PLAY_BUTTON_PIN 26
 #endif // !PLAY_BUTTON_PIN
@@ -29,16 +33,21 @@
 typedef struct {
 	bool play_button;
 	bool skip_button;
+	bool alt_button;
 
-	bool vol_up_button;
-	bool vol_down_button;
+	bool 2d_up;
+	bool 2d_down;
+	bool 2d_left;
+	bool 2d_right;
 
 	bool power_button;
 } input_flags;
 
+
 //functions
 void input_init(void);
 void input_reset_flags(void);
+
 input_flags input_get_flags(void);
 input_flags input_get_reset_flags(void);
 
