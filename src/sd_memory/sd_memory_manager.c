@@ -18,8 +18,11 @@
 
 typedef struct {
 	FIL file;
-	uint32_t data_byte_length;
-	uint32_t bytes_read_total;
+	//uint32_t data_byte_length;
+	//uint32_t bytes_read_total;
+
+	size_t data_byte_length;
+	size_t bytes_read_total;
 
 	wav_file wfile;
 } playing_song;
