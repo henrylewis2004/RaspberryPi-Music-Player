@@ -9,7 +9,7 @@
 // project headers
 #include "display_util.h"
 
-void text_size_sanitise(u8g2_t *u8g2, uint max_length, const char *text, char *text_out, size_t out_size){
+void text_size_sanitise(u8g2_t* u8g2, uint max_length, const char* text, char* text_out, size_t out_size){
 	if (out_size <= 0){
 		return;
 	}
@@ -43,7 +43,7 @@ void text_size_sanitise(u8g2_t *u8g2, uint max_length, const char *text, char *t
 
 }
 
-void time_sanitise(uint seconds_remaining, char *text_out, size_t out_size){
+void time_sanitise(uint seconds_remaining, char* text_out, size_t out_size){
 	uint hours = seconds_remaining / 3600;
 	uint minutes = (seconds_remaining - hours * 3600 )/ 60;
 	uint seconds = seconds_remaining - hours * 3600 - minutes * 60;;

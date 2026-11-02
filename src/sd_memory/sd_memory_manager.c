@@ -18,11 +18,8 @@
 
 typedef struct {
 	FIL file;
-	//uint32_t data_byte_length;
-	//uint32_t bytes_read_total;
-
-	size_t data_byte_length;
-	size_t bytes_read_total;
+	uint32_t data_byte_length;
+	uint32_t bytes_read_total;
 
 	wav_file wfile;
 } playing_song;
@@ -133,12 +130,12 @@ static int sd_write_file(char* filepath, char* data_in,size_t input_size, bool w
 }
 
 // wav
-static wav_file read_wav(char* filepath, playing_song* curSong){
-	FRESULT fr = f_open(&curSong->file, filepath, FA_READ);
+static wav_file read_wav(char* filepath, FIL* file;){//playing_song* curSong){
+	FRESULT fr = f_open(file, filepath, FA_READ);
 
 	//open file
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&curSong->file);
+		f_close(file);
 		panic("f_open(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
@@ -147,94 +144,94 @@ static wav_file read_wav(char* filepath, playing_song* curSong){
 	uint bytes_read;
 
 	//header
-	fr = f_read(&curSong->file,wfile.header.id,4,&bytes_read);
+	fr = f_read(file,wfile.header.id,4,&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&curSong->file);
+		f_close(file);
 		panic("f_read(%s) wav header id error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
-	fr = f_read(&curSong->file,&wfile.header.fileSize,sizeof(uint32_t),&bytes_read);
+	fr = f_read(file,&wfile.header.fileSize,sizeof(uint32_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&curSong->file);
+		f_close(file);
 		panic("f_read(%s) wav header file size error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
-	fr = f_read(&curSong->file,wfile.header.fileFormat,4,&bytes_read);
+	fr = f_read(file,wfile.header.fileFormat,4,&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&curSong->file);
+		f_close(file);
 		panic("f_read(%s) wav header file format error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
 	//format
-	fr = f_read(&curSong->file,wfile.format.chunkId,4,&bytes_read);
+	fr = f_read(file,wfile.format.chunkId,4,&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&curSong->file);
+		f_close(file);
 		panic("f_read(%s) wav format id error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
-	fr = f_read(&curSong->file,&wfile.format.chunkSize,sizeof(uint32_t),&bytes_read);
+	fr = f_read(file,&wfile.format.chunkSize,sizeof(uint32_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&curSong->file);
+		f_close(file);
 		panic("f_read(%s) wav format chunk size error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
-	fr = f_read(&curSong->file,&wfile.format.audioFormat,sizeof(uint16_t),&bytes_read);
+	fr = f_read(file,&wfile.format.audioFormat,sizeof(uint16_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&curSong->file);
+		f_close(file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
-	fr = f_read(&curSong->file,&wfile.format.numChannels,sizeof(uint16_t),&bytes_read);
+	fr = f_read(file,&wfile.format.numChannels,sizeof(uint16_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&curSong->file);
+		f_close(file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
-	fr = f_read(&curSong->file,&wfile.format.sampleRate,sizeof(uint32_t),&bytes_read);
+	fr = f_read(file,&wfile.format.sampleRate,sizeof(uint32_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&curSong->file);
+		f_close(file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
-	fr = f_read(&curSong->file,&wfile.format.byteRate,sizeof(uint32_t),&bytes_read);
+	fr = f_read(file,&wfile.format.byteRate,sizeof(uint32_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&curSong->file);
-		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
-	}
-
-	fr = f_read(&curSong->file,&wfile.format.blockAlign,sizeof(uint16_t),&bytes_read);
-	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&curSong->file);
+		f_close(file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
-	fr = f_read(&curSong->file,&wfile.format.bitsPerSample,sizeof(uint16_t),&bytes_read);
+	fr = f_read(file,&wfile.format.blockAlign,sizeof(uint16_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&curSong->file);
+		f_close(file);
+		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+	}
+
+	fr = f_read(file,&wfile.format.bitsPerSample,sizeof(uint16_t),&bytes_read);
+	if (fr != FR_OK && fr != FR_EXIST){
+		f_close(file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
 
 	//data
 	/*
-	fr = f_read(&curSong->file,wfile.data.chunkId,4,&bytes_read);
+	fr = f_read(file,wfile.data.chunkId,4,&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&curSong->file);
+		f_close(file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 	*/
 
 	uint32_t count = 0;
-	while (f_read(&curSong->file,wfile.data.chunkId,4,&bytes_read) == FR_OK ){
+	while (f_read(file,wfile.data.chunkId,4,&bytes_read) == FR_OK ){
 		if (memcmp(wfile.data.chunkId, "data",4) == 0){
 			break;
 		}
 		if (count > 20){ //check 20 chunks
-			f_close(&curSong->file);
+			f_close(file);
 			panic("data f_read(%s) error, cannot find data section!: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 		}
 		count++;
 
 		uint32_t chunksize;
 
-		fr = f_read(&curSong->file,&chunksize,sizeof(chunksize),&bytes_read);
+		fr = f_read(file,&chunksize,sizeof(chunksize),&bytes_read);
 		if (fr != FR_OK && fr != FR_EXIST){
-			f_close(&curSong->file);
+			f_close(file);
 			panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 		}
 
@@ -244,20 +241,65 @@ static wav_file read_wav(char* filepath, playing_song* curSong){
 			chunksize++;
 		}
 
-		f_lseek(&curSong->file, f_tell(&curSong->file) + chunksize);
+		f_lseek(file, f_tell(file) + chunksize);
 
 	}
 
-	fr = f_read(&curSong->file,&wfile.data.chunkSize,sizeof(uint32_t),&bytes_read);
+	fr = f_read(file,&wfile.data.chunkSize,sizeof(uint32_t),&bytes_read);
 	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(&curSong->file);
+		f_close(file);
 		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 	}
 
-	//need to change to malloc (if data is needed)
 	return wfile;
 }
 
+//NOTE: WIP
+track_tag_info read_track_info(char* filepath){
+	FIL file;
+	wav_file wfile = read_wav(filepath, &file);
+	track_tag_info itag;
+
+	//itag.length = calculate_time_from_bytes(wfile.data.chunkSize);
+
+	uint32_t count = 0;
+	uint bytes_read;
+	char chunkID[4];
+	while (f_read(&file,&chunkID,sizeof(chunkID),&bytes_read) == FR_OK ){
+		if (memcmp(chunkID, "INFO",4) == 0){
+			break;
+		}
+		//NOTE: probably remove 
+		if (count > 20){ //check 20 chunks
+			f_close(file);
+			panic("info f_read(%s) error, cannot find info section!: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+		}
+		count++;
+
+		uint32_t chunksize;
+
+		fr = f_read(file,&chunksize,sizeof(chunksize),&bytes_read);
+		if (fr != FR_OK && fr != FR_EXIST){
+			f_close(file);
+			panic("info f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
+		}
+
+
+		//word alignment
+		if (chunksize & 1){
+			chunksize++;
+		}
+
+		f_lseek(file, f_tell(file) + chunksize);
+
+	}
+
+	f_close(&file);
+	return itag;
+}
+
+uint calculate_time_from_bytes(uint bytes_length){
+}
 
 
 // public \\
@@ -303,9 +345,13 @@ void sd_functionality_test(void){
 }
 
 
+//
+track_tag_info sd_get_track_tag_info(char* filepath){
+}
 
+//wav functions (maybe make own c file)
 void sd_set_playsong(char* filepath){
-	cur_play_song.wfile = read_wav(filepath, &cur_play_song);
+	cur_play_song.wfile = read_wav(filepath, &cur_play_song->file);
 	cur_play_song.bytes_read_total = 0;
 	cur_play_song.data_byte_length = cur_play_song.wfile.data.chunkSize;
 }
@@ -366,7 +412,7 @@ bool sd_wav_read_data(uint32_t* buffer_refil){
 }
 
 
-//TODO: add checing 
+//TODO: add checking 
 void sd_wav_close_playing_song(void){
 	f_close(&cur_play_song.file);
 }

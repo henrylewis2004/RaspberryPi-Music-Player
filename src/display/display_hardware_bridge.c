@@ -22,12 +22,12 @@ static u8g2_t u8g2;
 //u8g2 callbacks for display setup
 
 //u8x8 byte communication
-uint8_t display_pico_byte_hw_spi_communication(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr){
-	uint8_t *data;
+uint8_t display_pico_byte_hw_spi_communication(u8x8_t* u8x8, uint8_t msg, uint8_t arg_int, void* arg_ptr){
+	uint8_t* data;
 
 	switch(msg){
 		case U8X8_MSG_BYTE_SEND:
-			data = (uint8_t *)arg_ptr;
+			data = (uint8_t* )arg_ptr;
 			spi_write_blocking(DISPLAY_SPI_PORT,data, arg_int);
 			break;
 
@@ -56,7 +56,7 @@ uint8_t display_pico_byte_hw_spi_communication(u8x8_t *u8x8, uint8_t msg, uint8_
 }
 
 //pico gpio and delay callback (implements communication delay and sets gpio values)
-uint8_t display_pico_gpio_delay(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr){
+uint8_t display_pico_gpio_delay(u8x8_t* u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr){
 	switch(msg){
 		//init
 		case U8X8_MSG_GPIO_AND_DELAY_INIT:	// called once during init phase of u8g2/u8x8
@@ -143,7 +143,7 @@ void hardware_clear_section(uint x, uint y, uint w, uint h){
 //top bar
 //header text
 
-void hardware_draw_top_text(char *top_text){
+void hardware_draw_top_text(char* top_text){
 	u8g2_SetFont(&u8g2, u8g2_font_ncenB08_tr);
 
 	//artist
@@ -187,7 +187,7 @@ void hardware_draw_progress_bar(float progress){
 
 }
 
-void hardware_draw_play_screen_song_text(char *artist, char *album, char *title){ 
+void hardware_draw_play_screen_song_text(char* artist, char* album, char* title){ 
 	u8g2_SetFont(&u8g2, u8g2_font_ncenB08_tr);
 
 	//artist
@@ -209,7 +209,7 @@ void hardware_draw_play_screen_song_text(char *artist, char *album, char *title)
 	u8g2_DrawStr(&u8g2, (DISPLAY_SIZE_X - u8g2_GetStrWidth(&u8g2,text))/2, PLAY_TITLE_Y, text);
 }
 
-void hardware_draw_play_screen_song_progress(char *time, float progress){ 
+void hardware_draw_play_screen_song_progress(char* time, float progress){ 
 	u8g2_SetFont(&u8g2, u8g2_font_ncenB08_tr);
 
 	//artist
@@ -220,7 +220,7 @@ void hardware_draw_play_screen_song_progress(char *time, float progress){
 
 //lists
 
-void hardware_draw_list(uint start_x, uint start_y, uint item_gap, const char *items[], size_t item_count, bool numbering, uint numbering_start,bool ending, bool centre){ //number = list each item with a number, ending = fill empty items with ---
+void hardware_draw_list(uint start_x, uint start_y, uint item_gap, const char* items[], size_t item_count, bool numbering, uint numbering_start,bool ending, bool centre){ //number = list each item with a number, ending = fill empty items with ---
 	if (item_count <= 0 || items == NULL){
 		return;
 	}
@@ -259,7 +259,7 @@ void hardware_draw_list(uint start_x, uint start_y, uint item_gap, const char *i
 
 }
 
-void hardware_draw_list_secondary(uint x_edge_gap, uint start_y, uint item_gap, const char *items[],size_t item_count){  //album year + song length
+void hardware_draw_list_secondary(uint x_edge_gap, uint start_y, uint item_gap, const char* items[],size_t item_count){  //album year + song length
 	if (item_count <= 0 || items == NULL){
 		return;
 	}
@@ -345,7 +345,7 @@ void display_hardware_draw_top_bat_ind(float battery_level,bool clear){
 	hardware_draw_bat_level(battery_level);
 }
 
-void display_hardware_draw_top_text(char *text, bool clear){
+void display_hardware_draw_top_text(char* text, bool clear){
 	if (clear){
 		hardware_clear_section(PLAY_TRIANGLE_X1 ,PLAY_TRIANGLE_Y0,BATTERY_IND_X - PLAY_TRIANGLE_X1, TOP_BAR_Y);
 	}
@@ -354,7 +354,7 @@ void display_hardware_draw_top_text(char *text, bool clear){
 }
 
 //play screen
-void display_hardware_draw_play_screen(char *artist, char *album, char *title, uint seconds_remaining, float progress, bool clear){
+void display_hardware_draw_play_screen(char* artist, char* album, char* title, uint seconds_remaining, float progress, bool clear){
 	if (clear){
 		//text
 		hardware_clear_section(0,TOP_BAR_Y+1,128,PLAY_TITLE_Y); 
@@ -381,7 +381,7 @@ void display_hardware_play_screen_update_time( uint seconds_remaining,float prog
 }
 
 //list
-void display_hardware_draw_list(uint SCREEN, const char *items[], size_t item_count, const char *secondary_items[], size_t secondary_items_count, uint numbering_start, bool clear){
+void display_hardware_draw_list(uint SCREEN, const char* items[], size_t item_count, const char* secondary_items[], size_t secondary_items_count, uint numbering_start, bool clear){
 	if (clear){
 		display_hardware_clear_list_area(LIST_ITEM_X0);
 	}
