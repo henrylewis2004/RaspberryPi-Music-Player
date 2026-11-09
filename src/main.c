@@ -28,21 +28,23 @@ void start_init(void){
 
 	//led
 	led_blink();
-//	sleep_ms(5000);
-//	printf("first i breathe!\n");
-	/*
+	sleep_ms(5000);
+	printf("first i breathe!\n");
 			       
+	/*
 	//audio
 	printf("audio_init\n");
 	dma_unclaim_mask(0x30); //unclaim channels 4 & 5
 	audio_init();
 	printf("audio_init finished\n");
+	*/
 
 	//sd card
 	printf("sd_init\n");
 	dma_unclaim_mask(0x0f); //unclaim channels (0-3)
 	sd_init();
 	printf("sd_init finished\n");
+	/*
 
 	//input
 	printf("input init\n");

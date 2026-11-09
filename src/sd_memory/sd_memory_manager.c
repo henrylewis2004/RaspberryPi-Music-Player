@@ -130,7 +130,7 @@ static int sd_write_file(char* filepath, char* data_in,size_t input_size, bool w
 }
 
 // wav
-static wav_file read_wav(char* filepath, FIL* file;){//playing_song* curSong){
+static wav_file read_wav(char* filepath, FIL* file){//playing_song* curSong){
 	FRESULT fr = f_open(file, filepath, FA_READ);
 
 	//open file
@@ -208,14 +208,6 @@ static wav_file read_wav(char* filepath, FIL* file;){//playing_song* curSong){
 
 
 	//data
-	/*
-	fr = f_read(file,wfile.data.chunkId,4,&bytes_read);
-	if (fr != FR_OK && fr != FR_EXIST){
-		f_close(file);
-		panic("f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
-	}
-	*/
-
 	uint32_t count = 0;
 	while (f_read(file,wfile.data.chunkId,4,&bytes_read) == FR_OK ){
 		if (memcmp(wfile.data.chunkId, "data",4) == 0){
@@ -254,33 +246,41 @@ static wav_file read_wav(char* filepath, FIL* file;){//playing_song* curSong){
 	return wfile;
 }
 
-//NOTE: WIP
+//file taggings
+uint calculate_time_from_bytes(uint bytes_length){
+}
+
 track_tag_info read_track_info(char* filepath){
 	FIL file;
 	wav_file wfile = read_wav(filepath, &file);
-	track_tag_info itag;
+	//need to skip data 
+	f_lseek(&file, f_tell(&file) + wfile.data.chunkSize);
 
+	track_tag_info itag;
 	//itag.length = calculate_time_from_bytes(wfile.data.chunkSize);
 
 	uint32_t count = 0;
 	uint bytes_read;
 	char chunkID[4];
-	while (f_read(&file,&chunkID,sizeof(chunkID),&bytes_read) == FR_OK ){
-		if (memcmp(chunkID, "INFO",4) == 0){
+
+	FRESULT fr = f_read(&file,&chunkID,sizeof(chunkID),&bytes_read) ;
+
+	while (fr == FR_OK ){
+		if (memcmp(chunkID, "LIST",4) == 0){
 			break;
 		}
 		//NOTE: probably remove 
 		if (count > 20){ //check 20 chunks
-			f_close(file);
+			f_close(&file);
 			panic("info f_read(%s) error, cannot find info section!: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 		}
 		count++;
 
 		uint32_t chunksize;
 
-		fr = f_read(file,&chunksize,sizeof(chunksize),&bytes_read);
+		fr = f_read(&file,&chunksize,sizeof(chunksize),&bytes_read);
 		if (fr != FR_OK && fr != FR_EXIST){
-			f_close(file);
+			f_close(&file);
 			panic("info f_read(%s) error: %s (%d)\n",filepath, FRESULT_str(fr), fr);
 		}
 
@@ -290,16 +290,17 @@ track_tag_info read_track_info(char* filepath){
 			chunksize++;
 		}
 
-		f_lseek(file, f_tell(file) + chunksize);
+		f_lseek(&file, f_tell(&file) + chunksize);
+
+		fr = f_read(&file,&chunkID,sizeof(chunkID),&bytes_read) ;
 
 	}
+
 
 	f_close(&file);
 	return itag;
 }
 
-uint calculate_time_from_bytes(uint bytes_length){
-}
 
 
 // public \\
@@ -351,7 +352,7 @@ track_tag_info sd_get_track_tag_info(char* filepath){
 
 //wav functions (maybe make own c file)
 void sd_set_playsong(char* filepath){
-	cur_play_song.wfile = read_wav(filepath, &cur_play_song->file);
+	cur_play_song.wfile = read_wav(filepath, &cur_play_song.file);
 	cur_play_song.bytes_read_total = 0;
 	cur_play_song.data_byte_length = cur_play_song.wfile.data.chunkSize;
 }

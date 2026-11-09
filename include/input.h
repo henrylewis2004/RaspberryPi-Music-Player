@@ -35,10 +35,10 @@ typedef struct {
 	bool skip_button;
 	bool alt_button;
 
-	bool 2d_up;
-	bool 2d_down;
-	bool 2d_left;
-	bool 2d_right;
+	bool axis_up;
+	bool axis_down;
+	bool axis_left;
+	bool axis_right;
 
 	bool power_button;
 } input_flags;

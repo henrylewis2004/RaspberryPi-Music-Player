@@ -1,6 +1,10 @@
 #ifndef LIBRARY_MANAGER_H
 #define LIBRARY_MANAGER_H
 
+//headers for types
+#include <stddef.h>
+#include <stdint.h>
+
 //frame 
 #ifndef MAX_FRAME_COUNT
 #define MAX_FRAME_COUNT 25
@@ -39,44 +43,45 @@ typedef struct {
 	char name[MAX_SONG_NAME_LENGTH];
 	char filepath[MAX_SONG_PATH_LENGTH];
 	//uint track_number;
-	uint length; //seconds
+	uint32_t length; //seconds
 
 } song_info;
 
 
 typedef struct {
 	char name[MAX_ALBUM_NAME_LENGTH];
-	uint year;
-	song_info *song_list; 
+	uint32_t year;
+	song_info* song_list; 
 	size_t song_count;
 
 } album_info;
 
 typedef struct {
 	char name[MAX_ARTIST_NAME_LENGTH];
-	album_name *album_list;
+	album_info* album_list;
 	size_t album_count;
 
 } artist_info;
 
 //object structs
 typedef struct {
-	song_info *song_i;
-	album_info *album_i;
+	song_info* song_i;
+	album_info* album_i;
 
 } song;
 
 typedef struct {
-	album_info *album_i;
-	artist_info *artist_i;
+	album_info* album_i;
+	artist_info* artist_i;
 
 } album;
 
 
 typedef struct {
-	artist_info *artist_list;
+	artist_info* artist_list;
 	size_t artist_count;
 
 } catalogue;
+
 
 #endif

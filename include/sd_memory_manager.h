@@ -5,10 +5,22 @@
 #define MAX_FILE_SIZE 4096
 #endif
 
-typedef struct {
+//NOTE: might want to move values and struct to different header
+#ifndef MAX_SONG_PATH_LENGTH
+#define MAX_SONG_PATH_LENGTH 128
+#endif
 
+#ifndef MAX_SONG_NAME_LENGTH
+#define MAX_SONG_NAME_LENGTH 128
+#endif
+
+#ifndef MAX_ARTIST_COUNT
+#define MAX_ARTIST_COUNT 10
+#endif
+
+typedef struct {
 	//example tag
-	/*LISTî: might be a number? might be unrelated
+	/* LIST: might be a number? might be unrelated
 	 * INFO: info chunk
 	 * ITRK: round the World
 	 * ICRD:1999-06-08
@@ -23,11 +35,11 @@ typedef struct {
 	size_t chunk_size;
 	char filepath[MAX_SONG_PATH_LENGTH];
 
-	uint track_number;
+	uint32_t track_number;
 
-	uint year;
-	uint month;
-	uint date;
+	uint32_t year;
+	uint32_t month;
+	uint32_t date;
 
 	/*
 	char *song_writers[];

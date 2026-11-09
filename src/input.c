@@ -42,12 +42,13 @@ void input_reset_flags(void){
 	input_button_flags.skip_button = false;
 	input_button_flags.alt_button = false;
 
-	input_button_flags.2d_up = false;
-	input_button_flags.2d_down = false;
-	input_button_flags.2d_left = false;
-	input_button_flags.2d_right = false;
+	input_button_flags.axis_up = false;
+	input_button_flags.axis_down = false;
+	input_button_flags.axis_left = false;
+	input_button_flags.axis_right = false;
 
 	input_button_flags.power_button = false;
+}
 
 
 input_flags input_get_flags(void){
