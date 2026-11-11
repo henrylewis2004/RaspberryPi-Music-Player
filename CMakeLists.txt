@@ -46,10 +46,13 @@ add_executable(Pico-Music
 	src/display/display_util.c
 
 	#input
-	src/input.c
+	src/input/input.c
 
 	#library
-	src/library_manager.c
+	src/library/library_manager.c
+
+	#controller
+	src/controller/controller.c
 
 )
 
