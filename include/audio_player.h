@@ -31,7 +31,10 @@ void audio_volume_down(void);
 void audio_skip_song(void);
 void audio_add_song_to_queue(char* filepath);
 int audio_play_top_queue(void);
+uint32_t audio_get_song_queue_count(void);
 
 bool audio_has_song_selected(void);
+
+void audio_song_test(bool play_now);
 
 #endif // !AUDIO_PLAYER_H

@@ -44,11 +44,11 @@ typedef struct {
 } input_flags;
 
 
+
 //functions
 void input_init(void);
-void input_reset_flags(void);
 
+input_flags input_reset_flags(void);
 input_flags input_get_flags(void);
-input_flags input_get_reset_flags(void);
 
 #endif

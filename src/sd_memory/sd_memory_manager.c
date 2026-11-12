@@ -357,7 +357,7 @@ void sd_set_playsong(char* filepath){
 	cur_play_song.data_byte_length = cur_play_song.wfile.data.chunkSize;
 }
 
-bool sd_wav_read_data(uint32_t* buffer_refil){
+bool sd_wav_read_data(volatile uint32_t* buffer_refil){
 	//might need changing?
 	//on last buffer swap one could be playing whilst the other "reads" but returns finished so does it stop playback early?
 	if (cur_play_song.bytes_read_total >= cur_play_song.data_byte_length){
@@ -401,6 +401,7 @@ bool sd_wav_read_data(uint32_t* buffer_refil){
 	// If the read was shorter than the full buffer, zero out the remainder
 	if (bytes_read < I2S_BUFFER_WORDS * sizeof(uint32_t)) {
 		uint32_t remaining_words = I2S_BUFFER_WORDS - sample_count;
+		//note: memset discards volatile 
 		memset(&buffer_refil[sample_count], 0, remaining_words * sizeof(uint32_t));
 	}
 	

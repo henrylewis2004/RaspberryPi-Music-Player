@@ -11,10 +11,10 @@
 
 typedef struct song_queue song_queue;
 
-struct song_queue {
+struct song_queue{
 	char path[MAX_SONG_PATH_LENGTH];
 
-	song_queue* previous_song; //NOTE: maybe include at a later date?
+	song_queue* previous_song; 
 	song_queue* next_song;
 
 };
@@ -29,5 +29,7 @@ char* song_queue_get_top_song_path(void);
 bool song_queue_top_has_song(void);
 
 int song_queue_clear(void);
+
+uint32_t song_queue_get_count(void);
 
 #endif // !DEBUG

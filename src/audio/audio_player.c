@@ -166,6 +166,35 @@ int audio_play_top_queue(void){
 	return -1;
 }
 
+uint32_t audio_get_song_queue_count(void){
+	return song_queue_get_count();
+}
+
 bool audio_has_song_selected(void){
 	return song_queue_top_has_song();
+}
+
+void audio_song_test(bool play_now){
+	//note: songs have to be on device
+	printf("add songs to queue\n");
+	audio_add_song_to_queue("californication/track01.cdda.wav");
+	audio_add_song_to_queue("californication/track02.cdda.wav");
+	audio_add_song_to_queue("californication/track03.cdda.wav");
+	audio_add_song_to_queue("californication/track04.cdda.wav");
+	audio_add_song_to_queue("californication/track05.cdda.wav");
+	audio_add_song_to_queue("californication/track06.cdda.wav");
+	audio_add_song_to_queue("californication/track07.cdda.wav");
+	audio_add_song_to_queue("californication/track08.cdda.wav");
+	audio_add_song_to_queue("californication/track09.cdda.wav");
+	audio_add_song_to_queue("californication/track10.cdda.wav");
+	audio_add_song_to_queue("californication/track11.cdda.wav");
+	audio_add_song_to_queue("californication/track12.cdda.wav");
+	audio_add_song_to_queue("californication/track13.cdda.wav");
+	audio_add_song_to_queue("californication/track14.cdda.wav");
+	audio_add_song_to_queue("californication/track15.cdda.wav");
+
+	if (play_now){
+		audio_play_top_queue();
+	}
+
 }

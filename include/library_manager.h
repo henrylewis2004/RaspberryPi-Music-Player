@@ -83,5 +83,13 @@ typedef struct {
 
 } catalogue;
 
+//functions
+void library_sync(bool full_sync);
+
+// get sizes
+uint32_t library_get_artist_count(void);
+uint32_t library_get_artist_album_count(char* artist);
+uint32_t library_get_album_song_count(char* artist, char* album);
+
 
 #endif

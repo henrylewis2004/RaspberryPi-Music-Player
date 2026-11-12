@@ -176,3 +176,7 @@ int song_queue_clear(void){
 
 	return 0;
 }
+
+uint32_t song_queue_get_count(void){
+	return queue_length;
+}

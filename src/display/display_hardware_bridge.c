@@ -303,7 +303,6 @@ void display_hardware_init(void){
 	u8g2_Setup_sh1107_pimoroni_128x128_f(&u8g2,U8G2_R0,display_pico_byte_hw_spi_communication,display_pico_gpio_delay);
 
 	u8g2_InitDisplay(&u8g2);
-	//u8g2_SetPowerSave(&u8g2, 1); 
 	display_hardware_set_powersave(true);
 	u8g2_SetContrast(&u8g2, DISPLAY_CONTRAST); 
 
@@ -381,6 +380,7 @@ void display_hardware_play_screen_update_time( uint seconds_remaining,float prog
 }
 
 //list
+//note: item_count and secondary_items_count should be the same, maybe only use one
 void display_hardware_draw_list(uint SCREEN, const char* items[], size_t item_count, const char* secondary_items[], size_t secondary_items_count, uint numbering_start, bool clear){
 	if (clear){
 		display_hardware_clear_list_area(LIST_ITEM_X0);

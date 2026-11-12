@@ -154,7 +154,7 @@ void display_update_play_progress(uint seconds_remaining,float progress){
 
 void display_update_list_selection(uint selected_index, uint previous_index, uint SCREEN){
 	display_hardware_clear_selection_ind(previous_index, SCREEN);
-	display_hardware_draw_list_selection_indicator(selected_index, SCREEN_OPTIONS);
+	display_hardware_draw_list_selection_indicator(selected_index, SCREEN);
 
 	display_hardware_draw_screen();
 }

@@ -27,17 +27,8 @@ void button_init(int gpio_pin){
 	gpio_set_irq_enabled_with_callback(gpio_pin,GPIO_IRQ_EDGE_FALL,true,&button_playback);
 }
 
-
-// public \\
-
-void input_init(void){
-	button_init(PLAY_BUTTON_PIN);
-
-	input_reset_flags();
-}
-
-void input_reset_flags(void){
-	//input buttons
+//NOTE: might have to add freshness (is button just pressed)
+void reset_flag_state(void){
 	input_button_flags.play_button = false;
 	input_button_flags.skip_button = false;
 	input_button_flags.alt_button = false;
@@ -51,12 +42,22 @@ void input_reset_flags(void){
 }
 
 
+// public \\
+
+void input_init(void){
+	button_init(PLAY_BUTTON_PIN);
+
+	reset_flag_state();
+}
+
+input_flags input_reset_flags(void){
+	//input buttons
+	reset_flag_state();
+
+	return input_button_flags;
+}
+
 input_flags input_get_flags(void){
 	return input_button_flags;
 }
 
-
-input_flags input_get_reset_flags(void){
-	input_reset_flags();
-	return input_button_flags;
-}

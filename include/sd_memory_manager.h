@@ -61,7 +61,7 @@ void sd_close(void);
 void sd_functionality_test(void);
 
 void sd_set_playsong(char *filepath);
-bool sd_wav_read_data(uint32_t *buf);
+bool sd_wav_read_data(volatile uint32_t *buf);
 void sd_wav_close_playing_song(void); 
 
 

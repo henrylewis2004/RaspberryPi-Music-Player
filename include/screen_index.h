@@ -5,6 +5,7 @@
 #define SCREEN_MAIN_MENU 0
 #endif
 
+
 #ifndef SCREEN_PLAYING
 #define SCREEN_PLAYING 1
 #endif
@@ -25,12 +26,22 @@
 #define SCREEN_TITLES 5
 #endif
 
+/*
 #ifndef SCREEN_PLAYLISTS
 #define SCREEN_PLAYLISTS 6
 #endif
 
+#ifndef SCREEN_PLAYLIST_TITLES
+#define SCREEN_PLAYLIST_TITLES 7
+#endif
+
+*/
 #ifndef SCREEN_OPTIONS
-#define SCREEN_OPTIONS 7
+#define SCREEN_OPTIONS 6
+#endif
+
+#ifndef SCREEN_DEFAULT_INIT
+#define SCREEN_DEFAULT_INIT SCREEN_MAIN_MENU
 #endif
 
 #ifndef SCREEN_MAIN_MENU_TEXT
@@ -38,7 +49,12 @@
 #endif
 
 #ifndef SCREEN_MAIN_MENU_ITEMS
-#define SCREEN_MAIN_MENU_ITEMS {"Playing", "Song Queue", "Artists","Playlists","Options"}
+//#define SCREEN_MAIN_MENU_ITEMS {"Playing", "Song Queue", "Artists","Playlists","Options"}
+#define SCREEN_MAIN_MENU_ITEMS {"Playing", "Artists","Options"}
+#endif
+
+#ifndef SCREEN_MAIN_MENU_ITEMS_COUNT
+#define SCREEN_MAIN_MENU_ITEMS_COUNT 3
 #endif
 
 #ifndef SCREEN_PLAYING_TEXT
@@ -59,6 +75,10 @@
 
 #ifndef SCREEN_OPTIONS_ITEMS
 #define SCREEN_OPTIONS_ITEMS {"Contrast", "Volume", "example option","example option 2","example option 3"}
+#endif
+
+#ifndef SCREEN_OPTIONS_ITEMS_COUNT
+#define SCREEN_OPTIONS_ITEMS_COUNT 5
 #endif
 
 #endif

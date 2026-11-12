@@ -18,8 +18,141 @@
 #include "audio_dac_pin_values.h"
 #include "display_manager.h"
 #include "input.h"
+#include "screen_index.h"
+#include "library_manager.h"
 
-static input_flags input_button_flags;
+typedef struct {
+	//input
+	input_flags input_button_flags;
+	uint32_t last_input_ts; //note 32 wraps every 1 hour 11 minutes 35 seconds, should be fine for input cooldown? alternatively cna use 64
+
+	//pages
+	uint8_t cur_page;
+
+	//selected indexes
+	uint32_t selected_index;
+
+	//info
+	char* cur_artist;
+	char* cur_album;
+	char* cur_song;
+	
+
+} state;
+
+static state cur_state;
+
+// private
+
+void reset_state(state s){
+	s.input_button_flags = input_reset_flags();
+	s.last_input_ts = 0;
+
+	s.cur_page = SCREEN_DEFAULT_INIT;
+	s.selected_index = 0;
+
+	s.cur_artist = NULL;
+	s.cur_album = NULL;
+	s.cur_song = NULL;
+}
+
+void reset_state_song_info(state s){
+	s.cur_artist = NULL;
+	s.cur_album = NULL;
+	s.cur_song = NULL;
+}
+
+
+
+//pages
+void goto_page(uint8_t page){
+	switch(page){
+		//menus
+		case SCREEN_MAIN_MENU:
+			display_goto_main_menu();
+			break;
+		case SCREEN_OPTIONS:
+			break;
+		case SCREEN_PLAYING:
+			break;
+		case SCREEN_QUEUE:
+			break;
+
+		//songs
+		case SCREEN_ARTISTS:
+			break;
+		case SCREEN_ALBUMS:
+			break;
+		case SCREEN_TITLES:
+			break;
+
+		//default
+		default:
+			printf("error: goto_page tried incorrect page index (page=%u)\n", page);
+			return;
+	}
+
+	cur_state.cur_page = page;
+	cur_state.selected_index = 0;
+}
+
+void goto_previous_page(void){
+	if (cur_state.cur_page == SCREEN_MAIN_MENU){
+		return;
+	}
+
+	if (cur_state.cur_page == SCREEN_PLAYING || cur_state.cur_page == SCREEN_ARTISTS || cur_state.cur_page == SCREEN_OPTIONS){
+		cur_state.cur_page = SCREEN_MAIN_MENU;
+	}
+	else if (cur_state.cur_page == SCREEN_ALBUMS || cur_state.cur_page == SCREEN_TITLES || cur_state.cur_page == SCREEN_QUEUE){
+		cur_state.cur_page--;
+	}
+
+	goto_page(cur_state.cur_page);
+}
+
+//index
+uint32_t get_max_index(void){
+	switch(cur_state.cur_page){
+		//constant
+		case SCREEN_MAIN_MENU:
+			return SCREEN_MAIN_MENU_ITEMS_COUNT;
+		case SCREEN_OPTIONS:
+			return SCREEN_OPTIONS_ITEMS_COUNT;
+
+		//dynamic
+		case SCREEN_ARTISTS:
+			return library_get_artist_count();
+		case SCREEN_ALBUMS:
+			return library_get_artist_album_count(cur_state.cur_artist);
+		case SCREEN_TITLES:
+			return library_get_album_song_count(cur_state.cur_artist, cur_state.cur_album);
+		case SCREEN_QUEUE:
+			return audio_get_song_queue_count();
+
+		default:
+			return 0;
+			 
+	}
+}
+
+void index_select_up(void){
+	if (cur_state.selected_index == 0){
+		return;
+	}
+
+	display_update_list_selection(cur_state.selected_index - 1,cur_state.selected_index,cur_state.cur_page);
+	cur_state.selected_index--;
+}
+
+void index_select_down(void){
+	if (cur_state.selected_index + 1 >= get_max_index()){ 
+		return;
+	}
+
+	display_update_list_selection(cur_state.selected_index + 1,cur_state.selected_index,cur_state.cur_page);
+	cur_state.selected_index++;
+}
 
 // public
 
@@ -38,85 +171,77 @@ void controller_system_init(void){
 	printf("audio_init\n");
 	dma_unclaim_mask(0x30); //unclaim channels 4 & 5
 	audio_init();
-	printf("audio_init finished\n");
 	*/
 
 	//sd card
 	printf("sd_init\n");
 	dma_unclaim_mask(0x0f); //unclaim channels (0-3)
 	sd_init();
-	printf("sd_init finished\n");
 	/*
 
 	//input
 	printf("input init\n");
 	input_init();
-	printf("input init finished\n");
 
 	*/
 	//display 
+	printf("display init\n");
 	display_init();
-	display_test_run();
 
 	sleep_ms(10);
-}
 
-void controller_song_test(bool play_now){
-	//note: songs have to be on device
-	printf("add songs to queue\n");
-	audio_add_song_to_queue("californication/track01.cdda.wav");
-	audio_add_song_to_queue("californication/track02.cdda.wav");
-	audio_add_song_to_queue("californication/track03.cdda.wav");
-	audio_add_song_to_queue("californication/track04.cdda.wav");
-	audio_add_song_to_queue("californication/track05.cdda.wav");
-	audio_add_song_to_queue("californication/track06.cdda.wav");
-	audio_add_song_to_queue("californication/track07.cdda.wav");
-	audio_add_song_to_queue("californication/track08.cdda.wav");
-	audio_add_song_to_queue("californication/track09.cdda.wav");
-	audio_add_song_to_queue("californication/track10.cdda.wav");
-	audio_add_song_to_queue("californication/track11.cdda.wav");
-	audio_add_song_to_queue("californication/track12.cdda.wav");
-	audio_add_song_to_queue("californication/track13.cdda.wav");
-	audio_add_song_to_queue("californication/track14.cdda.wav");
-	audio_add_song_to_queue("californication/track15.cdda.wav");
-
-	audio_add_song_to_queue("Revolver/track01.wav");
-	audio_add_song_to_queue("Revolver/track03.wav");
-	audio_add_song_to_queue("Revolver/track02.wav");
-	audio_add_song_to_queue("Revolver/track04.wav");
-	audio_add_song_to_queue("Revolver/track05.wav");
-	audio_add_song_to_queue("Revolver/track06.wav");
-	audio_add_song_to_queue("Revolver/track07.wav");
-	audio_add_song_to_queue("Revolver/track08.wav");
-	audio_add_song_to_queue("Revolver/track09.wav");
-	audio_add_song_to_queue("Revolver/track10.wav");
-	audio_add_song_to_queue("Revolver/track11.wav");
-	audio_add_song_to_queue("Revolver/track12.wav");
-	audio_add_song_to_queue("Revolver/track13.wav");
-	audio_add_song_to_queue("Revolver/track14.wav");
-	audio_add_song_to_queue("Revolver/track15.wav");
-
-	if (play_now){
-		audio_play_top_queue();
-	}
-
+	reset_state(cur_state);
+	//note: maybe change to loading or init screen?
+	goto_page(SCREEN_MAIN_MENU);
 }
 
 void controller_system_loop(void){
+	//audio_song_test(true);
+
 	//infinite loop
 	while(true){
-		input_button_flags = input_get_flags();
+		cur_state.input_button_flags = input_get_flags();
 
 		if (audio_buffer_refil_requested()){
 			audio_buffer_refil();
 		}
-		if (input_button_flags.play_button){
-			//input_button_flags.play_button = false;
-			printf("Play_pause_song called\n");
-			audio_play_pause_song();
-		}
 
-		input_button_flags = input_get_reset_flags();
+		//input 
+		//NOTE: maybe change timestamp method to an alarm (not sure how input callback is called, once per action or whilst held down?)
+		
+		if (time_us_32() - cur_state.last_input_ts >= INPUT_COOLDOWN_US){
+			if (cur_state.input_button_flags.play_button){
+				//input_button_flags.play_button = false;
+				printf("Play_pause_song called\n");
+
+				audio_play_pause_song();
+			}
+			if (cur_state.input_button_flags.axis_right){
+				//input_button_flags.axis_right = false;
+				printf("axis right button called\n");
+			}
+			if (cur_state.input_button_flags.axis_left){
+				//input_button_flags.axis_back = false;
+				printf("axis back button called\n");
+
+				goto_previous_page();
+			}
+			if (cur_state.input_button_flags.axis_up){
+				//input_button_flags.axis_up = false;
+				printf("axis up button called\n");
+
+				index_select_up();
+			}
+			if (cur_state.input_button_flags.axis_down){
+				//input_button_flags.axis_down = false;
+				printf("axis down button called\n");
+
+				index_select_down();
+			}
+
+			cur_state.input_button_flags = input_reset_flags();
+			cur_state.last_input_ts = time_us_32();
+		}
 
 		__wfi();
 	
